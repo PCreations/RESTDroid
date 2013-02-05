@@ -33,6 +33,8 @@ public abstract class Processor {
 	protected void preRequestProcess(RESTRequest<? extends ResourceRepresentation<?>> r) throws DaoFactoryNotInitializedException {
 		//GESTION BDD
 		Log.i(RestService.TAG, "preRequestProcess start");
+		/* preRequestProcessLogic(r) */
+		/* TODO : Strategy logic goes here */
 		if(WebService.FLAG_RESOURCE && r.getVerb() != HTTPVerb.GET) {
 			if(null == mDaoFactory) {
 				throw new DaoFactoryNotInitializedException();
@@ -64,7 +66,7 @@ public abstract class Processor {
 					e.printStackTrace();
 				}
 			}
-		}
+		} /* TODO : END Strategy logic goes here */
 		else
 			processRequest(r);
 		Log.i(RestService.TAG, "preRequestProcess end");
@@ -83,11 +85,13 @@ public abstract class Processor {
 		});
 		//TODO handle other verb
 		ResourceRepresentation<?> resource = r.getResourceRepresentation();
+		/* InputStream is = createInputStream(r) */
 		switch(r.getVerb()) {
 			case GET:
 				mHttpRequestHandler.get(r);
 				break;
 			case POST:
+				/* TODO : Strategy logic goes here */
 				try {
 					InputStream is = mParserFactory.getParser(resource.getClass()).parseToInputStream(resource);
 					//TODO afficher is
@@ -99,6 +103,7 @@ public abstract class Processor {
 				}
 				break;
 			case PUT:
+				/* TODO : Strategy logic goes here */
 				try {
 					InputStream is = mParserFactory.getParser(resource.getClass()).parseToInputStream(resource);
 					//TODO afficher is
@@ -150,7 +155,8 @@ public abstract class Processor {
 			mRESTServiceCallback.callAction(statusCode, request);
 		}
 		else {
-			//TODO setup StrategyProcess to decide what to do here
+			/* TODO : Strategy logic goes here */
+			/* handleHttpResponse(statusCode, request, resultStream) */
 			//By default store object
 			try {
 				if(WebService.FLAG_RESOURCE && request.getResourceRepresentation() != null) {
