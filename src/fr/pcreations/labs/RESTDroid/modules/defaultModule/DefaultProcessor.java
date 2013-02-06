@@ -62,8 +62,35 @@ public class DefaultProcessor extends Processor{
 	@Override
 	protected <T extends ResourceRepresentation<?>> int postRequestProcess(
 			int statusCode, RESTRequest<T> r, InputStream resultStream) {
-		// TODO Auto-generated method stub
-		return 0;
+        //TODO setup StrategyProcess to decide what to do here
+        //By default store object
+        try {
+                if(r.getVerb() == HTTPVerb.DELETE) {
+                        ResourceRepresentation<?> resource = r.getResourceRepresentation();
+                        Log.i(RestService.TAG, "AFTER DELETE RESOURCE AND BEFORE DELETE LOCAL DB RESOURCE = " + resource.toString());
+                        DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
+                        dao.deleteResource(resource);
+                }
+                else if(r.getVerb() == HTTPVerb.GET) {
+                        Log.i("debug", "Delete old resource !");
+                        //TODO handle parsing here with ParserFactory
+                        ResourceRepresentation<?> resource = r.getResourceRepresentation();
+                        DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
+                        ResourceRepresentation<?> oldResource = dao.findById(resource.getId());
+                        dao.deleteResource(oldResource);
+                }
+                if(r.getResourceRepresentation() != null) { //POST PUT GET
+                        ResourceRepresentation<?> resource = r.getResourceRepresentation();
+                        DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
+                        dao.updateOrCreate(r.getResourceRepresentation());
+                        Log.d(RestService.TAG, "handleHttpRequestHandlerCallback");
+                }
+        } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+        }
+        Log.i(RestService.TAG, "handleHTTpREquestHandlerCallback end");
+        return statusCode;
 	}
 
 	@Override
@@ -72,7 +99,7 @@ public class DefaultProcessor extends Processor{
 			throws DaoFactoryNotInitializedException {
 		 //GESTION BDD
         Log.i(RestService.TAG, "preRequestProcess start");
-        if(WebService.FLAG_RESOURCE && r.getVerb() != HTTPVerb.GET) {
+        if(r.getVerb() != HTTPVerb.GET) {
                 if(null == mDaoFactory) {
                         throw new DaoFactoryNotInitializedException();
                 }
@@ -97,15 +124,12 @@ public class DefaultProcessor extends Processor{
                         try {
                                 DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
                                 dao.updateOrCreate(resource);
-                                processRequest(r);
                         } catch (SQLException e) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
                         }
                 }
         }
-        else
-                processRequest(r);
         Log.i(RestService.TAG, "preRequestProcess end");
 		
 	}

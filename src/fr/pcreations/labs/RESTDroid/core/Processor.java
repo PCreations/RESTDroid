@@ -51,8 +51,6 @@ public abstract class Processor {
 			}
 			
 		});
-		//TODO handle other verb
-		ResourceRepresentation<?> resource = r.getResourceRepresentation();
 		InputStream is;
 		switch(r.getVerb()) {
 			case GET:
@@ -107,40 +105,8 @@ public abstract class Processor {
 		Log.i(RestService.TAG, "handleHTTpREquestHandlerCallback start");
         /*Log.i(RestService.TAG, "RESPONSE SERVER JSON = " + inputStreamToString(resultStream));
         Log.i(RestService.TAG, "Breakpoint");*/
-        if(postRequestProcess(statusCode, request, resultStream) != statusCode) {
-                mRESTServiceCallback.callAction(statusCode, request);
-        }
-        else {
-            //TODO setup StrategyProcess to decide what to do here
-            //By default store object
-            try {
-                    if(WebService.FLAG_RESOURCE && request.getVerb() == HTTPVerb.DELETE) {
-                            ResourceRepresentation<?> resource = request.getResourceRepresentation();
-                            Log.i(RestService.TAG, "AFTER DELETE RESOURCE AND BEFORE DELETE LOCAL DB RESOURCE = " + resource.toString());
-                            DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
-                            dao.deleteResource(resource);
-                    }
-                    else if(WebService.FLAG_RESOURCE && request.getVerb() == HTTPVerb.GET) {
-                            Log.i("debug", "Delete old resource !");
-                            //TODO handle parsing here with ParserFactory
-                            ResourceRepresentation<?> resource = request.getResourceRepresentation();
-                            DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
-                            ResourceRepresentation<?> oldResource = dao.findById(resource.getId());
-                            dao.deleteResource(oldResource);
-                    }
-                    if(WebService.FLAG_RESOURCE && request.getResourceRepresentation() != null) { //POST PUT GET
-                            ResourceRepresentation<?> resource = request.getResourceRepresentation();
-                            DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
-                            dao.updateOrCreate(request.getResourceRepresentation());
-                            Log.d(RestService.TAG, "handleHttpRequestHandlerCallback");
-                    }
-                    mRESTServiceCallback.callAction(statusCode, request);
-            } catch (SQLException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-            }
-            Log.i(RestService.TAG, "handleHTTpREquestHandlerCallback end");
-        }
+        statusCode = postRequestProcess(statusCode, request, resultStream);
+        mRESTServiceCallback.callAction(statusCode, request);
 	}
 	
 	public void setRESTServiceCallback(RESTServiceCallback callback) {
