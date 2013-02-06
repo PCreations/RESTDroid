@@ -1,4 +1,4 @@
-package fr.pcreations.labs.RESTDroid.core;
+package fr.pcreations.labs.RESTDroid.modules.defaultModule;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,6 +13,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fr.pcreations.labs.RESTDroid.core.Parser;
+import fr.pcreations.labs.RESTDroid.core.ResourceRepresentation;
+import fr.pcreations.labs.RESTDroid.core.RestService;
 import fr.pcreations.labs.RESTDroid.exceptions.ParsingException;
 
 public class SimpleJacksonParser implements Parser<ResourceRepresentation<?>>{

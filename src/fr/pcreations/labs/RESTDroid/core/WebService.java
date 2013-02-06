@@ -35,6 +35,11 @@ public abstract class WebService implements RestResultReceiver.Receiver{
         mRequestCollection = new ArrayList<RESTRequest<?>>();
 	}
 	
+	public void registerModule(Module m) {
+		m.init();
+		RestService.setProcessor(m.getProcessor());
+	}
+	
 	public <T extends ResourceRepresentation<?>> RESTRequest<T> newRequest(Class<T> clazz) {
 		RESTRequest<T> r = new RESTRequest<T>(generateID(), clazz);
 		mRequestCollection.add(r);

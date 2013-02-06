@@ -11,23 +11,10 @@ import fr.pcreations.labs.RESTDroid.core.RESTRequest;
 import fr.pcreations.labs.RESTDroid.core.RequestState;
 import fr.pcreations.labs.RESTDroid.core.ResourceRepresentation;
 import fr.pcreations.labs.RESTDroid.core.RestService;
-import fr.pcreations.labs.RESTDroid.core.WebService;
 import fr.pcreations.labs.RESTDroid.exceptions.DaoFactoryNotInitializedException;
 import fr.pcreations.labs.RESTDroid.exceptions.ParsingException;
 
 public class DefaultProcessor extends Processor{
-
-	@Override
-	public void setDaoFactory() {
-		// TODO Auto-generated method stub
-		mDaoFactory = new ORMLiteDaoFactory();
-	}
-
-	@Override
-	public void setParserFactory() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	protected void preGetRequest(RESTRequest<? extends ResourceRepresentation<?>> r) {
@@ -61,33 +48,32 @@ public class DefaultProcessor extends Processor{
 
 	@Override
 	protected <T extends ResourceRepresentation<?>> int postRequestProcess(
-			int statusCode, RESTRequest<T> r, InputStream resultStream) {
-        //TODO setup StrategyProcess to decide what to do here
+		int statusCode, RESTRequest<T> r, InputStream resultStream) {
         //By default store object
         try {
-                if(r.getVerb() == HTTPVerb.DELETE) {
-                        ResourceRepresentation<?> resource = r.getResourceRepresentation();
-                        Log.i(RestService.TAG, "AFTER DELETE RESOURCE AND BEFORE DELETE LOCAL DB RESOURCE = " + resource.toString());
-                        DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
-                        dao.deleteResource(resource);
-                }
-                else if(r.getVerb() == HTTPVerb.GET) {
-                        Log.i("debug", "Delete old resource !");
-                        //TODO handle parsing here with ParserFactory
-                        ResourceRepresentation<?> resource = r.getResourceRepresentation();
-                        DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
-                        ResourceRepresentation<?> oldResource = dao.findById(resource.getId());
-                        dao.deleteResource(oldResource);
-                }
-                if(r.getResourceRepresentation() != null) { //POST PUT GET
-                        ResourceRepresentation<?> resource = r.getResourceRepresentation();
-                        DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
-                        dao.updateOrCreate(r.getResourceRepresentation());
-                        Log.d(RestService.TAG, "handleHttpRequestHandlerCallback");
-                }
+            if(r.getVerb() == HTTPVerb.DELETE) {
+                ResourceRepresentation<?> resource = r.getResourceRepresentation();
+                Log.i(RestService.TAG, "AFTER DELETE RESOURCE AND BEFORE DELETE LOCAL DB RESOURCE = " + resource.toString());
+                DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
+                dao.deleteResource(resource);
+            }
+            else if(r.getVerb() == HTTPVerb.GET) {
+                Log.i("debug", "Delete old resource !");
+                //TODO handle parsing here with ParserFactory
+                ResourceRepresentation<?> resource = r.getResourceRepresentation();
+                DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
+                ResourceRepresentation<?> oldResource = dao.findById(resource.getId());
+                dao.deleteResource(oldResource);
+            }
+            if(r.getResourceRepresentation() != null) { //POST PUT GET
+                ResourceRepresentation<?> resource = r.getResourceRepresentation();
+                DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
+                dao.updateOrCreate(r.getResourceRepresentation());
+                Log.d(RestService.TAG, "handleHttpRequestHandlerCallback");
+            }
         } catch (SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         Log.i(RestService.TAG, "handleHTTpREquestHandlerCallback end");
         return statusCode;

@@ -21,12 +21,8 @@ public abstract class Processor {
 	
 	public Processor() {
 		mHttpRequestHandler = new HttpRequestHandler();
-		setDaoFactory();
-		setParserFactory();
 	}
 
-	abstract public void setDaoFactory();
-	abstract public void setParserFactory();
 	abstract protected void preRequestProcess(RESTRequest<? extends ResourceRepresentation<?>> r) throws DaoFactoryNotInitializedException;
 	abstract protected void preGetRequest(RESTRequest<? extends ResourceRepresentation<?>> r);
 	abstract protected void preDeleteRequest(RESTRequest<? extends ResourceRepresentation<?>> r);
@@ -111,6 +107,13 @@ public abstract class Processor {
 	
 	public void setRESTServiceCallback(RESTServiceCallback callback) {
 		mRESTServiceCallback = callback;
+	}
+	
+	public void setDaoFactory(DaoFactory d) {
+		mDaoFactory = d;
+	}
+	public void setParserFactory(ParserFactory p) {
+		mParserFactory = p;
 	}
 	
 	public interface RESTServiceCallback {
