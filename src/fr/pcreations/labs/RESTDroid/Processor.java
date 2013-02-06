@@ -27,54 +27,17 @@ public abstract class Processor {
 
 	abstract public void setDaoFactory();
 	abstract public void setParserFactory();
-	abstract protected void preRequestProcessLogic(RESTRequest<? extends ResourceRepresentation<?>> r);
+	abstract protected void preRequestProcess(RESTRequest<? extends ResourceRepresentation<?>> r) throws DaoFactoryNotInitializedException;
 	abstract protected boolean preGetRequest();
 	abstract protected boolean preDeleteRequest();
 	abstract protected InputStream prePostRequest();
 	abstract protected InputStream prePutRequest();
 	
-	abstract protected <T extends ResourceRepresentation<?>> int postProcess(int statusCode, RESTRequest<T> r, InputStream resultStream);
+	abstract protected <T extends ResourceRepresentation<?>> int postRequestProcess(int statusCode, RESTRequest<T> r, InputStream resultStream);
 	
-	protected void preRequestProcess(RESTRequest<? extends ResourceRepresentation<?>> r) throws DaoFactoryNotInitializedException {
-		//GESTION BDD
-		Log.i(RestService.TAG, "preRequestProcess start");
-		/* preRequestProcessLogic(r) */
-		/* TODO : Strategy logic goes here */
-		if(WebService.FLAG_RESOURCE && r.getVerb() != HTTPVerb.GET) {
-			if(null == mDaoFactory) {
-				throw new DaoFactoryNotInitializedException();
-			}
-			if(null != r.getResourceRepresentation()) {
-				ResourceRepresentation<?> resource = r.getResourceRepresentation();
-				resource.setTransactingFlag(true);
-				Log.e(RestService.TAG, "resource dans preProcessRequest = " + r.getResourceRepresentation().toString());
-				switch(r.getVerb()) {
-					case GET:
-						resource.setState(RequestState.STATE_RETRIEVING);
-						break;
-					case POST:
-						resource.setState(RequestState.STATE_POSTING);
-						break;
-					case PUT:
-						resource.setState(RequestState.STATE_UPDATING);
-						break;
-					case DELETE:
-						resource.setState(RequestState.STATE_DELETING);
-						break;
-				}
-				try {
-					DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
-					dao.updateOrCreate(resource);
-					processRequest(r);
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		} /* TODO : END Strategy logic goes here */
-		else
-			processRequest(r);
-		Log.i(RestService.TAG, "preRequestProcess end");
+	protected void process(RESTRequest<? extends ResourceRepresentation<?>> r) throws DaoFactoryNotInitializedException {
+		preRequestProcess(r);
+		processRequest(r);
 	}
 	
 	protected void processRequest(RESTRequest<? extends ResourceRepresentation<?>> r) {
@@ -156,8 +119,8 @@ public abstract class Processor {
 		Log.i(RestService.TAG, "handleHTTpREquestHandlerCallback start");
 		/*Log.i(RestService.TAG, "RESPONSE SERVER JSON = " + inputStreamToString(resultStream));
 		Log.i(RestService.TAG, "Breakpoint");*/
-		statusCode = postProcess(statusCode, request, resultStream);
-		if(postProcess(statusCode, request, resultStream) != statusCode) {
+		statusCode = postRequestProcess(statusCode, request, resultStream);
+		if(postRequestProcess(statusCode, request, resultStream) != statusCode) {
 			mRESTServiceCallback.callAction(statusCode, request);
 		}
 		else {
