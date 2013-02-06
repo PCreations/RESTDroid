@@ -3,7 +3,7 @@ package fr.pcreations.labs.RESTDroid.exceptions;
 import java.util.UUID;
 
 import android.util.Log;
-import fr.pcreations.labs.RESTDroid.RestService;
+import fr.pcreations.labs.RESTDroid.core.RestService;
 
 public class RequestNotFoundException extends Exception {
 	

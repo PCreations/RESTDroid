@@ -6,10 +6,10 @@ import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 
-import fr.pcreations.labs.RESTDroid.DaoAccess;
-import fr.pcreations.labs.RESTDroid.DaoFactory;
-import fr.pcreations.labs.RESTDroid.ResourceRepresentation;
-import fr.pcreations.labs.RESTDroid.RestService;
+import fr.pcreations.labs.RESTDroid.core.DaoAccess;
+import fr.pcreations.labs.RESTDroid.core.DaoFactory;
+import fr.pcreations.labs.RESTDroid.core.ResourceRepresentation;
+import fr.pcreations.labs.RESTDroid.core.RestService;
 import fr.pcreations.labs.RESTDroid.exceptions.DatabaseManagerNotInitializedException;
 
 public class ORMLiteDaoFactory extends DaoFactory {

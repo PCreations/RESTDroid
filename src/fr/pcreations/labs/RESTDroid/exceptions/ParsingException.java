@@ -1,7 +1,7 @@
 package fr.pcreations.labs.RESTDroid.exceptions;
 
 import android.util.Log;
-import fr.pcreations.labs.RESTDroid.RestService;
+import fr.pcreations.labs.RESTDroid.core.RestService;
 
 public class ParsingException extends Exception {
 

@@ -4,15 +4,16 @@ import java.io.InputStream;
 import java.sql.SQLException;
 
 import android.util.Log;
-import fr.pcreations.labs.RESTDroid.DaoAccess;
-import fr.pcreations.labs.RESTDroid.HTTPVerb;
-import fr.pcreations.labs.RESTDroid.Processor;
-import fr.pcreations.labs.RESTDroid.RESTRequest;
-import fr.pcreations.labs.RESTDroid.RequestState;
-import fr.pcreations.labs.RESTDroid.ResourceRepresentation;
-import fr.pcreations.labs.RESTDroid.RestService;
-import fr.pcreations.labs.RESTDroid.WebService;
+import fr.pcreations.labs.RESTDroid.core.DaoAccess;
+import fr.pcreations.labs.RESTDroid.core.HTTPVerb;
+import fr.pcreations.labs.RESTDroid.core.Processor;
+import fr.pcreations.labs.RESTDroid.core.RESTRequest;
+import fr.pcreations.labs.RESTDroid.core.RequestState;
+import fr.pcreations.labs.RESTDroid.core.ResourceRepresentation;
+import fr.pcreations.labs.RESTDroid.core.RestService;
+import fr.pcreations.labs.RESTDroid.core.WebService;
 import fr.pcreations.labs.RESTDroid.exceptions.DaoFactoryNotInitializedException;
+import fr.pcreations.labs.RESTDroid.exceptions.ParsingException;
 
 public class DefaultProcessor extends Processor{
 
@@ -29,27 +30,33 @@ public class DefaultProcessor extends Processor{
 	}
 
 	@Override
-	protected boolean preGetRequest() {
+	protected void preGetRequest(RESTRequest<? extends ResourceRepresentation<?>> r) {
 		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
-	protected boolean preDeleteRequest() {
+	protected void preDeleteRequest(RESTRequest<? extends ResourceRepresentation<?>> r) {
 		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
-	protected InputStream prePostRequest() {
-		// TODO Auto-generated method stub
+	protected InputStream prePostRequest(RESTRequest<? extends ResourceRepresentation<?>> r) {
+		try {
+			ResourceRepresentation<?> resource = r.getResourceRepresentation();
+			InputStream is = mParserFactory.getParser(resource.getClass()).parseToInputStream(resource);
+			//TODO afficher is
+			//Log.i(RestService.TAG, "INPUT STREAM NOTE = " + inputStreamToString(is));
+			return is;
+		} catch (ParsingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return null;
 	}
 
 	@Override
-	protected InputStream prePutRequest() {
-		// TODO Auto-generated method stub
-		return null;
+	protected InputStream prePutRequest(RESTRequest<? extends ResourceRepresentation<?>> r) {
+		return prePostRequest(r);
 	}
 
 	@Override
