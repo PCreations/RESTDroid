@@ -139,11 +139,6 @@ public class HttpRequestHandler {
 	    				e.printStackTrace();
 	    			}
 	    		}
-	    		/* TODO : PUT THIS IN PROCESSOR */
-	    		if(WebService.FLAG_RESOURCE) {
-	    			request.getResourceRepresentation().setResultCode(statusCode);
-	    			request.getResourceRepresentation().setTransactingFlag(false);
-	    		}
 	    		mProcessorCallback.callAction(statusCode, request, IS);
 	        }
 	    }).start();
@@ -186,11 +181,6 @@ public class HttpRequestHandler {
 	    			Log.e(RestService.TAG, "IO_EXCEPTION");
 	    			//e.printStackTrace();
 	    		} finally {
-	    			/* TODO : Put this in processor */
-	    			if(WebService.FLAG_RESOURCE && request.getVerb() != HTTPVerb.GET) {
-		    			request.getResourceRepresentation().setResultCode(statusCode);
-		    			request.getResourceRepresentation().setTransactingFlag(false);
-		    		}
 		    		mProcessorCallback.callAction(statusCode, request, IS);
 	    			try {
 	    				if(null != responseEntity)

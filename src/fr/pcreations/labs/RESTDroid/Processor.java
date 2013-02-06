@@ -27,6 +27,11 @@ public abstract class Processor {
 
 	abstract public void setDaoFactory();
 	abstract public void setParserFactory();
+	abstract protected void preRequestProcessLogic(RESTRequest<? extends ResourceRepresentation<?>> r);
+	abstract protected boolean preGetRequest();
+	abstract protected boolean preDeleteRequest();
+	abstract protected InputStream prePostRequest();
+	abstract protected InputStream prePutRequest();
 	
 	abstract protected <T extends ResourceRepresentation<?>> int postProcess(int statusCode, RESTRequest<T> r, InputStream resultStream);
 	
@@ -151,6 +156,7 @@ public abstract class Processor {
 		Log.i(RestService.TAG, "handleHTTpREquestHandlerCallback start");
 		/*Log.i(RestService.TAG, "RESPONSE SERVER JSON = " + inputStreamToString(resultStream));
 		Log.i(RestService.TAG, "Breakpoint");*/
+		statusCode = postProcess(statusCode, request, resultStream);
 		if(postProcess(statusCode, request, resultStream) != statusCode) {
 			mRESTServiceCallback.callAction(statusCode, request);
 		}
@@ -158,6 +164,11 @@ public abstract class Processor {
 			/* TODO : Strategy logic goes here */
 			/* handleHttpResponse(statusCode, request, resultStream) */
 			//By default store object
+			/* TODO : PUT THIS IN PROCESSOR */
+    		if(WebService.FLAG_RESOURCE) {
+    			request.getResourceRepresentation().setResultCode(statusCode);
+    			request.getResourceRepresentation().setTransactingFlag(false);
+    		}
 			try {
 				if(WebService.FLAG_RESOURCE && request.getResourceRepresentation() != null) {
 					ResourceRepresentation<?> resource = request.getResourceRepresentation();
