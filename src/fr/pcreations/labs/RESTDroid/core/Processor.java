@@ -158,35 +158,14 @@ public abstract class Processor {
 		return true;
 	}
 	
-	private String inputStreamToString(InputStream is) {
-        BufferedReader bufferedReader;
-		try {
-			bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-			StringBuilder inputStringBuilder = new StringBuilder();
-	        String line;
-			try {
-				line = bufferedReader.readLine();
-				while(line != null){
-		            inputStringBuilder.append(line);inputStringBuilder.append('\n');
-		            try {
-						line = bufferedReader.readLine();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-		        }
-				return inputStringBuilder.toString();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	        
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-        return null;
+	protected <R extends ResourceRepresentation<?>> R parseToObject(InputStream content, Class<R> clazz) throws ParsingException {
+		Parser<R> p = mParserFactory.getParser(clazz);
+		return p.parseToObject(content);
+	}
+	
+	protected <R extends ResourceRepresentation<?>> InputStream parseToInputStream(R resource, Class<R> clazz) throws ParsingException {
+		Parser<R> p = mParserFactory.getParser(clazz);
+		return p.parseToInputStream(resource);
 	}
 
 }
