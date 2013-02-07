@@ -29,7 +29,7 @@ public class DatabaseManager implements helperGetter{
 	private <H extends OrmLiteSqliteOpenHelper> DatabaseManager(Context context, Class<H> databaseHelper) {
 		Class<H> _tempClass;
 		try {
-			_tempClass = (Class<H>) Class.forName(databaseHelper.getSimpleName());
+			_tempClass = (Class<H>) Class.forName(databaseHelper.getName());
 			Constructor<H> ctor = _tempClass.getDeclaredConstructor(Context.class);  
 	    	helper = ctor.newInstance(context);
 		} catch (ClassNotFoundException e) {

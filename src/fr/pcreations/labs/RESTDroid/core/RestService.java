@@ -41,9 +41,9 @@ public class RestService extends IntentService{
 			}
      
         });
-        try {
-			RestService.processor.preRequestProcess(r);
-		} catch (DaoFactoryNotInitializedException e) {
+		try {
+			RestService.processor.process(r);
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

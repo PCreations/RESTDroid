@@ -39,7 +39,7 @@ public class RESTDroid {
 		
 		Class<W> _tempClass;
 		try {
-			_tempClass = (Class<W>) Class.forName(clazz.getSimpleName());
+			_tempClass = (Class<W>) Class.forName(clazz.getName());
 			Constructor<W> ctor = _tempClass.getDeclaredConstructor(Context.class);  
 			instance.mWebServices.put(clazz, ctor.newInstance(instance.mContext));
 			return instance.mWebServices.get(clazz);

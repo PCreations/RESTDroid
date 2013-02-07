@@ -23,7 +23,7 @@ public abstract class Processor {
 		mHttpRequestHandler = new HttpRequestHandler();
 	}
 
-	abstract protected void preRequestProcess(RESTRequest<? extends ResourceRepresentation<?>> r) throws DaoFactoryNotInitializedException;
+	abstract protected void preRequestProcess(RESTRequest<? extends ResourceRepresentation<?>> r) throws Exception;
 	abstract protected void preGetRequest(RESTRequest<? extends ResourceRepresentation<?>> r);
 	abstract protected void preDeleteRequest(RESTRequest<? extends ResourceRepresentation<?>> r);
 	abstract protected InputStream prePostRequest(RESTRequest<? extends ResourceRepresentation<?>> r);
@@ -31,7 +31,7 @@ public abstract class Processor {
 	
 	abstract protected <T extends ResourceRepresentation<?>> int postRequestProcess(int statusCode, RESTRequest<T> r, InputStream resultStream);
 	
-	protected void process(RESTRequest<? extends ResourceRepresentation<?>> r) throws DaoFactoryNotInitializedException {
+	protected void process(RESTRequest<? extends ResourceRepresentation<?>> r) throws Exception {
 		preRequestProcess(r);
 		processRequest(r);
 	}
