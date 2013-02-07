@@ -1,4 +1,4 @@
-package fr.pcreations.labs.RESTDroid.modules.defaultModule;
+package fr.pcreations.labs.RESTDroid.modules.ORMliteJacksonModule;
 
 import fr.pcreations.labs.RESTDroid.core.Parser;
 import fr.pcreations.labs.RESTDroid.core.ParserFactory;

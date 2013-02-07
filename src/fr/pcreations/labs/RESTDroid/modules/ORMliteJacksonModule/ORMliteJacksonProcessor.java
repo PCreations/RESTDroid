@@ -1,4 +1,4 @@
-package fr.pcreations.labs.RESTDroid.modules.defaultModule;
+package fr.pcreations.labs.RESTDroid.modules.ORMliteJacksonModule;
 
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -14,7 +14,7 @@ import fr.pcreations.labs.RESTDroid.core.RestService;
 import fr.pcreations.labs.RESTDroid.exceptions.DaoFactoryNotInitializedException;
 import fr.pcreations.labs.RESTDroid.exceptions.ParsingException;
 
-public class DefaultProcessor extends Processor{
+public class ORMliteJacksonProcessor extends Processor{
 
 	@Override
 	protected void preGetRequest(RESTRequest<? extends ResourceRepresentation<?>> r) {

@@ -1,4 +1,4 @@
-package fr.pcreations.labs.RESTDroid.modules.defaultModule;
+package fr.pcreations.labs.RESTDroid.modules.ORMliteJacksonModule;
 
 import java.sql.SQLException;
 
@@ -16,13 +16,8 @@ public class ORMLiteDaoFactory extends DaoFactory {
 
 	private OrmLiteSqliteOpenHelper mHelper;
     
-    public ORMLiteDaoFactory() {
-            try {
-                    mHelper = DatabaseManager.getInstance().getHelper();
-            } catch (DatabaseManagerNotInitializedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-            }
+    public ORMLiteDaoFactory(OrmLiteSqliteOpenHelper helper) {
+            mHelper = helper;
     }
 
     @SuppressWarnings("unchecked")

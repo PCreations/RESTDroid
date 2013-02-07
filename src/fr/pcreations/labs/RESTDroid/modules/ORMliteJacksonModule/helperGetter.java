@@ -1,4 +1,4 @@
-package fr.pcreations.labs.RESTDroid.modules.defaultModule;
+package fr.pcreations.labs.RESTDroid.modules.ORMliteJacksonModule;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 

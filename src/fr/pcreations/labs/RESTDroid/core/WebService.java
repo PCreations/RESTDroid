@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.util.Log;
 import fr.pcreations.labs.RESTDroid.core.RESTRequest.OnFinishedRequestListener;
 import fr.pcreations.labs.RESTDroid.exceptions.RequestNotFoundException;
+import fr.pcreations.labs.RESTDroid.modules.ORMliteJacksonModule.ORMliteJacksonModule;
 
 public abstract class WebService implements RestResultReceiver.Receiver{
 

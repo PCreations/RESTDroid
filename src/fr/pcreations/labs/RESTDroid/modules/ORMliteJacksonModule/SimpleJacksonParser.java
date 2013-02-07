@@ -1,4 +1,4 @@
-package fr.pcreations.labs.RESTDroid.modules.defaultModule;
+package fr.pcreations.labs.RESTDroid.modules.ORMliteJacksonModule;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
