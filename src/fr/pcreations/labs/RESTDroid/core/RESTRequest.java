@@ -20,14 +20,14 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	private Bundle mExtraParams;
 	private List<SerializableHeader> mHeaders;
 	private T mResourceRepresentation;
-	private String mResourceName;
+	private Class<T> mResourceClass;
 	protected transient OnStartedRequestListener mOnStartedRequestListener;
 	protected transient OnFinishedRequestListener mOnFinishedRequestListener;
 	protected transient OnFailedRequestListener mOnFailedRequestListener;
 	
 	public RESTRequest(UUID id, Class<T> clazz) {
 		mID = id;
-		mResourceName = clazz.getSimpleName();
+		mResourceClass = clazz;
 		mHeaders = new ArrayList<SerializableHeader>();
 	}
 	
@@ -105,8 +105,8 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 		return mResourceRepresentation;
 	}
 	
-	public String getResourceName() {
-		return mResourceName;
+	public Class<T> getResourceClass() {
+		return mResourceClass;
 	}
 
 	@SuppressWarnings("unchecked")

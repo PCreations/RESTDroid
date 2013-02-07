@@ -28,17 +28,14 @@ public class ORMliteJacksonProcessor extends Processor{
 
 	@Override
 	protected InputStream prePostRequest(RESTRequest<? extends ResourceRepresentation<?>> r) {
+		InputStream is = null;
 		try {
-			ResourceRepresentation<?> resource = r.getResourceRepresentation();
-			InputStream is = mParserFactory.getParser(resource.getClass()).parseToInputStream(resource);
-			//TODO afficher is
-			//Log.i(RestService.TAG, "INPUT STREAM NOTE = " + inputStreamToString(is));
-			return is;
+			is =  parseToInputStream(r.getResourceRepresentation());
 		} catch (ParsingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
+		return is;
 	}
 
 	@Override
@@ -54,20 +51,24 @@ public class ORMliteJacksonProcessor extends Processor{
             if(r.getVerb() == HTTPVerb.DELETE) {
                 ResourceRepresentation<?> resource = r.getResourceRepresentation();
                 Log.i(RestService.TAG, "AFTER DELETE RESOURCE AND BEFORE DELETE LOCAL DB RESOURCE = " + resource.toString());
-                DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
+                DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(r.getResourceClass());
                 dao.deleteResource(resource);
             }
             else if(r.getVerb() == HTTPVerb.GET) {
                 Log.i("debug", "Delete old resource !");
-                //TODO handle parsing here with ParserFactory
+                try {
+    				r.setResourceRepresentation(parseToObject(resultStream, r.getResourceClass()));
+    			} catch (ParsingException e) {
+    				statusCode = -10;
+    				e.printStackTrace();
+    			}
                 ResourceRepresentation<?> resource = r.getResourceRepresentation();
                 DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
                 ResourceRepresentation<?> oldResource = dao.findById(resource.getId());
                 dao.deleteResource(oldResource);
             }
             if(r.getResourceRepresentation() != null) { //POST PUT GET
-                ResourceRepresentation<?> resource = r.getResourceRepresentation();
-                DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
+                DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(r.getResourceClass());
                 dao.updateOrCreate(r.getResourceRepresentation());
                 Log.d(RestService.TAG, "handleHttpRequestHandlerCallback");
             }

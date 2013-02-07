@@ -20,9 +20,9 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	public static final boolean FLAG_RESOURCE = true;
 	protected RestResultReceiver mReceiver;
 	protected Context mContext;
-	protected Processor mProcessor;
 	protected OnFinishedRequestListener onFinishedRequestListener;
 	protected List<RESTRequest<?>> mRequestCollection;
+	protected Module mModule;
 	
 	protected WebService() {}
 	
@@ -35,8 +35,9 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	}
 	
 	public void registerModule(Module m) {
-		m.init();
-		RestService.setProcessor(m.getProcessor());
+		mModule = m;
+		mModule.init();
+		RestService.setProcessor(mModule.getProcessor());
 	}
 	
 	public <T extends ResourceRepresentation<?>> RESTRequest<T> newRequest(Class<T> clazz) {
@@ -95,7 +96,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		Log.i(RestService.TAG, "Init service request id = " + String.valueOf(request.getID()));
 		boolean proceedRequest = true;
 		if(request.getVerb() != HTTPVerb.GET)
-			proceedRequest = mProcessor.checkRequest(request);
+			proceedRequest = mModule.getProcessor().checkRequest(request);
 		if(proceedRequest) {
 			Intent i = new Intent(mContext, RestService.class);
 			i.setData(Uri.parse(request.getUrl()));
