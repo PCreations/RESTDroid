@@ -16,10 +16,11 @@ public class RESTDroid {
 	
 	private RESTDroid(Context context) {
 		mContext = context;
+		mWebServices = new HashMap<Class<? extends WebService>, WebService>();
 	}
 	
 	static public void init(Context context) {
-		if(null != instance)
+		if(null == instance)
 			instance = new RESTDroid(context);
 	}
 	
@@ -30,7 +31,7 @@ public class RESTDroid {
 	}
 	
 	@SuppressWarnings("unchecked")
-	static public <W extends WebService> WebService getWebService(Class<W> clazz) throws RESTDroidNotInitializedException {
+	public <W extends WebService> WebService getWebService(Class<W> clazz) throws RESTDroidNotInitializedException {
 		if(null == instance)
 			throw new RESTDroidNotInitializedException();
 		if(instance.mWebServices.containsKey(clazz))

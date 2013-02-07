@@ -28,8 +28,6 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	public WebService(Context context) {
 		super();
 		mContext = context;
-		setProcessor();
-		RestService.setProcessor(mProcessor);
 		mReceiver = new RestResultReceiver(new Handler());
         mReceiver.setReceiver(this);
         mRequestCollection = new ArrayList<RESTRequest<?>>();
@@ -46,8 +44,6 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		Log.i(RestService.TAG, "Requête ajoutée ID = " + String.valueOf(r.getID()));
 		return r;
 	}
-	
-	protected abstract void setProcessor();
 	
 	protected void get(RESTRequest<?> r, String uri) {
 		Log.e(RestService.TAG, "WebService.get("+uri+")");
