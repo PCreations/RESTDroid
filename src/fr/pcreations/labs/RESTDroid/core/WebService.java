@@ -97,7 +97,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	protected void initAndStartService(RESTRequest<?> request){
 		Log.i(RestService.TAG, "Init service request id = " + String.valueOf(request.getID()));
 		boolean proceedRequest = true;
-		if(FLAG_RESOURCE && request.getVerb() != HTTPVerb.GET)
+		if(request.getVerb() != HTTPVerb.GET)
 			proceedRequest = mProcessor.checkRequest(request);
 		if(proceedRequest) {
 			Intent i = new Intent(mContext, RestService.class);

@@ -233,8 +233,8 @@ public class HttpRequestHandler {
 
 		private void setHeaders(List<SerializableHeader> headers) {
 			if(null != headers) {
-				for(Header h : headers) {
-					mRequest.addHeader(h);
+				for(SerializableHeader h : headers) {
+					mRequest.addHeader(h.getName(), h.getValue());
 				}
 			}
 		}

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import org.apache.http.message.BasicHeader;
 
-public class SerializableHeader extends BasicHeader implements Serializable {
+public class SerializableHeader implements Serializable {
 
 	/**
 	 * 
@@ -15,8 +15,8 @@ public class SerializableHeader extends BasicHeader implements Serializable {
 	private String mValue;
 	
 	public SerializableHeader(String name, String value) {
-		super(name, value);
-		// TODO Auto-generated constructor stub
+		mName = name;
+		mValue = value;
 	}
 	
 	public void setName(String name) {

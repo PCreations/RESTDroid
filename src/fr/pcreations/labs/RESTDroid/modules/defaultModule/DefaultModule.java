@@ -6,7 +6,7 @@ import fr.pcreations.labs.RESTDroid.core.ParserFactory;
 import fr.pcreations.labs.RESTDroid.core.Processor;
 
 public class DefaultModule extends Module {
-
+	
 	@Override
 	public Processor setProcessor() {
 		return new DefaultProcessor();
