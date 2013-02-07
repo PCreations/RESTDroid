@@ -118,6 +118,14 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 		mExtraParams = extraParams;
 	}
 	
+	public void addHeader(SerializableHeader h) {
+		mHeaders.add(h);
+	}
+	
+	public void addHeader(String name, String value) {
+		mHeaders.add(new SerializableHeader(name, value));
+	}
+	
 	public String toString() {
 		String str = "";
 		str += null != mID ? "Request[id] = " +mID.toString() : "Request[id] = null";
