@@ -9,5 +9,6 @@ public interface DaoAccess<T extends ResourceRepresentation<?>> {
 	abstract public <ID> T findById(ID resourceId) throws SQLException;
 	abstract public List<T> queryForAll() throws SQLException;
 	abstract public int deleteResource(T resource) throws SQLException;
+	abstract public int updateResource(T resource) throws SQLException;
 	
 }

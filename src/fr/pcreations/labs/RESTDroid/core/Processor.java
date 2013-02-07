@@ -163,8 +163,8 @@ public abstract class Processor {
 		return p.parseToObject(content);
 	}
 	
-	protected <R extends ResourceRepresentation<?>> InputStream parseToInputStream(R resource, Class<R> clazz) throws ParsingException {
-		Parser<R> p = mParserFactory.getParser(clazz);
+	protected <R extends ResourceRepresentation<?>> InputStream parseToInputStream(R resource) throws ParsingException {
+		Parser<R> p = mParserFactory.getParser(resource.getClass());
 		return p.parseToInputStream(resource);
 	}
 
