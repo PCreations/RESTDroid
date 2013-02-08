@@ -156,6 +156,8 @@ public abstract class Processor {
             	DaoAccess<ResourceRepresentation<?>> dao = getResourceDao(r.getResourceRepresentation());
             	r.getResourceRepresentation().setResultCode(statusCode);
             	r.getResourceRepresentation().setTransactingFlag(false);
+            	if(statusCode >= 200 && statusCode <= 210)
+            		r.getResourceRepresentation().setState(RequestState.STATE_OK);
                 dao.updateOrCreate(r.getResourceRepresentation());
                 Log.d(RestService.TAG, "handleHttpRequestHandlerCallback");
             }
@@ -170,6 +172,16 @@ public abstract class Processor {
 		return mDaoFactory.getDao(r.getClass());
 	}
 
+	public static boolean isRemotelySync(ResourceRepresentation<?> r) {
+		if(r.getTransactingFlag())
+			return false;
+		if(r.getState() == RequestState.STATE_OK)
+			return true;
+		if(r.getResultCode() >= 200 && r.getResultCode() <= 210)
+			return true;
+		return false;
+	}
+	
 	public boolean checkRequest(RESTRequest<? extends ResourceRepresentation<?>> request) {
 		/*Log.e(RestService.TAG, "LISTE RESOURCES = ");
 		List<ResourceRepresentation<?>> resourcesList;
