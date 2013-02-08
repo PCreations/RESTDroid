@@ -49,9 +49,9 @@ public class ORMliteJacksonProcessor extends Processor{
         //By default store object
         try {
             if(r.getVerb() == HTTPVerb.DELETE) {
-                ResourceRepresentation<?> resource = r.getResourceRepresentation();
+            	ResourceRepresentation<?> resource = r.getResourceRepresentation();
                 Log.i(RestService.TAG, "AFTER DELETE RESOURCE AND BEFORE DELETE LOCAL DB RESOURCE = " + resource.toString());
-                DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(r.getResourceClass());
+                DaoAccess<ResourceRepresentation<?>> dao = getResourceDao(resource);
                 dao.deleteResource(resource);
             }
             else if(r.getVerb() == HTTPVerb.GET) {
@@ -63,12 +63,12 @@ public class ORMliteJacksonProcessor extends Processor{
     				e.printStackTrace();
     			}
                 ResourceRepresentation<?> resource = r.getResourceRepresentation();
-                DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
+                DaoAccess<ResourceRepresentation<?>> dao = getResourceDao(resource);
                 ResourceRepresentation<?> oldResource = dao.findById(resource.getId());
                 dao.deleteResource(oldResource);
             }
             if(r.getResourceRepresentation() != null) { //POST PUT GET
-                DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(r.getResourceClass());
+            	DaoAccess<ResourceRepresentation<?>> dao = getResourceDao(r.getResourceRepresentation());
                 dao.updateOrCreate(r.getResourceRepresentation());
                 Log.d(RestService.TAG, "handleHttpRequestHandlerCallback");
             }
@@ -95,18 +95,18 @@ public class ORMliteJacksonProcessor extends Processor{
                         resource.setTransactingFlag(true);
                         Log.e(RestService.TAG, "resource dans preProcessRequest = " + r.getResourceRepresentation().toString());
                         switch(r.getVerb()) {
-                                case GET:
-                                        resource.setState(RequestState.STATE_RETRIEVING);
-                                        break;
-                                case POST:
-                                        resource.setState(RequestState.STATE_POSTING);
-                                        break;
-                                case PUT:
-                                        resource.setState(RequestState.STATE_UPDATING);
-                                        break;
-                                case DELETE:
-                                        resource.setState(RequestState.STATE_DELETING);
-                                        break;
+                            case GET:
+                                    resource.setState(RequestState.STATE_RETRIEVING);
+                                    break;
+                            case POST:
+                                    resource.setState(RequestState.STATE_POSTING);
+                                    break;
+                            case PUT:
+                                    resource.setState(RequestState.STATE_UPDATING);
+                                    break;
+                            case DELETE:
+                                    resource.setState(RequestState.STATE_DELETING);
+                                    break;
                         }
                         try {
                                 DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());

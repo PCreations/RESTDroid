@@ -1,15 +1,10 @@
 package fr.pcreations.labs.RESTDroid.core;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 
 import android.util.Log;
 import fr.pcreations.labs.RESTDroid.core.HttpRequestHandler.ProcessorCallback;
-import fr.pcreations.labs.RESTDroid.exceptions.DaoFactoryNotInitializedException;
 import fr.pcreations.labs.RESTDroid.exceptions.ParsingException;
 
 public abstract class Processor {
@@ -69,34 +64,6 @@ public abstract class Processor {
 		Log.i(RestService.TAG, "processRequest end");
 	}
 	
-	/*private InputStream stringToInputStream(String str) {
-    	// convert String into InputStream
-    	InputStream is = new ByteArrayInputStream(str.getBytes());
-     
-    	// read it with BufferedReader
-    	BufferedReader br = new BufferedReader(new InputStreamReader(is));
-     
-    	String line;
-    	try {
-			while ((line = br.readLine()) != null) {
-				System.out.println(line);
-			}
-			try {
-				br.close();
-				return is;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
-    	return null;
-    }*/
-	
-	
 	protected void handleHttpRequestHandlerCallback(int statusCode, RESTRequest<? extends ResourceRepresentation<?>> request, InputStream resultStream) {
 		Log.i(RestService.TAG, "handleHTTpREquestHandlerCallback start");
         /*Log.i(RestService.TAG, "RESPONSE SERVER JSON = " + inputStreamToString(resultStream));
@@ -118,6 +85,16 @@ public abstract class Processor {
 	
 	public interface RESTServiceCallback {
 		abstract public void callAction(int statusCode, RESTRequest<? extends ResourceRepresentation<?>> r);
+	}
+	
+	protected <T extends ResourceRepresentation<?>> int mirrorServerState(
+			int statusCode, RESTRequest<T> r, InputStream resultStream) {
+		
+		return statusCode;
+	}
+	
+	protected DaoAccess<ResourceRepresentation<?>> getResourceDao(ResourceRepresentation<?> r) {
+		return mDaoFactory.getDao(r.getClass());
 	}
 
 	public boolean checkRequest(RESTRequest<? extends ResourceRepresentation<?>> request) {
