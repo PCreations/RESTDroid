@@ -131,27 +131,31 @@ public abstract class Processor {
 	
 	protected int updateLocalResource(int statusCode, RESTRequest<ResourceRepresentation<?>> r, InputStream resultStream) {
 		try {
-            if(r.getVerb() == HTTPVerb.DELETE) {
-            	ResourceRepresentation<?> resource = r.getResourceRepresentation();
-                Log.i(RestService.TAG, "AFTER DELETE RESOURCE AND BEFORE DELETE LOCAL DB RESOURCE = " + resource.toString());
-                DaoAccess<ResourceRepresentation<?>> dao = getResourceDao(resource);
-                dao.deleteResource(resource);
-            }
-            else if(r.getVerb() == HTTPVerb.GET) {
-                Log.i("debug", "Delete old resource !");
-                try {
-    				r.setResourceRepresentation(parseToObject(resultStream, r.getResourceClass()));
-    			} catch (ParsingException e) {
-    				statusCode = -10;
-    				e.printStackTrace();
-    			}
-                ResourceRepresentation<?> resource = r.getResourceRepresentation();
-                DaoAccess<ResourceRepresentation<?>> dao = getResourceDao(resource);
-                ResourceRepresentation<?> oldResource = dao.findById(resource.getId());
-                dao.deleteResource(oldResource);
-            }
+			if(statusCode >= 200 && statusCode <= 210) {
+	            if(r.getVerb() == HTTPVerb.DELETE) {
+	            	ResourceRepresentation<?> resource = r.getResourceRepresentation();
+	                Log.i(RestService.TAG, "AFTER DELETE RESOURCE AND BEFORE DELETE LOCAL DB RESOURCE = " + resource.toString());
+	                DaoAccess<ResourceRepresentation<?>> dao = getResourceDao(resource);
+	                dao.deleteResource(resource);
+	            }
+	            else if(r.getVerb() == HTTPVerb.GET) {
+	                Log.i("debug", "Delete old resource !");
+	                try {
+	    				r.setResourceRepresentation(parseToObject(resultStream, r.getResourceClass()));
+	    			} catch (ParsingException e) {
+	    				statusCode = -10;
+	    				e.printStackTrace();
+	    			}
+	                ResourceRepresentation<?> resource = r.getResourceRepresentation();
+	                DaoAccess<ResourceRepresentation<?>> dao = getResourceDao(resource);
+	                ResourceRepresentation<?> oldResource = dao.findById(resource.getId());
+	                dao.deleteResource(oldResource);
+	            }
+			}
             if(r.getResourceRepresentation() != null) { //POST PUT GET
             	DaoAccess<ResourceRepresentation<?>> dao = getResourceDao(r.getResourceRepresentation());
+            	r.getResourceRepresentation().setResultCode(statusCode);
+            	r.getResourceRepresentation().setTransactingFlag(false);
                 dao.updateOrCreate(r.getResourceRepresentation());
                 Log.d(RestService.TAG, "handleHttpRequestHandlerCallback");
             }

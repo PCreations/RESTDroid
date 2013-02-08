@@ -46,7 +46,7 @@ public class ORMliteJacksonProcessor extends Processor{
 	@Override
 	protected int postRequestProcess(
 		int statusCode, RESTRequest<ResourceRepresentation<?>> r, InputStream resultStream) {
-        return updateLocalResource(statusCode, r, resultStream);
+    	return updateLocalResource(statusCode, r, resultStream);
 	}
 
 	@Override
