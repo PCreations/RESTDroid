@@ -104,9 +104,6 @@ public abstract class Processor {
                 resource.setTransactingFlag(true);
                 Log.e(RestService.TAG, "resource dans preProcessRequest = " + r.getResourceRepresentation().toString());
                 switch(r.getVerb()) {
-                    case GET:
-                            resource.setState(RequestState.STATE_RETRIEVING);
-                            break;
                     case POST:
                             resource.setState(RequestState.STATE_POSTING);
                             break;

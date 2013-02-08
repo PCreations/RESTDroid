@@ -161,6 +161,8 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 					it.remove();
 			}
 		}
+		if(resultCode >= 200 && resultCode <= 210)
+			retryFailedRequest();
 		Log.e(RestService.TAG, "onReceiveResult : mRequestCollection.size() = " + String.valueOf(mRequestCollection.size()));
 	}
 	
@@ -171,5 +173,14 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 				return (RESTRequest<T>) r;
 		}
 		throw new RequestNotFoundException(requestID);
+	}
+	
+	public void retryFailedRequest() {
+		for(RESTRequest<? extends ResourceRepresentation<?>> r : mRequestCollection) {
+			ResourceRepresentation<?> resource = r.getResourceRepresentation();
+			if(!resource.getTransactingFlag() && resource.getState() != RequestState.STATE_OK && (resource.getResultCode() < 200 || resource.getResultCode() > 210)) {
+				initAndStartService(r);
+			}
+		}
 	}
 }
