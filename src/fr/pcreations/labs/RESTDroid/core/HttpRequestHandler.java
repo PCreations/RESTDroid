@@ -59,7 +59,7 @@ public class HttpRequestHandler {
 		httpRequests = new HashMap<UUID, HTTPContainer>();
 	}
 	
-	public void get(RESTRequest<? extends ResourceRepresentation<?>> r) {
+	public void get(RESTRequest<ResourceRepresentation<?>> r) {
 		Log.d("tag", "Executing GET request: " + r.getUrl());
 		try {
 			httpRequests.put(r.getID(), new HTTPContainer(new HttpGet(), new URI(r.getUrl()), r.getHeaders()));
@@ -71,7 +71,7 @@ public class HttpRequestHandler {
 		}
 	}
 	
-	public void post(RESTRequest<? extends ResourceRepresentation<?>> r, InputStream holder) {
+	public void post(RESTRequest<ResourceRepresentation<?>> r, InputStream holder) {
 		try {
 			httpRequests.put(r.getID(), new HTTPContainer(new HttpPost(r.getUrl()), new URI(r.getUrl()), r.getHeaders()));
 			processRequest(r, holder);
@@ -82,7 +82,7 @@ public class HttpRequestHandler {
 		}
 	}
 	
-	public void put(RESTRequest<? extends ResourceRepresentation<?>> r, InputStream holder) {
+	public void put(RESTRequest<ResourceRepresentation<?>> r, InputStream holder) {
 		try {
 			httpRequests.put(r.getID(), new HTTPContainer(new HttpPut(r.getUrl()), new URI(r.getUrl()), r.getHeaders()));
 			processRequest(r, holder);
@@ -94,7 +94,7 @@ public class HttpRequestHandler {
 		
 	}
 	
-	public void delete(RESTRequest<? extends ResourceRepresentation<?>> r) {
+	public void delete(RESTRequest<ResourceRepresentation<?>> r) {
 		Log.d("tag", "Executing DELETE request: " + r.getUrl());
 		try {
 			httpRequests.put(r.getID(), new HTTPContainer(new HttpDelete(r.getUrl()), new URI(r.getUrl()), r.getHeaders()));
@@ -105,7 +105,7 @@ public class HttpRequestHandler {
 		}
 	}
 	
-	private void processRequest(final RESTRequest<? extends ResourceRepresentation<?>> request, final InputStream holder) {
+	private void processRequest(final RESTRequest<ResourceRepresentation<?>> request, final InputStream holder) {
 		new Thread(new Runnable() {
 	        public void run() {
 	        	Log.e(RestService.TAG, "PROCESS HTTP REQUEST YEAH");
@@ -156,9 +156,9 @@ public class HttpRequestHandler {
 	    }).start();
 	}
 	
-	private void processRequest(final RESTRequest<? extends ResourceRepresentation<?>> request) {
-		//new Thread(new Runnable() {
-	        //public void run() {
+	private void processRequest(final RESTRequest<ResourceRepresentation<?>> request) {
+		new Thread(new Runnable() {
+	        public void run() {
 	    		HTTPContainer currentHttpContainer = httpRequests.get(request.getID());
 	    		HttpResponse response = null;
 	    		HttpEntity responseEntity = null;
@@ -203,11 +203,11 @@ public class HttpRequestHandler {
 	    			}
 	    		}
 	        }
-	    //}).start();
-	//}
+	    }).start();
+	}
 	
 	public interface ProcessorCallback {
-		abstract public void callAction(int statusCode, RESTRequest<? extends ResourceRepresentation<?>> request, InputStream resultStream);
+		abstract public void callAction(int statusCode, RESTRequest<ResourceRepresentation<?>> request, InputStream resultStream);
 	}
 	
 	public void setProcessorCallback(ProcessorCallback callback) {

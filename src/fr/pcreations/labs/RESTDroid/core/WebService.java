@@ -47,19 +47,19 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		return r;
 	}
 	
-	protected void get(RESTRequest<?> r, String uri) {
+	protected void get(RESTRequest<? extends ResourceRepresentation<?>> r, String uri) {
 		Log.e(RestService.TAG, "WebService.get("+uri+")");
 		initRequest(r, HTTPVerb.GET,  uri);
 		initAndStartService(r);
 	}
 	
-	protected void get(RESTRequest<?> r, String uri, Bundle extraParams) {
+	protected void get(RESTRequest<? extends ResourceRepresentation<?>> r, String uri, Bundle extraParams) {
 		Log.d(RestService.TAG, "WebService.get()");
 		initRequest(r, HTTPVerb.GET, uri, extraParams);
 		initAndStartService(r);
 	}
 	
-	protected void post(RESTRequest<?> r, String string, ResourceRepresentation<?> resource) {
+	protected void post(RESTRequest<? extends ResourceRepresentation<?>> r, String string, ResourceRepresentation<?> resource) {
 		//initPostHeaders(r);
 		Log.e(RestService.TAG, "WebService.post("+string+")");
 		r.setResourceRepresentation(resource);
@@ -67,32 +67,32 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		initAndStartService(r);
 	}
 	
-	protected void put(RESTRequest<?> r, String string, ResourceRepresentation<?> resource) {
+	protected void put(RESTRequest<? extends ResourceRepresentation<?>> r, String string, ResourceRepresentation<?> resource) {
 		Log.e(RestService.TAG, "WebService.put("+string+")");
 		r.setResourceRepresentation(resource);
 		initRequest(r, HTTPVerb.PUT,  string);
 		initAndStartService(r);
 	}
 	
-	protected void delete(RESTRequest<?> r, String string, ResourceRepresentation<?> resource) {
+	protected void delete(RESTRequest<? extends ResourceRepresentation<?>> r, String string, ResourceRepresentation<?> resource) {
 		Log.e(RestService.TAG, "WebService.delete("+string+")");
 		r.setResourceRepresentation(resource);
 		initRequest(r, HTTPVerb.DELETE, string);
 		initAndStartService(r);
 	}
 	
-	protected void initRequest(RESTRequest<?> r, HTTPVerb verb, String uri) {
+	protected void initRequest(RESTRequest<? extends ResourceRepresentation<?>> r, HTTPVerb verb, String uri) {
 		r.setVerb(verb);
 		r.setUrl(uri);
 	}
 	
-	protected void initRequest(RESTRequest<?> r, HTTPVerb verb, String uri, Bundle extraParams) {
+	protected void initRequest(RESTRequest<? extends ResourceRepresentation<?>> r, HTTPVerb verb, String uri, Bundle extraParams) {
 		r.setVerb(verb);
 		r.setUrl(uri);
 		r.setExtraParams(extraParams);
 	}
 	
-	protected void initAndStartService(RESTRequest<?> request){
+	protected void initAndStartService(RESTRequest<? extends ResourceRepresentation<?>> request){
 		Log.i(RestService.TAG, "Init service request id = " + String.valueOf(request.getID()));
 		boolean proceedRequest = true;
 		if(request.getVerb() != HTTPVerb.GET)
@@ -118,7 +118,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		}
 	}
 	
-	protected void initPostHeaders(RESTRequest<?> r) {
+	protected void initPostHeaders(RESTRequest<ResourceRepresentation<?>> r) {
 		//TODO Make clean header class
 		/*r.getHeaders().add(r.new SerializableHeader("Accept", "application/json"));
 		r.getHeaders().add(r.new SerializableHeader("Content-type", "application/json"));*/
