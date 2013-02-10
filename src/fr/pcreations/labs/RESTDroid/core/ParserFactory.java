@@ -2,8 +2,6 @@ package fr.pcreations.labs.RESTDroid.core;
 
 import java.util.HashMap;
 
-import fr.pcreations.labs.RESTDroid.modules.ORMliteJacksonModule.SimpleJacksonParser;
-
 /**
  * <b>Base class for ParserFactory that handle creation and access of Parser as Singleton</b>
  * 

@@ -3,7 +3,6 @@ package fr.pcreations.labs.RESTDroid.core;
 import java.io.InputStream;
 import java.sql.SQLException;
 
-import android.util.Log;
 import fr.pcreations.labs.RESTDroid.core.HttpRequestHandler.ProcessorCallback;
 import fr.pcreations.labs.RESTDroid.exceptions.DaoFactoryNotInitializedException;
 import fr.pcreations.labs.RESTDroid.exceptions.ParsingException;
@@ -138,7 +137,6 @@ public abstract class Processor {
 	 * @see ProcessorCallback
 	 */
 	protected void processRequest(RESTRequest<ResourceRepresentation<?>> r) {
-		Log.i(RestService.TAG, "processRequest start");
 		mHttpRequestHandler.setProcessorCallback(new ProcessorCallback() {
 
 			@Override
@@ -167,7 +165,6 @@ public abstract class Processor {
 				mHttpRequestHandler.delete(r);
 				
 		}
-		Log.i(RestService.TAG, "processRequest end");
 	}
 	
 	/**
@@ -183,7 +180,6 @@ public abstract class Processor {
 	 * 		The server response
 	 */
 	protected void handleHttpRequestHandlerCallback(int statusCode, RESTRequest<ResourceRepresentation<?>> request, InputStream resultStream) {
-		Log.i(RestService.TAG, "handleHTTpREquestHandlerCallback start");
         statusCode = postRequestProcess(statusCode, request, resultStream);
         mRESTServiceCallback.callAction(statusCode, request);
 	}
@@ -272,7 +268,6 @@ public abstract class Processor {
             if(null != r.getResourceRepresentation()) {
                 ResourceRepresentation<?> resource = r.getResourceRepresentation();
                 resource.setTransactingFlag(true);
-                Log.e(RestService.TAG, "resource dans preProcessRequest = " + r.getResourceRepresentation().toString());
                 switch(r.getVerb()) {
                     case POST:
                             resource.setState(RequestState.STATE_POSTING);
@@ -295,7 +290,6 @@ public abstract class Processor {
                 }
             }
         }
-        Log.i(RestService.TAG, "preRequestProcess end");
 	}
 	
 	/**
@@ -319,12 +313,10 @@ public abstract class Processor {
 			if(statusCode >= 200 && statusCode <= 210) {
 	            if(r.getVerb() == HTTPVerb.DELETE) {
 	            	ResourceRepresentation<?> resource = r.getResourceRepresentation();
-	                Log.i(RestService.TAG, "AFTER DELETE RESOURCE AND BEFORE DELETE LOCAL DB RESOURCE = " + resource.toString());
 	                DaoAccess<ResourceRepresentation<?>> dao = getResourceDao(resource);
 	                dao.deleteResource(resource);
 	            }
 	            else if(r.getVerb() == HTTPVerb.GET) {
-	                Log.i("debug", "Delete old resource !");
 	                try {
 	    				r.setResourceRepresentation(parseToObject(resultStream, r.getResourceClass()));
 	    			} catch (ParsingException e) {
@@ -344,7 +336,6 @@ public abstract class Processor {
             	if(statusCode >= 200 && statusCode <= 210)
             		r.getResourceRepresentation().setState(RequestState.STATE_OK);
                 dao.updateOrCreate(r.getResourceRepresentation());
-                Log.d(RestService.TAG, "handleHttpRequestHandlerCallback");
             }
         } catch (SQLException e) {
             // TODO Auto-generated catch block
@@ -386,7 +377,7 @@ public abstract class Processor {
 	}
 	
 	/**
-	 * Handles caching logic. TODO Has to be delegate to a CacheManager
+	 * Handles caching logic. This method can be implemented in specific Processor to always return true in order to avoid caching. TODO Has to be delegate to a CacheManager and handle refresh with timestamp
 	 * 
 	 * @param request
 	 * 		The actual {@link ResourceRepresentation}
@@ -395,40 +386,23 @@ public abstract class Processor {
 	 * 		False if the request has to be resent, true otherwise
 	 */
 	public boolean checkRequest(RESTRequest<? extends ResourceRepresentation<?>> request) {
-		/*Log.e(RestService.TAG, "LISTE RESOURCES = ");
-		List<ResourceRepresentation<?>> resourcesList;
 		ResourceRepresentation<?> requestResource = request.getResourceRepresentation();
 		DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(requestResource.getClass());
 		try {
-			resourcesList = dao.queryForAll();
-			for(ResourceRepresentation<?> r : resourcesList) {
-				Log.e(RestService.TAG, r.toString());
-			}
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		Log.e(RestService.TAG, "FIN LISTE RESOURCES");
-		try {
 			ResourceRepresentation<?> resource = dao.findById(request.getResourceRepresentation().getId());
 			if(null != resource) {
-				Log.w(RestService.TAG, resource.toString());
 				if(!resource.getTransactingFlag()) {
 					if(resource.getResultCode() == 200) {
-						Log.e(RestService.TAG, "La requête s'est bien déroulée : je ne fait rien et je renvoie false");
 						return false;
 					}
-					Log.e(RestService.TAG, "La requête s'est mal déroulée : je la relance et je renvoie true");
 					return true;
 				}
-				Log.e(RestService.TAG, "La requête est en cours : j'attends et je renvoie false");
 				return false;
 			}
-			Log.e(RestService.TAG, "Je ne manipule pas la même resource et je renvoie true");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 		return true;
 	}
 	

@@ -2,8 +2,6 @@ package fr.pcreations.labs.RESTDroid.core;
 
 import java.io.Serializable;
 
-import org.apache.http.message.BasicHeader;
-
 /**
  * <b>Simple class to represents serializable header</b>
  * 

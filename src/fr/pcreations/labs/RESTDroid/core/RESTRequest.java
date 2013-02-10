@@ -400,6 +400,19 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	}
 
 	/**
+	 * Getter for extra parameters
+	 * 
+	 * @return
+	 * 		{@link RESTRequest}'s extra	parameters
+	 * 
+	 * @see RESTRequest#mExtraParams
+	 * @see RESTRequest#setExtraParams(Bundle)
+	 */
+	public Bundle getExtraParams() {
+		return mExtraParams;
+	}
+	
+	/**
 	 * Setter for extra parameters
 	 * 
 	 * @param extraParams

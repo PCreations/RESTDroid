@@ -7,10 +7,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
-import android.util.Log;
-import fr.pcreations.labs.RESTDroid.core.HttpRequestHandler.ProcessorCallback;
 import fr.pcreations.labs.RESTDroid.core.Processor.RESTServiceCallback;
-import fr.pcreations.labs.RESTDroid.exceptions.DaoFactoryNotInitializedException;
 
 /**
  * <b>Service class which hold all process populating an Intent map and calling {@link Processor#process(RESTRequest)}</b>
@@ -81,7 +78,6 @@ public class RestService extends IntentService{
 		@SuppressWarnings("unchecked")
 		RESTRequest<ResourceRepresentation<?>> r = (RESTRequest<ResourceRepresentation<?>>) bundle.getSerializable(RestService.REQUEST_KEY);
 		mIntentsMap.put(r.getID(), intent);
-		Log.e(RestService.TAG, "onHandleIntent() "+ String.valueOf(r.getID()));
 		RestService.processor.setRESTServiceCallback(new RESTServiceCallback() {
 
 			@Override
@@ -121,7 +117,6 @@ public class RestService extends IntentService{
 		Bundle resultData = new Bundle();
         resultData.putSerializable(RestService.REQUEST_KEY, r);
         resultData.putParcelable(RestService.INTENT_KEY, currentIntent);
-        Log.i(RestService.TAG, "send");
         receiver.send(statusCode, resultData);
 	}
 	

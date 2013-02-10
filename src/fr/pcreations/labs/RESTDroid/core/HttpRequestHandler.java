@@ -34,7 +34,6 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
-import android.util.Log;
 
 /**
  * <b>Holder class to handle HTTP request</b>
@@ -101,7 +100,6 @@ public class HttpRequestHandler {
 	 * @see HttpRequestHandler#processRequest(RESTRequest)
 	 */
 	public void get(RESTRequest<ResourceRepresentation<?>> r) {
-		Log.d("tag", "Executing GET request: " + r.getUrl());
 		try {
 			httpRequests.put(r.getID(), new HTTPContainer(new HttpGet(), new URI(r.getUrl()), r.getHeaders()));
 			processRequest(r);
@@ -166,7 +164,6 @@ public class HttpRequestHandler {
 	 * @see HttpRequestHandler#processRequest(RESTRequest)
 	 */
 	public void delete(RESTRequest<ResourceRepresentation<?>> r) {
-		Log.d("tag", "Executing DELETE request: " + r.getUrl());
 		try {
 			httpRequests.put(r.getID(), new HTTPContainer(new HttpDelete(r.getUrl()), new URI(r.getUrl()), r.getHeaders()));
 			processRequest(r);
@@ -189,7 +186,6 @@ public class HttpRequestHandler {
 	private void processRequest(final RESTRequest<ResourceRepresentation<?>> request, final InputStream holder) {
 		new Thread(new Runnable() {
 	        public void run() {
-	        	Log.e(RestService.TAG, "PROCESS HTTP REQUEST YEAH");
 	    		HTTPContainer currentHttpContainer = httpRequests.get(request.getID());
 	    		HttpResponse response = null;
 	    		HttpEntity responseEntity = null;
@@ -201,11 +197,9 @@ public class HttpRequestHandler {
 	    			StatusLine responseStatus = response.getStatusLine();
 	    			statusCode                = responseStatus != null ? responseStatus.getStatusCode() : 0;
 	    			IS = responseEntity.getContent();
-	    			Log.e(RestService.TAG, "IS SERVER = " + inputStreamToString(IS));
 	    		} catch (ClientProtocolException e) {
 	    			// TODO Auto-generated catch block
 	    			statusCode = CLIENT_PROTOCOL_EXCEPTION;
-	    			Log.e(RestService.TAG, "CLIENT_PROTOCOL_EXCEPTION");
 	    			e.printStackTrace();
 	    		} catch (IOException e) {
 	    			// TODO Auto-generated catch block
@@ -221,7 +215,6 @@ public class HttpRequestHandler {
 	    				statusCode = SOCKET_TIMEOUT_EXCEPTION;
 	    			else
 	    				statusCode = IO_EXCEPTION;
-	    			Log.e(RestService.TAG, "IO_EXCEPTION");
 	    			e.printStackTrace();
 	    		} finally {
 	    			try {
@@ -262,7 +255,6 @@ public class HttpRequestHandler {
 	    		} catch (ClientProtocolException e) {
 	    			// TODO Auto-generated catch block
 	    			statusCode = CLIENT_PROTOCOL_EXCEPTION;
-	    			Log.e(RestService.TAG, "CLIENT_PROTOCOL_EXCEPTION");
 	    			//e.printStackTrace();
 	    		} catch (IOException e) {
 	    			// TODO Auto-generated catch block
@@ -278,7 +270,6 @@ public class HttpRequestHandler {
 	    				statusCode = SOCKET_TIMEOUT_EXCEPTION;
 	    			else
 	    				statusCode = IO_EXCEPTION;
-	    			Log.e(RestService.TAG, "IO_EXCEPTION");
 	    			//e.printStackTrace();
 	    		} finally {
 		    		mProcessorCallback.callAction(statusCode, request, IS);
@@ -443,7 +434,6 @@ public class HttpRequestHandler {
 				mRequest.setHeader("Content-type", "application/json");
 				String str = inputStreamToString(holder);
 				StringEntity se = new StringEntity(str);
-				Log.i(RestService.TAG, "STRING ENTITY = " + str);
 				if(mRequest instanceof HttpPost) {
 					((HttpPost) mRequest).setEntity(se);
 				}
@@ -485,37 +475,6 @@ public class HttpRequestHandler {
 	        return null;
 		}
 		
-	}
-	
-	private String inputStreamToString(InputStream is) {
-        BufferedReader bufferedReader;
-		try {
-			bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-			StringBuilder inputStringBuilder = new StringBuilder();
-	        String line;
-			try {
-				line = bufferedReader.readLine();
-				while(line != null){
-		            inputStringBuilder.append(line);inputStringBuilder.append('\n');
-		            try {
-						line = bufferedReader.readLine();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-		        }
-				return inputStringBuilder.toString();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	        
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-        return null;
 	}
 	
 }

@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import fr.pcreations.labs.RESTDroid.exceptions.RequestNotFoundException;
 
 /**
@@ -112,7 +111,6 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	public <T extends ResourceRepresentation<?>> RESTRequest<T> newRequest(Class<T> clazz) {
 		RESTRequest<T> r = new RESTRequest<T>(generateID(), clazz);
 		mRequestCollection.add(r);
-		Log.i(RestService.TAG, "Requête ajoutée ID = " + String.valueOf(r.getID()));
 		return r;
 	}
 	
@@ -128,7 +126,6 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @see WebService#get(RESTRequest, String, Bundle)
 	 */
 	protected void get(RESTRequest<? extends ResourceRepresentation<?>> r, String uri) {
-		Log.e(RestService.TAG, "WebService.get("+uri+")");
 		initRequest(r, HTTPVerb.GET,  uri);
 		initAndStartService(r);
 	}
@@ -148,7 +145,6 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @see WebService#get(RESTRequest, String)
 	 */
 	protected void get(RESTRequest<? extends ResourceRepresentation<?>> r, String uri, Bundle extraParams) {
-		Log.d(RestService.TAG, "WebService.get()");
 		initRequest(r, HTTPVerb.GET, uri, extraParams);
 		initAndStartService(r);
 	}
@@ -166,7 +162,6 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 */
 	protected void post(RESTRequest<? extends ResourceRepresentation<?>> r, String uri, ResourceRepresentation<?> resource) {
 		//initPostHeaders(r);
-		Log.e(RestService.TAG, "WebService.post("+uri+")");
 		r.setResourceRepresentation(resource);
 		initRequest(r, HTTPVerb.POST,  uri);
 		initAndStartService(r);
@@ -184,7 +179,6 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 */
 	protected void put(RESTRequest<? extends ResourceRepresentation<?>> r, String uri, ResourceRepresentation<?> resource) {
-		Log.e(RestService.TAG, "WebService.put("+uri+")");
 		r.setResourceRepresentation(resource);
 		initRequest(r, HTTPVerb.PUT,  uri);
 		initAndStartService(r);
@@ -201,7 +195,6 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 		Resource to send
 	 */
 	protected void delete(RESTRequest<? extends ResourceRepresentation<?>> r, String uri, ResourceRepresentation<?> resource) {
-		Log.e(RestService.TAG, "WebService.delete("+uri+")");
 		r.setResourceRepresentation(resource);
 		initRequest(r, HTTPVerb.DELETE, uri);
 		initAndStartService(r);
@@ -253,7 +246,6 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @see Processor#checkRequest(RESTRequest)
 	 */
 	protected void initAndStartService(RESTRequest<? extends ResourceRepresentation<?>> request){
-		Log.i(RestService.TAG, "Init service request id = " + String.valueOf(request.getID()));
 		boolean proceedRequest = true;
 		if(request.getVerb() != HTTPVerb.GET)
 			proceedRequest = mModule.getProcessor().checkRequest(request);
@@ -262,13 +254,10 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 			i.setData(Uri.parse(request.getUrl()));
 			i.putExtra(RestService.REQUEST_KEY, request);
 			i.putExtra(RestService.RECEIVER_KEY, mReceiver);
-			Log.d(RestService.TAG, "startService");
 			
 			/* Fire OnStartedRequest listener */
 			for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
 				RESTRequest<?> r = it.next();
-				Log.e(RestService.TAG, "R == null " + String.valueOf(null == r));
-				Log.e(RestService.TAG, "R = " + r.toString());
 				if(request.getID().equals(r.getID())) {
 					if(r.getOnStartedRequestListener() != null)
 						r.getOnStartedRequestListener().onStartedRequest();
@@ -293,7 +282,6 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 */
 	@Override
 	public void onReceiveResult(int resultCode, Bundle resultData) {
-		Log.d(RestService.TAG, "onReceiveResult");
 		RESTRequest<?> r = (RESTRequest<?>) resultData.getSerializable(RestService.REQUEST_KEY);
 		//Log.w(RestService.TAG, "dans onReceiveResult" + r.getResourceRepresentation().toString());
 		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
@@ -318,13 +306,14 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 					it.remove();
 			}
 		}
-		if(resultCode >= 200 && resultCode <= 210)
-			retryFailedRequest();
-		Log.e(RestService.TAG, "onReceiveResult : mRequestCollection.size() = " + String.valueOf(mRequestCollection.size()));
+		/*if(resultCode >= 200 && resultCode <= 210)
+			retryFailedRequest();*/
 	}
 	
 	/**
 	 * Getter for retrieve specific {@link RESTRequest} in {@link WebService#mRequestCollection}
+	 * 
+	 * FIXME !
 	 * 
 	 * @param requestID
 	 * 		The {@link RESTRequest} unique ID

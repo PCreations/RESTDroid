@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 import android.content.Context;
-import android.os.Bundle;
 import fr.pcreations.labs.RESTDroid.exceptions.RESTDroidNotInitializedException;
 
 /**
