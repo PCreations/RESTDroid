@@ -4,6 +4,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 
+/**
+ * <b>Specific implementation of {@link ResultReceiver} for {@link RESTDroid}</b>
+ * 
+ * @author Pierre Criulanscy
+ * 
+ * @version 0.5
+ *
+ */
 public class RestResultReceiver extends ResultReceiver {
 	private Receiver mReceiver;
 

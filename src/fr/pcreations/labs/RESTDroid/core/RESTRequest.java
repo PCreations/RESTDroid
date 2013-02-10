@@ -7,6 +7,16 @@ import java.util.UUID;
 
 import android.os.Bundle;
 
+/**
+ * <b>Holder class for all request stuff. Provides some listener to handle specific logic in Activity when request starts, succeed or failed</b>
+ * 
+ * @author Pierre Criulanscy
+ *
+ * @param <T>
+ * 		The {@link ResourceRepresentation} class that request deals with
+ * 
+ * @version 0.5
+ */
 public class RESTRequest<T extends ResourceRepresentation<?>> implements Serializable {
 	
 	/**
@@ -14,23 +24,109 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 */
 	private static final long serialVersionUID = -3975518541858101876L;
 	
+	/**
+	 * Unique ID of the request
+	 * 
+	 * @see RESTRequest#getID()
+	 */
 	private UUID mID;
+	
+	/**
+	 * The particular {@link HTTPVerb} for this request
+	 * 
+	 * @see RESTRequest#getVerb()
+	 * @see RESTRequest#setVerb(HTTPVerb)
+	 */
 	private HTTPVerb mVerb;
+	
+	/**
+	 * Url for this request
+	 * 
+	 * @see RESTRequest#getUrl()
+	 * @see RESTRequest#setUrl(String)
+	 */
 	private String mUrl;
+	
+	/**
+	 * Defines extra parameters for request
+	 * 
+	 */
 	private Bundle mExtraParams;
+	
+	/**
+	 * List of {@link SerializableHeader} for this request
+	 * 
+	 * @see RESTRequest#getHeaders()
+	 * @see RESTRequest#addHeader(SerializableHeader)
+	 * @see RESTRequest#addHeader(String, String)
+	 */
 	private List<SerializableHeader> mHeaders;
+	
+	/**
+	 * Instance of {@link ResourceRepresentation} attached to this request
+	 * 
+	 * @see RESTRequest#getResourceRepresentation()
+	 * @see RESTRequest#setResourceRepresentation(ResourceRepresentation)
+	 */
 	private T mResourceRepresentation;
+	
+	/**
+	 * The Class object of {@link ResourceRepresentation} attached to this request. Useful when {@link RESTRequest#mResourceRepresentation} is null
+	 * 
+	 * @see RESTRequest#getResourceClass()
+	 */
 	private Class<T> mResourceClass;
+	
+	/**
+	 * Callback fires when the request starts
+	 * 
+	 * @see OnStartedRequestListener
+	 * @see RESTRequest#getOnStartedRequestListener()
+	 * @see RESTRequest#setOnStartedRequestListener(OnStartedRequestListener)
+	 */
 	protected transient OnStartedRequestListener mOnStartedRequestListener;
+	
+	/**
+	 * Callback fires when the request is finished
+	 * 
+	 * @see OnFinishedRequestListener
+	 * @see RESTRequest#getOnFinishedRequestListener()
+	 * @see RESTRequest#setOnFinishedRequestListener(OnFinishedRequestListener)
+	 */
 	protected transient OnFinishedRequestListener mOnFinishedRequestListener;
+	
+	/**
+	 * Callback fires when the request failed
+	 * 
+	 * @see OnFailedRequestListener
+	 * @see RESTRequest#getOnFailedRequestListener()
+	 * @see RESTRequest#setOnFailedRequestListener(OnFailedRequestListener)
+	 */
 	protected transient OnFailedRequestListener mOnFailedRequestListener;
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param id
+	 * 		Unique ID of the request
+	 * 
+	 * @param clazz
+	 * 		The Class object of the {@link ResourceRepresentation} attached to this request
+	 */
 	public RESTRequest(UUID id, Class<T> clazz) {
 		mID = id;
 		mResourceClass = clazz;
 		mHeaders = new ArrayList<SerializableHeader>();
 	}
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param verb
+	 * @param id
+	 * @param url
+	 * @param extraParams
+	 */
 	public RESTRequest(HTTPVerb verb, UUID id, String url, Bundle extraParams) {
 		super();
 		mVerb = verb;
@@ -40,88 +136,310 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 		mHeaders = new ArrayList<SerializableHeader>();
 	}
 
-	
+	/**
+	 * Set the {@link OnStartedRequestListener}
+	 * 
+	 * @param listener
+	 * 		Instance of {@link OnStartedRequestListener}
+	 * 
+	 * @see OnStartedRequestListener
+	 * @see RESTRequest#mOnStartedRequestListener
+	 * @see RESTRequest#getOnStartedRequestListener()
+	 */
 	public void setOnStartedRequestListener(OnStartedRequestListener listener) {
 		mOnStartedRequestListener = listener;
 	}
 	
+	/**
+	 * Set the {@link OnFinishedRequestListener}
+	 * 
+	 * @param listener
+	 * 		Instance of {@link OnFinishedRequestListener}
+	 * 
+	 * @see OnFinishedRequestListener
+	 * @see RESTRequest#mOnFinishedRequestListener
+	 * @see RESTRequest#getOnFinishedRequestListener()
+	 */
 	public void setOnFinishedRequestListener(OnFinishedRequestListener listener) {
 		mOnFinishedRequestListener = listener;
 	}
 	
+	/**
+	 * Set the {@link OnFailedRequestListener}
+	 * 
+	 * @param listener
+	 * 		Instance of {@link OnFailedRequestListener}
+	 * 
+	 * @see OnFailedRequestListener
+	 * @see RESTRequest#mOnFailedRequestListener
+	 * @see RESTRequest#getOnFailedRequestListener()
+	 */
 	public void setOnFailedRequestListener(OnFailedRequestListener listener) {
 		mOnFailedRequestListener = listener;
 	}
 
+	/**
+	 * Getter for the unique ID of the request
+	 * 
+	 * @return
+	 * 		The unique ID of the request
+	 * 
+	 * @see RESTRequest#mID
+	 */
 	public UUID getID() {
 		return mID;
 	}
 	
+	/**
+	 * Getter for request's list of {@link SerializableHeader}
+	 * 
+	 * @return
+	 * 		All the {@link SerializableHeader} of the request
+	 * 
+	 * @see RESTRequest#mHeaders
+	 * @see RESTRequest#addHeader(SerializableHeader)
+	 * @see RESTRequest#addHeader(String, String)
+	 * @see SerializableHeader
+	 */
 	public List<SerializableHeader> getHeaders() {
 		return mHeaders;
 	}
 
+	/**
+	 * Getter for {@link OnStartedRequestListener}
+	 * 
+	 * @return
+	 * 		Instance of {@link OnStartedRequestListener}
+	 * 
+	 * @see OnStartedRequestListener
+	 * @see RESTRequest#mOnStartedRequestListener
+	 * @see RESTRequest#getOnStartedRequestListener()
+	 * @see RESTRequest#setOnStartedRequestListener(OnStartedRequestListener)
+	 */
 	public OnStartedRequestListener getOnStartedRequestListener() {
 		return mOnStartedRequestListener;
 	}
 	
+	/**
+	 * Getter for {@link OnFinishedRequestListener}
+	 * 
+	 * @return
+	 * 		Instance of {@link OnFailedRequestListener}
+	 * 
+	 * @see OnFinishedRequestListener
+	 * @see RESTRequest#mOnFinishedRequestListener
+	 * @see RESTRequest#getOnFinishedRequestListener()
+	 * @see RESTRequest#setOnFinishedRequestListener(OnFinishedRequestListener)
+	 */
 	public OnFinishedRequestListener getOnFinishedRequestListener() {
 		return mOnFinishedRequestListener;
 	}
 	
+	/**
+	 * Getter for {@link OnFailedRequestListener}
+	 * 
+	 * @return
+	 * 		Instance of {@link OnFailedRequestListener}
+	 * 
+	 * @see OnFailedRequestListener
+	 * @see RESTRequest#mOnFailedRequestListener
+	 * @see RESTRequest#getOnFailedRequestListener()
+	 * @see RESTRequest#setOnFailedRequestListener(OnFailedRequestListener)
+	 */
 	public OnFailedRequestListener getOnFailedRequestListener() {
 		return mOnFailedRequestListener;
 	}
 	
+	/**
+	 * <b>Listener for {@link RESTRequest} started state</b>
+	 * 
+	 * @author Pierre Criulanscy
+	 * 
+	 * @version 0.5
+	 *
+	 */
 	public interface OnStartedRequestListener {
+		
+		/**
+		 * Logic to executes when a {@link RESTRequest} starts
+		 */
 		public abstract void onStartedRequest();
 	}
 	
+	/**
+	 * <b>Listener for {@link RESTRequest} finished state</b>
+	 * 
+	 * @author Pierre Criulanscy
+	 * 
+	 * @version 0.5
+	 *
+	 */
 	public interface OnFinishedRequestListener {
+		
+		/**
+		 * Logic to executes when a {@link RESTRequest} finished
+		 * 
+		 * @param resultCode
+		 * 		The result code resulting of all process
+		 */
         public abstract void onFinishedRequest(int resultCode);
     }
 	
+	/**
+	 * <b>Listener for {@link RESTRequest} failed state</b>
+	 * 
+	 * @author Pierre Criulanscy
+	 * 
+	 * @version 0.5
+	 */
 	public interface OnFailedRequestListener {
+		
+		/**
+		 * Logic to executes when {@link RESTRequest} failed
+		 * 
+		 * @param resultCode
+		 * 		The result code resulting of all process
+		 */
 		public abstract void onFailedRequest(int resultCode);
 	}
 
+	/**
+	 * Getter for url
+	 * 
+	 * @return
+	 * 		The {@link RESTRequest}'s url
+	 * 
+	 * @see RESTRequest#mUrl
+	 * @see RESTRequest#setUrl(String)
+	 */
 	public String getUrl() {
 		return mUrl;
 	}
 
+	/**
+	 * Setter for url
+	 * 
+	 * @param url
+	 * 		The {@link RESTRequest}'s url
+	 * 
+	 * @see RESTRequest#mUrl
+	 * @see RESTRequest#getUrl()
+	 */
 	public void setUrl(String url) {
 		this.mUrl = url;
 	}
 
+	/**
+	 * Getter for {@link HTTPVerb}
+	 * 
+	 * @return
+	 * 		The {@link RESTRequest}'s {@link HTTPVerb}
+	 * 
+	 * @see HTTPVerb
+	 * @see RESTRequest#mVerb
+	 * @see RESTRequest#setVerb(HTTPVerb)
+	 */
 	public HTTPVerb getVerb() {
 		return mVerb;
 	}
 
+	/**
+	 * Setter for {@link HTTPVerb}
+	 * 
+	 * @param mVerb
+	 * 		The {@link RESTRequest}'s {@link HTTPVerb}
+	 * 
+	 * @see HTTPVerb
+	 * @see RESTRequest#mVerb
+	 * @see RESTRequest#getVerb()
+	 */
 	public void setVerb(HTTPVerb mVerb) {
 		this.mVerb = mVerb;
 	}
 	
+	/**
+	 * Getter for {@link ResourceRepresentation}
+	 * 
+	 * @return
+	 * 		The {@link RESTRequest}'s {@link ResourceRepresentation}
+	 * 
+	 * @see ResourceRepresentation
+	 * @see RESTRequest#mResourceRepresentation
+	 * @see RESTRequest#setResourceRepresentation(ResourceRepresentation)
+	 */
 	public T getResourceRepresentation() {
 		return mResourceRepresentation;
 	}
 	
+	/**
+	 * Getter for Class object of {@link RESTRequest}'s {@link ResourceRepresentation}
+	 * 
+	 * @return
+	 * 		Class object of {@link RESTRequest}'s {@link ResourceRepresentation}
+	 * 
+	 * @see ResourceRepresentation
+	 * @see RESTRequest#mResourceClass
+	 */
 	public Class<T> getResourceClass() {
 		return mResourceClass;
 	}
-
+	
+	/**
+	 * Setter for {@link ResourceRepresentation}
+	 *  
+	 * @param mResourceRepresentation
+	 * 		Instance of {@link ResourceRepresentation}
+	 * 
+	 * @see ResourceRepresentation
+	 * @see RESTRequest#mResourceRepresentation
+	 * @see RESTRequest#getResourceRepresentation()
+	 */
 	@SuppressWarnings("unchecked")
 	public void setResourceRepresentation(ResourceRepresentation<?> mResourceRepresentation) {
 		this.mResourceRepresentation = (T) mResourceRepresentation;
 	}
 
+	/**
+	 * Setter for extra parameters
+	 * 
+	 * @param extraParams
+	 * 		Extra parameters to store in {@link RESTRequest}
+	 * 
+	 * @see RESTRequest#mExtraParams
+	 */
 	public void setExtraParams(Bundle extraParams) {
 		mExtraParams = extraParams;
 	}
 	
+	/**
+	 * Add {@link SerializableHeader} to {@link RESTRequest}
+	 * 
+	 * @param h
+	 * 		Instance of {@link SerializableHeader}
+	 * 
+	 * @see SerializableHeader
+	 * @see RESTRequest#mHeaders
+	 * @see RESTRequest#getHeaders()
+	 * @see RESTRequest#addHeader(String, String)
+	 */
 	public void addHeader(SerializableHeader h) {
 		mHeaders.add(h);
 	}
 	
+	/**
+	 * Add {@link SerializableHeader} from name and value
+	 *  
+	 * @param name
+	 * 		Header's name
+	 * 
+	 * @param value
+	 * 		Header's value
+	 * 
+	 * @see SerializableHeader
+	 * @see RESTRequest#mHeaders
+	 * @see RESTRequest#getHeaders()
+	 * @see RESTRequest#addHeader(SerializableHeader)
+	 */
 	public void addHeader(String name, String value) {
 		mHeaders.add(new SerializableHeader(name, value));
 	}

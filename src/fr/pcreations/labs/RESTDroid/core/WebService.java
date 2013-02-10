@@ -11,21 +11,66 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import fr.pcreations.labs.RESTDroid.core.RESTRequest.OnFinishedRequestListener;
 import fr.pcreations.labs.RESTDroid.exceptions.RequestNotFoundException;
-import fr.pcreations.labs.RESTDroid.modules.ORMliteJacksonModule.ORMliteJacksonModule;
 
+/**
+ * <b>Helper which exposes simple asynchronous API to be used by the UI</b>
+ * 
+ * <p>
+ * This class is used as singleton by {@link RESTDroid}. This class provides also a little factory for {@link RESTRequest}.
+ * First of all a {@link Module} must be registered.
+ * The role of this class is to prepare and to send the {@link RestService} request :
+ * <ul>
+ * <li>Check if the request has to be re-sent or not via {@link Processor#checkRequest(RESTRequest)}</li>
+ * <li>Create the request Intent</li>
+ * <li>Add the {@link RESTRequest} in {@link WebService#mRequestCollection}</li>
+ * <li>Start the service</li>
+ * </ul>
+ * </p>
+ * 
+ * @author Pierre Criulanscy
+ * 
+ * @version 0.5
+ * 
+ * @see RESTDroid#getWebService(Class)
+ * @see Processor#checkRequest(RESTRequest)
+ * @see Module
+ */
 public abstract class WebService implements RestResultReceiver.Receiver{
 
-	public static final boolean FLAG_RESOURCE = true;
+	/**
+	 * ResultReceiver to acts as a binder callback
+	 */
 	protected RestResultReceiver mReceiver;
+	
+	/**
+	 * Current application context
+	 */
 	protected Context mContext;
-	protected OnFinishedRequestListener onFinishedRequestListener;
+	
+	/**
+	 * Collection of {@link RESTRequest}
+	 */
 	protected List<RESTRequest<?>> mRequestCollection;
+	
+	/**
+	 * {@link Module} actually registered to this WebService instance
+	 */
 	protected Module mModule;
 	
+	/**
+	 * Empty constructor
+	 */
 	protected WebService() {}
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param context
+	 * 		Actual application context
+	 * 
+	 * @see WebService#mContext
+	 */
 	public WebService(Context context) {
 		super();
 		mContext = context;
@@ -34,12 +79,36 @@ public abstract class WebService implements RestResultReceiver.Receiver{
         mRequestCollection = new ArrayList<RESTRequest<?>>();
 	}
 	
+	/**
+	 * Registers module for this instance of WebService and set {@link RestService} {@link Processor}
+	 * 
+	 * @param m
+	 * 		Module to be registered
+	 * 
+	 * @see Module
+	 * @see Module#init()
+	 * @see RestService#setProcessor(Processor)
+	 * @see WebService#mModule
+	 */
 	public void registerModule(Module m) {
 		mModule = m;
 		mModule.init();
 		RestService.setProcessor(mModule.getProcessor());
 	}
 	
+	/**
+	 * Factory of {@link RESTRequest}. Adds {@link RESTRequest} instance in {@link WebService#mRequestCollection}
+	 * 
+	 * @param clazz
+	 * 		Class object of the {@link ResourceRepresentation} which {@link RESTRequest} is dealing with
+	 * 
+	 * @return
+	 * 		Instance of {@link RESTRequest}
+	 * 
+	 * @see RESTRequest
+	 * @see WebService#mRequestCollection
+	 * @see WebService#get(RESTRequest, String)
+	 */
 	public <T extends ResourceRepresentation<?>> RESTRequest<T> newRequest(Class<T> clazz) {
 		RESTRequest<T> r = new RESTRequest<T>(generateID(), clazz);
 		mRequestCollection.add(r);
@@ -47,51 +116,142 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		return r;
 	}
 	
+	/**
+	 * Initializes and prepares a GET request
+	 * 
+	 * @param r
+	 * 		Instance of {@link RESTRequest}
+	 * 
+	 * @param uri
+	 * 		Uri to fetch
+	 * 
+	 * @see WebService#get(RESTRequest, String, Bundle)
+	 */
 	protected void get(RESTRequest<? extends ResourceRepresentation<?>> r, String uri) {
 		Log.e(RestService.TAG, "WebService.get("+uri+")");
 		initRequest(r, HTTPVerb.GET,  uri);
 		initAndStartService(r);
 	}
 	
+	/**
+	 * Initializes and prepares a GET request with extra parameters
+	 * 
+	 * @param r
+	 * 		Instance of {@link RESTRequest}
+	 * 
+	 * @param uri
+	 * 		Uri to fetch
+	 * 
+	 * @param extraParams
+	 * 		Extra parameters
+	 * 
+	 * @see WebService#get(RESTRequest, String)
+	 */
 	protected void get(RESTRequest<? extends ResourceRepresentation<?>> r, String uri, Bundle extraParams) {
 		Log.d(RestService.TAG, "WebService.get()");
 		initRequest(r, HTTPVerb.GET, uri, extraParams);
 		initAndStartService(r);
 	}
 	
-	protected void post(RESTRequest<? extends ResourceRepresentation<?>> r, String string, ResourceRepresentation<?> resource) {
+	/**
+	 * Initializes and prepares a POST request
+	 * 
+	 * @param r
+	 * 		Instance of {@link RESTRequest}
+	 * @param uri
+	 * 		URI to retrieve
+	 * @param resource
+	 * 		Resource to send
+	 * 
+	 */
+	protected void post(RESTRequest<? extends ResourceRepresentation<?>> r, String uri, ResourceRepresentation<?> resource) {
 		//initPostHeaders(r);
-		Log.e(RestService.TAG, "WebService.post("+string+")");
+		Log.e(RestService.TAG, "WebService.post("+uri+")");
 		r.setResourceRepresentation(resource);
-		initRequest(r, HTTPVerb.POST,  string);
+		initRequest(r, HTTPVerb.POST,  uri);
 		initAndStartService(r);
 	}
 	
-	protected void put(RESTRequest<? extends ResourceRepresentation<?>> r, String string, ResourceRepresentation<?> resource) {
-		Log.e(RestService.TAG, "WebService.put("+string+")");
+	/**
+	 * Initializes and prepares a PUT request
+	 * 
+	 * @param r
+	 * 		Instance of {@link RESTRequest}
+	 * @param uri
+	 * 		URI to fetch
+	 * @param resource
+	 * 		Resource to send
+	 * 
+	 */
+	protected void put(RESTRequest<? extends ResourceRepresentation<?>> r, String uri, ResourceRepresentation<?> resource) {
+		Log.e(RestService.TAG, "WebService.put("+uri+")");
 		r.setResourceRepresentation(resource);
-		initRequest(r, HTTPVerb.PUT,  string);
+		initRequest(r, HTTPVerb.PUT,  uri);
 		initAndStartService(r);
 	}
 	
-	protected void delete(RESTRequest<? extends ResourceRepresentation<?>> r, String string, ResourceRepresentation<?> resource) {
-		Log.e(RestService.TAG, "WebService.delete("+string+")");
+	/**
+	 * Initializes and prepares a DELETE request
+	 * 
+	 * @param r
+	 * 		Instance of {@link RESTRequest}
+	 * @param uri
+	 * 		Uri to fetch
+	 * @param resource
+	 * 		Resource to send
+	 */
+	protected void delete(RESTRequest<? extends ResourceRepresentation<?>> r, String uri, ResourceRepresentation<?> resource) {
+		Log.e(RestService.TAG, "WebService.delete("+uri+")");
 		r.setResourceRepresentation(resource);
-		initRequest(r, HTTPVerb.DELETE, string);
+		initRequest(r, HTTPVerb.DELETE, uri);
 		initAndStartService(r);
 	}
 	
+	/**
+	 * Initializes a request by setting verb and uri
+	 * 
+	 * @param r
+	 * 		Instance of {@link RESTRequest}
+	 * @param verb
+	 * 		Instance of {@link HTTPVerb}
+	 * @param uri
+	 * 		Uri to fetch
+	 * 
+	 * @see WebService#initRequest(RESTRequest, HTTPVerb, String, Bundle)
+	 */
 	protected void initRequest(RESTRequest<? extends ResourceRepresentation<?>> r, HTTPVerb verb, String uri) {
 		r.setVerb(verb);
 		r.setUrl(uri);
 	}
 	
+	/**
+	 * Initializes a request by setting verb, uri and extra paramaters
+	 * 
+	 * @param r
+	 * 		Instance of {@link RESTRequest}
+	 * @param verb
+	 * 		Instance of {@link HTTPVerb}
+	 * @param uri
+	 * 		Uri to fetch
+	 * @param extraParams
+	 * 		Extra parameters
+	 * 
+	 * @see WebService#initRequest(RESTRequest, HTTPVerb, String)
+	 */
 	protected void initRequest(RESTRequest<? extends ResourceRepresentation<?>> r, HTTPVerb verb, String uri, Bundle extraParams) {
 		r.setVerb(verb);
 		r.setUrl(uri);
 		r.setExtraParams(extraParams);
 	}
 	
+	/**
+	 * Initializes and starts the service if the request has to be re-sent
+	 * 
+	 * @param request
+	 * 		Instance of {@link RESTRequest}
+	 * 
+	 * @see Processor#checkRequest(RESTRequest)
+	 */
 	protected void initAndStartService(RESTRequest<? extends ResourceRepresentation<?>> request){
 		Log.i(RestService.TAG, "Init service request id = " + String.valueOf(request.getID()));
 		boolean proceedRequest = true;
@@ -118,22 +278,19 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		}
 	}
 	
-	protected void initPostHeaders(RESTRequest<ResourceRepresentation<?>> r) {
-		//TODO Make clean header class
-		/*r.getHeaders().add(r.new SerializableHeader("Accept", "application/json"));
-		r.getHeaders().add(r.new SerializableHeader("Content-type", "application/json"));*/
-	}
-	
+	/**
+	 * Generates a unique ID
+	 * 
+	 * @return
+	 * 		Unique ID
+	 */
 	protected UUID generateID() {
 		return UUID.randomUUID();
 	}
-	
 
-	public void setOnFinishedRequestListener(OnFinishedRequestListener listener) {
-		onFinishedRequestListener = listener;
-	}
-
-	
+	/**
+	 * Receive result from {@link RestService} and fires callbacks corresponding to the request'state
+	 */
 	@Override
 	public void onReceiveResult(int resultCode, Bundle resultData) {
 		Log.d(RestService.TAG, "onReceiveResult");
@@ -166,6 +323,19 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		Log.e(RestService.TAG, "onReceiveResult : mRequestCollection.size() = " + String.valueOf(mRequestCollection.size()));
 	}
 	
+	/**
+	 * Getter for retrieve specific {@link RESTRequest} in {@link WebService#mRequestCollection}
+	 * 
+	 * @param requestID
+	 * 		The {@link RESTRequest} unique ID
+	 * @param clazz
+	 * 		The {@link RESTRequest}'s {@link ResourceRepresentation} class
+	 * 
+	 * @return
+	 * 		The {@link RESTRequest}
+	 * 
+	 * @throws RequestNotFoundException if {@link RESTRequest} is not found
+	 */
 	@SuppressWarnings("unchecked")
 	public <T extends ResourceRepresentation<?>> RESTRequest<T> getRequest(UUID requestID, Class<T> clazz) throws RequestNotFoundException {
 		for(RESTRequest<? extends ResourceRepresentation<?>> r : mRequestCollection) {
@@ -175,6 +345,9 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		throw new RequestNotFoundException(requestID);
 	}
 	
+	/**
+	 * Provides a way to retry failed requests
+	 */
 	public void retryFailedRequest() {
 		for(RESTRequest<? extends ResourceRepresentation<?>> r : mRequestCollection) {
 			ResourceRepresentation<?> resource = r.getResourceRepresentation();

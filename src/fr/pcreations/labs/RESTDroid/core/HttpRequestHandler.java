@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -37,9 +36,24 @@ import org.apache.http.protocol.HttpContext;
 
 import android.util.Log;
 
+/**
+ * <b>Holder class to handle HTTP request</b>
+ * 
+ * @author Pierre Criulanscy
+ * 
+ * @version 0.5
+ *
+ */
 public class HttpRequestHandler {
 
+	/**
+	 * Constant use to store response status code
+	 */
 	public static final String STATUS_CODE_KEY = "com.pcreations.restclient.HttpRequestHandler.STATUS_CODE";
+	
+	/**
+	 * Constant use to store the response
+	 */
 	public static final String RESPONSE_KEY = "com.pcreations.restclient.HttpRequestHandler.RESPONSE";
 	private static final int URI_SYNTAX_EXCEPTION = 1;
 	private static final int CLIENT_PROTOCOL_EXCEPTION = 2;
@@ -52,13 +66,40 @@ public class HttpRequestHandler {
 	private static final int TIMEOUT_CONNECTION = 10000;
 	private static final int TIMEOUT_SOCKET = 10000;
 	
+	/**
+	 * Processor callback. This callback is fired when the request is finished
+	 * 
+	 * @see ProcessorCallback
+	 */
 	private ProcessorCallback mProcessorCallback;
+	
+	/**
+	 * HashMap to store {@link HTTPContainer} corresponding to {@link RESTRequest}
+	 * 
+	 * <p>
+	 * <ul>
+	 * <li><b>key</b> : the UUID of the request</li>
+	 * <li><b>value</b> : the {@link HTTPContainer} instance</li>
+	 * </ul>
+	 * </p>
+	 */
 	private HashMap<UUID, HTTPContainer> httpRequests;
 	
+	/**
+	 * Constructor
+	 */
 	public HttpRequestHandler() {
 		httpRequests = new HashMap<UUID, HTTPContainer>();
 	}
 	
+	/**
+	 * Prepares {@link HTTPContainer} and executes a HTTP GET request
+	 * 
+	 * @param r
+	 * 		Instance of {@link RESTRequest}
+	 * 
+	 * @see HttpRequestHandler#processRequest(RESTRequest)
+	 */
 	public void get(RESTRequest<ResourceRepresentation<?>> r) {
 		Log.d("tag", "Executing GET request: " + r.getUrl());
 		try {
@@ -71,6 +112,17 @@ public class HttpRequestHandler {
 		}
 	}
 	
+	/**
+	 * Prepares {@link HTTPContainer} and executes a HTTP POST request
+	 * 
+	 * @param r
+	 * 		Instance of {@link RESTRequest}
+	 * 
+	 * @param holder
+	 * 		InputStream holding post data
+	 * 
+	 * @see HttpRequestHandler#processRequest(RESTRequest, InputStream)
+	 */
 	public void post(RESTRequest<ResourceRepresentation<?>> r, InputStream holder) {
 		try {
 			httpRequests.put(r.getID(), new HTTPContainer(new HttpPost(r.getUrl()), new URI(r.getUrl()), r.getHeaders()));
@@ -82,6 +134,17 @@ public class HttpRequestHandler {
 		}
 	}
 	
+	/**
+	 * Prepares {@link HTTPContainer} and executes a HTTP PUT request
+	 * 
+	 * @param r
+	 * 		Instance of {@link RESTRequest}
+	 * 
+	 * @param holder
+	 * 		InputStream holding post data
+	 * 
+	 * @see HttpRequestHandler#processRequest(RESTRequest, InputStream)
+	 */
 	public void put(RESTRequest<ResourceRepresentation<?>> r, InputStream holder) {
 		try {
 			httpRequests.put(r.getID(), new HTTPContainer(new HttpPut(r.getUrl()), new URI(r.getUrl()), r.getHeaders()));
@@ -94,6 +157,14 @@ public class HttpRequestHandler {
 		
 	}
 	
+	/**
+	 * Prepares {@link HTTPContainer} and executes a HTTP DELETE request
+	 * 
+	 * @param r
+	 * 		Instance of {@link RESTRequest}
+	 * 
+	 * @see HttpRequestHandler#processRequest(RESTRequest)
+	 */
 	public void delete(RESTRequest<ResourceRepresentation<?>> r) {
 		Log.d("tag", "Executing DELETE request: " + r.getUrl());
 		try {
@@ -105,6 +176,16 @@ public class HttpRequestHandler {
 		}
 	}
 	
+	
+	/**
+	 * Launch request in a worker thread and fires {@link ProcessorCallback}
+	 * 
+	 * @param request
+	 * 		Instance of {@link RESTRequest}
+	 * 
+	 * @param holder
+	 * 		InputStream holding post data
+	 */
 	private void processRequest(final RESTRequest<ResourceRepresentation<?>> request, final InputStream holder) {
 		new Thread(new Runnable() {
 	        public void run() {
@@ -156,6 +237,13 @@ public class HttpRequestHandler {
 	    }).start();
 	}
 	
+	/**
+	 * @see HttpRequestHandler#processRequest(RESTRequest, InputStream)
+	 * 
+	 * @param request
+	 * 		Instance of {@link RESTRequest}
+	 * 
+	 */
 	private void processRequest(final RESTRequest<ResourceRepresentation<?>> request) {
 		new Thread(new Runnable() {
 	        public void run() {
@@ -206,20 +294,97 @@ public class HttpRequestHandler {
 	    }).start();
 	}
 	
+	/**
+	 * <b>Binder callback fires when the request is finished</b>
+	 * 
+	 * @author Pierre Criulanscy
+	 *
+	 * @version 0.5
+	 */
 	public interface ProcessorCallback {
+		
+		/**
+		 * Method to handle the callback
+		 * 
+		 * @param statusCode
+		 * 		The status code of the request
+		 * 
+		 * @param request
+		 * 		Instance of the current {@link RESTRequest}
+		 * 
+		 * @param resultStream
+		 * 		Server response
+		 */
 		abstract public void callAction(int statusCode, RESTRequest<ResourceRepresentation<?>> request, InputStream resultStream);
 	}
 	
+	/**
+	 * Set the processor callback
+	 * 
+	 * @param callback
+	 * 		@see ProcessorCallback
+	 * 
+	 * @see HttpRequestHandler#mProcessorCallback
+	 */
 	public void setProcessorCallback(ProcessorCallback callback) {
 		mProcessorCallback = callback;
 	}
 	
+	
+	/**
+	 * <b>Holder inner class holding http client, context and other http stuff</b>
+	 * 
+	 * @author Pierre Criulanscy
+	 * 
+	 * @version 0.5
+	 */
 	private class HTTPContainer {
+		
+		/**
+		 * Actual HttpClient
+		 * 
+		 * @see HttpClient
+		 */
 		private HttpClient mHttpClient;
+		
+		/**
+		 * Actual HttpClient
+		 * 
+		 * @see HttpClient
+		 */
 		private HttpContext mHttpContext;
+		
+		/**
+		 * Actual HttpRequestBase
+		 * 
+		 * @see HttpRequestBase
+		 */
 		private HttpRequestBase mRequest;
+		
+		/**
+		 * Actual HttpParams
+		 * 
+		 * @see HttpParams
+		 */
 		private HttpParams mHttpParams;
 		
+		/**
+		 * Constructor. Defines a {@link BasicHttpContext}, {@link BasicHttpContext} and {@link DefaultHttpClient}
+		 * 
+		 * @param request
+		 * 		Instance of {@link HttpRequestBase}
+		 * 
+		 * @param uri
+		 * 		Uri to retrieve
+		 * 
+		 * @param headers
+		 * 		List of {@link SerializableHeader}
+		 * 
+		 * @see HTTPContainer#mHttpClient
+		 * @see HTTPContainer#mHttpContext
+		 * @see HTTPContainer#mHttpParams
+		 * @see HTTPContainer#mRequest
+		 */
 		public HTTPContainer(HttpRequestBase request, URI uri, List<SerializableHeader> headers) {
 			mHttpParams = new BasicHttpParams();
 			mHttpContext = new BasicHttpContext();
@@ -231,6 +396,12 @@ public class HttpRequestHandler {
 			setHeaders(headers);
 		}
 
+		/**
+		 * Add header to {@link HTTPContainer#mRequest}
+		 * 
+		 * @param headers
+		 * 		List of {@link SerializableHeader}
+		 */
 		private void setHeaders(List<SerializableHeader> headers) {
 			if(null != headers) {
 				for(SerializableHeader h : headers) {
@@ -239,12 +410,33 @@ public class HttpRequestHandler {
 			}
 		}
 		
+		/**
+		 * Executes the request
+		 * 
+		 * @return
+		 * 		Instance of {@link HttpResponse}
+		 * 
+		 * @throws ClientProtocolException
+		 * @throws IOException
+		 */
 		public HttpResponse execute() throws ClientProtocolException, IOException {
 			if(mRequest instanceof HttpGet || mRequest instanceof HttpDelete)
 				return mHttpClient.execute(mRequest, mHttpContext);
 			return null;
 		}
 
+		/**
+		 * Executes the request with data. Add header to manager JSON. (TODO change this)
+		 * 
+		 * @param holder
+		 * 		Data to send
+		 * 
+		 * @return
+		 * 		Instance of {@link HttpResponse}
+		 * 
+		 * @throws ClientProtocolException
+		 * @throws IOException
+		 */
 		public HttpResponse execute(InputStream holder) throws ClientProtocolException, IOException {
 			if(mRequest instanceof HttpPost || mRequest instanceof HttpPut) {
 				mRequest.setHeader("Accept", "application/json");
