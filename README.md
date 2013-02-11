@@ -16,7 +16,7 @@ RESTDroid provides a way to handle REST call to REST web-service in Virgil Dobja
 ## RESTDroid available Modules :
 
 *	[ORMLiteJacksonModule](https://github.com/PCreations/ORMLiteJacksonModule)
-*	[TestModule](https://github.com/PCreations/RESTDroidTestModule)
+*	[TestModule](https://github.com/PCreations/RESTDroid-Test-Module)
 
 ## User guide
 
