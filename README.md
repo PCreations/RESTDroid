@@ -165,7 +165,7 @@ public class TestWebService extends WebService {
 	private static final String BASE_URI = "https://api.parse.com/1/classes/";
 	private static final String TEST_OBJECT = "Test/";
 	
-	/* Must override this constructor for dynamic instanciation */
+	/* Must defines this constructor for dynamic instanciation */
 	public DebugWebService(Context context) {
 		super(context);
 	}
