@@ -2,10 +2,16 @@ package fr.pcreations.labs.RESTDroid.core;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import android.os.Bundle;
+import android.util.Log;
+import fr.pcreations.labs.RESTDroid.core.RESTRequest.OnFailedRequestListener;
+import fr.pcreations.labs.RESTDroid.core.RESTRequest.OnFinishedRequestListener;
+import fr.pcreations.labs.RESTDroid.core.RESTRequest.OnStartedRequestListener;
 
 /**
  * <b>Holder class for all request stuff. Provides some listener to handle specific logic in Activity when request starts, succeed or failed</b>
@@ -39,6 +45,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 */
 	private HTTPVerb mVerb;
 	
+	
 	/**
 	 * Url for this request
 	 * 
@@ -46,6 +53,14 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @see RESTRequest#setUrl(String)
 	 */
 	private String mUrl;
+	
+	/**
+	 * Request result code
+	 * 
+	 * @see RESTRequest#getResultCode()
+	 * @see RESTRequest#setResultCode(int)
+	 */
+	private int mResultCode;
 	
 	/**
 	 * Defines extra parameters for request
@@ -78,31 +93,34 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	private Class<T> mResourceClass;
 	
 	/**
-	 * Callback fires when the request starts
+	 * HashMap of onStartedRequestListener. Fires if value is set to true.
 	 * 
 	 * @see OnStartedRequestListener
+	 * @see ListenerState
 	 * @see RESTRequest#getOnStartedRequestListener()
 	 * @see RESTRequest#setOnStartedRequestListener(OnStartedRequestListener)
 	 */
-	protected transient OnStartedRequestListener mOnStartedRequestListener;
+	protected transient HashMap<OnStartedRequestListener, ListenerState> mOnStartedRequestListeners;
 	
 	/**
-	 * Callback fires when the request is finished
+	 * HashMap of onFinishedRequestListener. Fires if value is set to true.
 	 * 
 	 * @see OnFinishedRequestListener
+	 * @see ListenerState
 	 * @see RESTRequest#getOnFinishedRequestListener()
 	 * @see RESTRequest#setOnFinishedRequestListener(OnFinishedRequestListener)
 	 */
-	protected transient OnFinishedRequestListener mOnFinishedRequestListener;
+	protected transient HashMap<OnFinishedRequestListener, ListenerState> mOnFinishedRequestListeners;
 	
 	/**
-	 * Callback fires when the request failed
+	 * HashMap of onFailedRequestListener. Fires if value is set to true.
 	 * 
 	 * @see OnFailedRequestListener
+	 * @see ListenerState
 	 * @see RESTRequest#getOnFailedRequestListener()
 	 * @see RESTRequest#setOnFailedRequestListener(OnFailedRequestListener)
 	 */
-	protected transient OnFailedRequestListener mOnFailedRequestListener;
+	protected transient HashMap<OnFailedRequestListener, ListenerState> mOnFailedRequestListeners;
 	
 	/**
 	 * Constructor
@@ -117,6 +135,9 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 		mID = id;
 		mResourceClass = clazz;
 		mHeaders = new ArrayList<SerializableHeader>();
+		mOnFailedRequestListeners = new HashMap<OnFailedRequestListener, ListenerState>();
+		mOnFinishedRequestListeners = new HashMap<OnFinishedRequestListener, ListenerState>();
+		mOnStartedRequestListeners = new HashMap<OnStartedRequestListener, ListenerState>();
 	}
 	
 	/**
@@ -134,10 +155,13 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 		mUrl = url;
 		mExtraParams = extraParams;
 		mHeaders = new ArrayList<SerializableHeader>();
+		mOnFailedRequestListeners = new HashMap<OnFailedRequestListener, ListenerState>();
+		mOnFinishedRequestListeners = new HashMap<OnFinishedRequestListener, ListenerState>();
+		mOnStartedRequestListeners = new HashMap<OnStartedRequestListener, ListenerState>();
 	}
 
 	/**
-	 * Set the {@link OnStartedRequestListener}
+	 * Add {@link OnStartedRequestListener} listener
 	 * 
 	 * @param listener
 	 * 		Instance of {@link OnStartedRequestListener}
@@ -146,12 +170,13 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @see RESTRequest#mOnStartedRequestListener
 	 * @see RESTRequest#getOnStartedRequestListener()
 	 */
-	public void setOnStartedRequestListener(OnStartedRequestListener listener) {
-		mOnStartedRequestListener = listener;
+	public void addOnStartedRequestListener(OnStartedRequestListener listener) {
+		if(!mOnStartedRequestListeners.containsKey(listener))
+			mOnStartedRequestListeners.put(listener, ListenerState.SET);
 	}
 	
 	/**
-	 * Set the {@link OnFinishedRequestListener}
+	 * Add {@link OnFinishedRequestListener} listener
 	 * 
 	 * @param listener
 	 * 		Instance of {@link OnFinishedRequestListener}
@@ -160,12 +185,13 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @see RESTRequest#mOnFinishedRequestListener
 	 * @see RESTRequest#getOnFinishedRequestListener()
 	 */
-	public void setOnFinishedRequestListener(OnFinishedRequestListener listener) {
-		mOnFinishedRequestListener = listener;
+	public void addOnFinishedRequestListener(OnFinishedRequestListener listener) {
+		if(!mOnFinishedRequestListeners.containsKey(listener))
+			mOnFinishedRequestListeners.put(listener, ListenerState.SET);
 	}
 	
 	/**
-	 * Set the {@link OnFailedRequestListener}
+	 * Add {@link OnFailedRequestListener} listener
 	 * 
 	 * @param listener
 	 * 		Instance of {@link OnFailedRequestListener}
@@ -174,8 +200,87 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @see RESTRequest#mOnFailedRequestListener
 	 * @see RESTRequest#getOnFailedRequestListener()
 	 */
-	public void setOnFailedRequestListener(OnFailedRequestListener listener) {
-		mOnFailedRequestListener = listener;
+	public void addOnFailedRequestListener(OnFailedRequestListener listener) {
+		if(!mOnFailedRequestListeners.containsKey(listener))
+			mOnFailedRequestListeners.put(listener, ListenerState.SET);
+	}
+	
+	/**
+	 * Pauses the listeners by setting their state to {@link ListenerState#UNSET}
+	 * 
+	 * @see RESTRequest#resumeListeners()
+	 * @see RESTRequest#mOnFailedRequestListeners
+	 * @see RESTRequest#mOnFinishedRequestListeners
+	 * @see RESTRequest#mOnStartedRequestListeners
+	 */
+	public void pauseListeners() {
+		for(Entry<OnStartedRequestListener, ListenerState> listener : mOnStartedRequestListeners.entrySet()) {
+			listener.setValue(ListenerState.UNSET);
+		}
+		for(Entry<OnFailedRequestListener, ListenerState> listener : mOnFailedRequestListeners.entrySet()) {
+			listener.setValue(ListenerState.UNSET);
+		}
+		for(Entry<OnFinishedRequestListener, ListenerState> listener : mOnFinishedRequestListeners.entrySet()) {
+			listener.setValue(ListenerState.UNSET);
+		}
+	}
+	
+	/**
+	 * Resumes the listeners. If listener state is set to {@link ListenerState#UNSET}, state is updated to {@link ListenerState#SET}. If the state is {@link ListenerState#TRIGGER_ME} the listener is triggered and is state updated to {@link ListenerState#TRIGGERED}
+	 * 
+	 * @return
+	 * 		True if listener(s) was triggered, false otherwise
+	 * 
+	 * @see RESTRequest#pauseListeners()
+	 * @see RESTRequest#mOnFailedRequestListeners
+	 * @see RESTRequest#mOnFinishedRequestListeners
+	 * @see RESTRequest#mOnStartedRequestListeners
+	 */
+	public boolean resumeListeners() {
+		boolean listenerTriggered = false;
+		for(Entry<OnStartedRequestListener, ListenerState> listener : mOnStartedRequestListeners.entrySet()) {
+			switch(listener.getValue()) {
+				case TRIGGER_ME:
+					listener.setValue(ListenerState.TRIGGERED);
+					listener.getKey().onStartedRequest();
+					listenerTriggered = true;
+					break;
+				case UNSET:
+					listener.setValue(ListenerState.SET);
+					break;
+				default:
+					break;
+			}
+		}
+		for(Entry<OnFailedRequestListener, ListenerState> listener : mOnFailedRequestListeners.entrySet()) {
+			switch(listener.getValue()) {
+				case TRIGGER_ME:
+					listener.setValue(ListenerState.TRIGGERED);
+					listener.getKey().onFailedRequest(mResultCode);
+					listenerTriggered = true;
+					break;
+				case UNSET:
+					listener.setValue(ListenerState.SET);
+					break;
+				default:
+					break;
+			}
+		}
+		for(Entry<OnFinishedRequestListener, ListenerState> listener : mOnFinishedRequestListeners.entrySet()) {
+			switch(listener.getValue()) {
+				case TRIGGER_ME:
+					listener.setValue(ListenerState.TRIGGERED);
+					listener.getKey().onFinishedRequest(mResultCode);
+					listenerTriggered = true;
+					break;
+				case UNSET:
+					listener.setValue(ListenerState.SET);
+					break;
+				default:
+					break;
+			}
+		}
+		return listenerTriggered;
 	}
 
 	/**
@@ -206,48 +311,39 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	}
 
 	/**
-	 * Getter for {@link OnStartedRequestListener}
-	 * 
 	 * @return
-	 * 		Instance of {@link OnStartedRequestListener}
+	 * 		{@link RESTRequest#mOnStartedRequestListeners}
 	 * 
-	 * @see OnStartedRequestListener
-	 * @see RESTRequest#mOnStartedRequestListener
-	 * @see RESTRequest#getOnStartedRequestListener()
-	 * @see RESTRequest#setOnStartedRequestListener(OnStartedRequestListener)
+	 * @see OnStartedRequestListeners
+	 * @see RESTRequest#mOnStartedRequestListeners
+	 * @see RESTRequest#addOnStartedRequestListener(OnStartedRequestListener)
 	 */
-	public OnStartedRequestListener getOnStartedRequestListener() {
-		return mOnStartedRequestListener;
+	public HashMap<OnStartedRequestListener, ListenerState> getOnStartedRequestListeners() {
+		return mOnStartedRequestListeners;
 	}
 	
 	/**
-	 * Getter for {@link OnFinishedRequestListener}
-	 * 
 	 * @return
-	 * 		Instance of {@link OnFailedRequestListener}
+	 * 		{@link RESTRequest#mOnFinishedRequestListeners}
 	 * 
-	 * @see OnFinishedRequestListener
-	 * @see RESTRequest#mOnFinishedRequestListener
-	 * @see RESTRequest#getOnFinishedRequestListener()
-	 * @see RESTRequest#setOnFinishedRequestListener(OnFinishedRequestListener)
+	 * @see OnFinishedRequestListeners
+	 * @see RESTRequest#mOnFinishedRequestListeners
+	 * @see RESTRequest#addOnFinishedRequestListener(OnFinishedRequestListener)
 	 */
-	public OnFinishedRequestListener getOnFinishedRequestListener() {
-		return mOnFinishedRequestListener;
+	public HashMap<OnFinishedRequestListener, ListenerState> getOnFinishedRequestListener() {
+		return mOnFinishedRequestListeners;
 	}
 	
 	/**
-	 * Getter for {@link OnFailedRequestListener}
-	 * 
 	 * @return
-	 * 		Instance of {@link OnFailedRequestListener}
+	 * 		{@link RESTRequest#mOnFailedRequestListeners}
 	 * 
-	 * @see OnFailedRequestListener
-	 * @see RESTRequest#mOnFailedRequestListener
-	 * @see RESTRequest#getOnFailedRequestListener()
-	 * @see RESTRequest#setOnFailedRequestListener(OnFailedRequestListener)
+	 * @see OnFailedRequestListeners
+	 * @see RESTRequest#mOnFailedRequestListeners
+	 * @see RESTRequest#addOnFailedRequestListener(OnFailedRequestListener)
 	 */
-	public OnFailedRequestListener getOnFailedRequestListener() {
-		return mOnFailedRequestListener;
+	public HashMap<OnFailedRequestListener, ListenerState> getOnFailedRequestListener() {
+		return mOnFailedRequestListeners;
 	}
 	
 	/**
@@ -304,6 +400,87 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	}
 
 	/**
+	 * Triggers {@link OnStartedRequestListener} if state is set to {@link ListenerState#SET} and updates state to {@link ListenerState#TRIGGERED}. If the listener is unset, state is updated to {@link ListenerState#TRIGGER_ME}
+	 * 
+	 * @return
+	 * 		True if a listener was triggered, false otherwise
+	 * 
+	 * @see RESTRequest#mOnStartedRequestListeners
+	 */
+	public boolean triggerOnStartedRequestListeners() {
+		boolean listenerFired = false;
+		for(Entry<OnStartedRequestListener, ListenerState> listener : mOnStartedRequestListeners.entrySet()) {
+			switch(listener.getValue()) {
+				case SET:
+					listener.setValue(ListenerState.TRIGGERED);
+					listenerFired = true;
+					listener.getKey().onStartedRequest();
+					break;
+				case UNSET:
+					listener.setValue(ListenerState.TRIGGER_ME);
+					break;
+				default:
+					break;
+			}
+		}
+		return listenerFired;
+	}
+	
+	/**
+	 * Triggers {@link OnFinishedRequestListener} if state is set to {@link ListenerState#SET} and updates state to {@link ListenerState#TRIGGERED}. If the listener is unset, state is updated to {@link ListenerState#TRIGGER_ME}
+	 * 
+	 * @return
+	 * 		True if a listener was triggered, false otherwise
+	 * 
+	 * @see RESTRequest#mOnFinishedRequestListeners
+	 */
+	public boolean triggerOnFinishedRequestListeners() {
+		boolean listenerFired = false;
+		for(Entry<OnFinishedRequestListener, ListenerState> listener : mOnFinishedRequestListeners.entrySet()) {
+			switch(listener.getValue()) {
+				case SET:
+					listener.setValue(ListenerState.TRIGGERED);
+					listenerFired = true;
+					listener.getKey().onFinishedRequest(mResultCode);
+					break;
+				case UNSET:
+					listener.setValue(ListenerState.TRIGGER_ME);
+					break;
+				default:
+					break;
+			}
+		}
+		return listenerFired;
+	}
+	
+	/**
+	 * Triggers {@link OnFailedRequestListener} if state is set to {@link ListenerState#SET} and updates state to {@link ListenerState#TRIGGERED}. If the listener is unset, state is updated to {@link ListenerState#TRIGGER_ME}
+	 * 
+	 * @return
+	 * 		True if a listener was triggered, false otherwise
+	 * 
+	 * @see RESTRequest#mOnFailedRequestListeners
+	 */
+	public boolean triggerOnFailedRequestListeners() {
+		boolean listenerFired = false;
+		for(Entry<OnFailedRequestListener, ListenerState> listener : mOnFailedRequestListeners.entrySet()) {
+			switch(listener.getValue()) {
+				case SET:
+					listener.setValue(ListenerState.TRIGGERED);
+					listenerFired = true;
+					listener.getKey().onFailedRequest(mResultCode);
+					break;
+				case UNSET:
+					listener.setValue(ListenerState.TRIGGER_ME);
+					break;
+				default:
+					break;
+			}
+		}
+		return listenerFired;
+	}
+	
+	/**
 	 * Getter for url
 	 * 
 	 * @return
@@ -327,6 +504,14 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 */
 	public void setUrl(String url) {
 		this.mUrl = url;
+	}
+
+	public int getResultCode() {
+		return mResultCode;
+	}
+
+	public void setResultCode(int resultCode) {
+		mResultCode = resultCode;
 	}
 
 	/**
@@ -356,7 +541,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	public void setVerb(HTTPVerb mVerb) {
 		this.mVerb = mVerb;
 	}
-	
+
 	/**
 	 * Getter for {@link ResourceRepresentation}
 	 * 

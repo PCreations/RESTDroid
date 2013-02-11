@@ -114,6 +114,21 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		return r;
 	}
 	
+	public void onPause() {
+		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
+			RESTRequest<?> r = it.next();
+			r.pauseListeners();
+		}
+	}
+	
+	public void onResume() {
+		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
+			RESTRequest<?> r = it.next();
+			if(r.resumeListeners())
+				it.remove();
+		}
+	}
+	
 	/**
 	 * Initializes and prepares a GET request
 	 * 
@@ -255,12 +270,11 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 			i.putExtra(RestService.REQUEST_KEY, request);
 			i.putExtra(RestService.RECEIVER_KEY, mReceiver);
 			
-			/* Fire OnStartedRequest listener */
+			/* Trigger OnStartedRequest listener */
 			for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
 				RESTRequest<?> r = it.next();
 				if(request.getID().equals(r.getID())) {
-					if(r.getOnStartedRequestListener() != null)
-						r.getOnStartedRequestListener().onStartedRequest();
+					r.triggerOnStartedRequestListeners();
 				}
 			}
 			mContext.startService(i);
@@ -287,23 +301,20 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
 			RESTRequest<?> request = it.next();
 			if(request.getID().equals(r.getID())) {
+				request.setResultCode(resultCode);
 				if(resultCode >= 200 && resultCode <= 210) {
-					if(request.getOnFinishedRequestListener() != null) {
-						request.setResourceRepresentation(r.getResourceRepresentation());
-						request.getOnFinishedRequestListener().onFinishedRequest(resultCode);
-					}
+					request.setResourceRepresentation(r.getResourceRepresentation());
+					if(request.triggerOnFinishedRequestListeners())
+						it.remove();
 				}
 				else {
-					if(request.getOnFailedRequestListener() != null) {
-						request.setResourceRepresentation(r.getResourceRepresentation());
-						request.getOnFailedRequestListener().onFailedRequest(resultCode);
-					}
+					request.setResourceRepresentation(r.getResourceRepresentation());
+					if(request.triggerOnFailedRequestListeners())
+						it.remove();
 				}
 				
 				Intent i = resultData.getParcelable(RestService.INTENT_KEY);
 				mContext.stopService(i);
-				if(resultCode >= 200 && resultCode <= 210)
-					it.remove();
 			}
 		}
 		/*if(resultCode >= 200 && resultCode <= 210)
