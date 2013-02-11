@@ -291,19 +291,19 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 					if(request.getOnFinishedRequestListener() != null) {
 						request.setResourceRepresentation(r.getResourceRepresentation());
 						request.getOnFinishedRequestListener().onFinishedRequest(resultCode);
+						it.remove();
 					}
 				}
 				else {
 					if(request.getOnFailedRequestListener() != null) {
 						request.setResourceRepresentation(r.getResourceRepresentation());
 						request.getOnFailedRequestListener().onFailedRequest(resultCode);
+						it.remove();
 					}
 				}
 				
 				Intent i = resultData.getParcelable(RestService.INTENT_KEY);
 				mContext.stopService(i);
-				if(resultCode >= 200 && resultCode <= 210)
-					it.remove();
 			}
 		}
 		/*if(resultCode >= 200 && resultCode <= 210)

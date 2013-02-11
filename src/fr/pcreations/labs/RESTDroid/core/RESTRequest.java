@@ -2,6 +2,7 @@ package fr.pcreations.labs.RESTDroid.core;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -78,31 +79,31 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	private Class<T> mResourceClass;
 	
 	/**
-	 * Callback fires when the request starts
+	 * List of onStartedRequestListener. Fires if key is set to true.
 	 * 
 	 * @see OnStartedRequestListener
 	 * @see RESTRequest#getOnStartedRequestListener()
 	 * @see RESTRequest#setOnStartedRequestListener(OnStartedRequestListener)
 	 */
-	protected transient OnStartedRequestListener mOnStartedRequestListener;
+	protected transient HashMap<Boolean, OnStartedRequestListener> mOnStartedRequestListeners;
 	
 	/**
-	 * Callback fires when the request is finished
+	 * List of onFinishedRequestListener. Fires if key is set to true.
 	 * 
 	 * @see OnFinishedRequestListener
 	 * @see RESTRequest#getOnFinishedRequestListener()
 	 * @see RESTRequest#setOnFinishedRequestListener(OnFinishedRequestListener)
 	 */
-	protected transient OnFinishedRequestListener mOnFinishedRequestListener;
+	protected transient HashMap<Boolean, OnFinishedRequestListener> mOnFinishedRequestListeners;
 	
 	/**
-	 * Callback fires when the request failed
+	 * List of onFailedRequestListener. Fires if key is set to true.
 	 * 
 	 * @see OnFailedRequestListener
 	 * @see RESTRequest#getOnFailedRequestListener()
 	 * @see RESTRequest#setOnFailedRequestListener(OnFailedRequestListener)
 	 */
-	protected transient OnFailedRequestListener mOnFailedRequestListener;
+	protected transient HashMap<Boolean, OnFailedRequestListener> mOnFailedRequestListeners;
 	
 	/**
 	 * Constructor
@@ -137,7 +138,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	}
 
 	/**
-	 * Set the {@link OnStartedRequestListener}
+	 * Add {@link OnStartedRequestListener} listener
 	 * 
 	 * @param listener
 	 * 		Instance of {@link OnStartedRequestListener}
@@ -146,12 +147,12 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @see RESTRequest#mOnStartedRequestListener
 	 * @see RESTRequest#getOnStartedRequestListener()
 	 */
-	public void setOnStartedRequestListener(OnStartedRequestListener listener) {
-		mOnStartedRequestListener = listener;
+	public void addOnStartedRequestListener(OnStartedRequestListener listener) {
+		mOnStartedRequestListeners.put(false, listener);
 	}
 	
 	/**
-	 * Set the {@link OnFinishedRequestListener}
+	 * Add {@link OnFinishedRequestListener} listener
 	 * 
 	 * @param listener
 	 * 		Instance of {@link OnFinishedRequestListener}
@@ -160,12 +161,12 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @see RESTRequest#mOnFinishedRequestListener
 	 * @see RESTRequest#getOnFinishedRequestListener()
 	 */
-	public void setOnFinishedRequestListener(OnFinishedRequestListener listener) {
-		mOnFinishedRequestListener = listener;
+	public void addOnFinishedRequestListener(OnFinishedRequestListener listener) {
+		mOnFinishedRequestListeners.put(false, listener);
 	}
 	
 	/**
-	 * Set the {@link OnFailedRequestListener}
+	 * Add {@link OnFailedRequestListener} listener
 	 * 
 	 * @param listener
 	 * 		Instance of {@link OnFailedRequestListener}
@@ -174,8 +175,8 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @see RESTRequest#mOnFailedRequestListener
 	 * @see RESTRequest#getOnFailedRequestListener()
 	 */
-	public void setOnFailedRequestListener(OnFailedRequestListener listener) {
-		mOnFailedRequestListener = listener;
+	public void addOnFailedRequestListener(OnFailedRequestListener listener) {
+		mOnFailedRequestListeners.put(false, listener);
 	}
 
 	/**
@@ -206,48 +207,39 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	}
 
 	/**
-	 * Getter for {@link OnStartedRequestListener}
-	 * 
 	 * @return
-	 * 		Instance of {@link OnStartedRequestListener}
+	 * 		{@link RESTRequest#mOnStartedRequestListeners}
 	 * 
-	 * @see OnStartedRequestListener
-	 * @see RESTRequest#mOnStartedRequestListener
-	 * @see RESTRequest#getOnStartedRequestListener()
-	 * @see RESTRequest#setOnStartedRequestListener(OnStartedRequestListener)
+	 * @see OnStartedRequestListeners
+	 * @see RESTRequest#mOnStartedRequestListeners
+	 * @see RESTRequest#addOnStartedRequestListener(OnStartedRequestListener)
 	 */
-	public OnStartedRequestListener getOnStartedRequestListener() {
-		return mOnStartedRequestListener;
+	public HashMap<Boolean, OnStartedRequestListener> getOnStartedRequestListeners() {
+		return mOnStartedRequestListeners;
 	}
 	
 	/**
-	 * Getter for {@link OnFinishedRequestListener}
-	 * 
 	 * @return
-	 * 		Instance of {@link OnFailedRequestListener}
+	 * 		{@link RESTRequest#mOnFinishedRequestListeners}
 	 * 
-	 * @see OnFinishedRequestListener
-	 * @see RESTRequest#mOnFinishedRequestListener
-	 * @see RESTRequest#getOnFinishedRequestListener()
-	 * @see RESTRequest#setOnFinishedRequestListener(OnFinishedRequestListener)
+	 * @see OnFinishedRequestListeners
+	 * @see RESTRequest#mOnFinishedRequestListeners
+	 * @see RESTRequest#addOnFinishedRequestListener(OnFinishedRequestListener)
 	 */
-	public OnFinishedRequestListener getOnFinishedRequestListener() {
-		return mOnFinishedRequestListener;
+	public HashMap<Boolean, OnFinishedRequestListener> getOnFinishedRequestListener() {
+		return mOnFinishedRequestListeners;
 	}
 	
 	/**
-	 * Getter for {@link OnFailedRequestListener}
-	 * 
 	 * @return
-	 * 		Instance of {@link OnFailedRequestListener}
+	 * 		{@link RESTRequest#mOnFailedRequestListeners}
 	 * 
-	 * @see OnFailedRequestListener
-	 * @see RESTRequest#mOnFailedRequestListener
-	 * @see RESTRequest#getOnFailedRequestListener()
-	 * @see RESTRequest#setOnFailedRequestListener(OnFailedRequestListener)
+	 * @see OnFailedRequestListeners
+	 * @see RESTRequest#mOnFailedRequestListeners
+	 * @see RESTRequest#addOnFailedRequestListener(OnFailedRequestListener)
 	 */
-	public OnFailedRequestListener getOnFailedRequestListener() {
-		return mOnFailedRequestListener;
+	public HashMap<Boolean, OnFailedRequestListener> getOnFailedRequestListener() {
+		return mOnFailedRequestListeners;
 	}
 	
 	/**
