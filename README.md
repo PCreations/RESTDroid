@@ -13,6 +13,11 @@ RESTDroid : REST client library for Android
 
 RESTDroid provides a way to handle REST call to REST web-service in Virgil Dobjanschi's pattern A (Google IO 2010) way. RESTDroid packed fundamental logic to handle request, data caching (soon) and data persistence. This logic is not strongly tied to RESTDroid, RESTDroid module lets you decide if you want to implement this logic or another which fits your specifics needs. See below for details.
 
+## RESTDroid available Modules :
+
+*	[ORMLiteJacksonModule](https://github.com/PCreations/ORMLiteJacksonModule)
+*	[TestModule](https://github.com/PCreations/RESTDroidTestModule)
+
 ## User guide
 
 ### Getting started
@@ -366,4 +371,4 @@ public class TestActivity extends Activity {
 </pre>
 
 We're done ! Launch your test application and you will see in LogCat the response server :).
-Again, this a totally overkill implementation for this use, you've seen only 10% of RESTDroid potential. Now let's take a look of a complete exemple with ORMLite for local database and Jackson for parsing/mapping and request listener !
+Again, this a totally overkill implementation for this use, you've seen only 10% of RESTDroid potential. Now let's take a look of a complete exemple with ORMLite for local database and Jackson for parsing/mapping and request listeners : [ORMLiteJacksonModule](https://github.com/PCreations/ORMLiteJacksonModule)
