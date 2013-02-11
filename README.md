@@ -41,7 +41,7 @@ Download RESTDroid library and add it to your Android project. Update your andro
 </pre>
 
 Implement RESTDroid boils down to implement a RESTDroid Module or use an existing one. RESTDroid Core library implements many hooks throughout the processus on which you can attached you specific logic. See image below :
-
+![Schema](http://hpics.li/6d236af)
 All you have to do it's to create a new RESTDroid Module by extending Processor and WebService classes.
 
 ### Create a RESTDroid Module
