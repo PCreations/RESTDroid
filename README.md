@@ -1,8 +1,6 @@
 RESTDroid : REST client library for Android
 =========
 
-
-
 Alpha release 0.5.1
 
 RESTDroid provides a way to handle REST call to REST web-service. RESTDroid only packed fundamental logic to handle request. Extends this logic is the role of Module. Here you can found severals Module such as an ORMlite-Jackon module to handle data persistence and mapping/parsing.
@@ -363,6 +361,8 @@ public class TestActivity extends Activity {
 
 	private DebugWebService ws;
 	private RESTRequest&lt;TestObject> getTestRequest;
+
+	public final static String GET_TEST_REQUEST_ID = "get_test_request_id";
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -371,7 +371,7 @@ public class TestActivity extends Activity {
         try {
 			ws = (TestWebService) RESTDroid.getInstance().getWebService(TestWebService.class);
 			ws.registerModule(new TestModule());
-			getTestRequest = ws.newRequest(TestObject.class);
+			getTestRequest = ws.createOrGetRequest(GET_TEST_REQUEST_ID, TestObject.class);
 			ws.getTest(getTestRequest, "mG2hB0Xvco"); /* we want to retrieve the object with id "mG2hB0Xvco" from the server */
 		} catch (RESTDroidNotInitializedException e) {
 			// TODO Auto-generated catch block
