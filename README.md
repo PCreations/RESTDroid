@@ -5,6 +5,14 @@ RESTDroid provides a way to handle REST call to REST web-service. RESTDroid only
 
 [RESTDroid Documentation](http://pcreations.fr/labs/RESTDroid/doc)
 
+RESTDroid in a nutshell :
+
+*	Make *asynchrone* REST request
+*	Requests hold *POJO's* (can be your database model)
+*	Network calls are *not tied to your Activity*, if the Activity is killed, network / database operation still running
+*	You can *notify your Activities* with request listeners
+*	You can *dynamically change the process logic* via RESTDroid Module (choose to cache, persist, only debug, or whatever you want/need)
+
 User guide
 ----------
 
