@@ -1,7 +1,37 @@
 RESTDroid : REST client library for Android
+=========
+
+
+
+Alpha release 0.5.1
+
+RESTDroid provides a way to handle REST call to REST web-service. RESTDroid only packed fundamental logic to handle request. Extends this logic is the role of Module. Here you can found severals Module such as an ORMlite-Jackon module to handle data persistence and mapping/parsing.
+
+[RESTDroid Documentation](http://pcreations.fr/labs/RESTDroid/doc)
+
+RESTDroid in a nutshell :
+
+*	Make __asynchronous__ REST request
+*	You're __not limited to one web service__
+*	Requests hold __POJO's__ (can be your database model)
+*	Network calls are __not tied to your Activity__, if the Activity is killed, network / database operations (ore whathever you decided to do) are still running
+*	You can __notify your Activities__ with request listeners
+*	You can __dynamically change the process logic__ via RESTDroid Module (choose to cache & persist, only debug, not cache, or whatever you want/need by creating a new RESTDroid Module)
+
+User guide
+----------
+
+# Getting started
+
+RESTDroid : REST client library for Android
 ===========================================
 
 RESTDroid provides a way to handle REST call to REST web-service in Virgil Dobjanschi's pattern A (Google IO 2010) way. RESTDroid packed fundamental logic to handle request, data caching (soon) and data persistence. This logic is not strongly tied to RESTDroid, RESTDroid module lets you decide if you want to implement this logic or another which fits your specifics needs. See below for details.
+
+## RESTDroid available Modules :
+
+*	[ORMLiteJacksonModule](https://github.com/PCreations/ORMLiteJacksonModule)
+*	[TestModule](https://github.com/PCreations/RESTDroid-Test-Module)
 
 ## User guide
 
@@ -24,7 +54,7 @@ Download RESTDroid library and add it to your Android project. Update your andro
 </pre>
 
 Implement RESTDroid boils down to implement a RESTDroid Module or use an existing one. RESTDroid Core library implements many hooks throughout the processus on which you can attached you specific logic. See image below :
-
+![Schema](http://hpics.li/6d236af)
 All you have to do it's to create a new RESTDroid Module by extending Processor and WebService classes.
 
 ### Create a RESTDroid Module
@@ -356,4 +386,4 @@ public class TestActivity extends Activity {
 </pre>
 
 We're done ! Launch your test application and you will see in LogCat the response server :).
-Again, this a totally overkill implementation for this use, you've seen only 10% of RESTDroid potential. Now let's take a look of a complete exemple with ORMLite for local database and Jackson for parsing/mapping and request listener !
+Again, this a totally overkill implementation for this use, you've seen only 10% of RESTDroid potential. Now let's take a look of a complete exemple with ORMLite for local database and Jackson for parsing/mapping and request listeners : [ORMLiteJacksonModule](https://github.com/PCreations/ORMLiteJacksonModule)
