@@ -12,7 +12,7 @@ RESTDroid in a nutshell :
 *	Requests hold __POJO's__ (can be your database model)
 *	Network calls are __not tied to your Activity__, if the Activity is killed, network / database operations (ore whathever you decided to do) are still running
 *	You can __notify your Activities__ with request listeners
-*	You can __dynamically change the process logic__ via RESTDroid Module (choose to cache & persist, only debug, not cache, or whatever you want/need by creation a new RESTDroid Module)
+*	You can __dynamically change the process logic__ via RESTDroid Module (choose to cache & persist, only debug, not cache, or whatever you want/need by creating a new RESTDroid Module)
 
 User guide
 ----------
