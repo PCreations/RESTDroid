@@ -79,18 +79,18 @@ public class HttpRequestHandler {
 	 * 
 	 * <p>
 	 * <ul>
-	 * <li><b>key</b> : the UUID of the request</li>
+	 * <li><b>key</b> : the ID of the request</li>
 	 * <li><b>value</b> : the {@link HTTPContainer} instance</li>
 	 * </ul>
 	 * </p>
 	 */
-	private HashMap<UUID, HTTPContainer> httpRequests;
+	private HashMap<String, HTTPContainer> httpRequests;
 	
 	/**
 	 * Constructor
 	 */
 	public HttpRequestHandler() {
-		httpRequests = new HashMap<UUID, HTTPContainer>();
+		httpRequests = new HashMap<String, HTTPContainer>();
 	}
 	
 	/**
@@ -217,7 +217,7 @@ public class HttpRequestHandler {
 	    				statusCode = SOCKET_TIMEOUT_EXCEPTION;
 	    			else
 	    				statusCode = IO_EXCEPTION;
-	    			e.printStackTrace();
+	    			Log.e("debug", e.getStackTrace().toString());
 	    		} finally {
 	    			try {
 	    				if(null != responseEntity)

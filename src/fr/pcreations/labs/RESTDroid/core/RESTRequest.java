@@ -21,7 +21,7 @@ import fr.pcreations.labs.RESTDroid.core.RESTRequest.OnStartedRequestListener;
  * @param <T>
  * 		The {@link ResourceRepresentation} class that request deals with
  * 
- * @version 0.5
+ * @version 0.6.0
  */
 public class RESTRequest<T extends ResourceRepresentation<?>> implements Serializable {
 	
@@ -31,11 +31,11 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	private static final long serialVersionUID = -3975518541858101876L;
 	
 	/**
-	 * Unique ID of the request
+	 * ID of the request. Should be unique
 	 * 
 	 * @see RESTRequest#getID()
 	 */
-	private UUID mID;
+	private String mID;
 	
 	/**
 	 * The particular {@link HTTPVerb} for this request
@@ -61,6 +61,16 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @see RESTRequest#setResultCode(int)
 	 */
 	private int mResultCode;
+	
+	/**
+	 * Boolean to know if request is pending
+	 * 
+	 * @see RESTRequest#isPending()
+	 * @see RESTRequest#setPending(boolean)
+	 * 
+	 * @since 0.6.0
+	 */
+	private boolean mPending;
 	
 	/**
 	 * Defines extra parameters for request
@@ -131,9 +141,10 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @param clazz
 	 * 		The Class object of the {@link ResourceRepresentation} attached to this request
 	 */
-	public RESTRequest(UUID id, Class<T> clazz) {
+	public RESTRequest(String id, Class<T> clazz) {
 		mID = id;
 		mResourceClass = clazz;
+		mPending = false;
 		mHeaders = new ArrayList<SerializableHeader>();
 		mOnFailedRequestListeners = new HashMap<OnFailedRequestListener, ListenerState>();
 		mOnFinishedRequestListeners = new HashMap<OnFinishedRequestListener, ListenerState>();
@@ -148,11 +159,12 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @param url
 	 * @param extraParams
 	 */
-	public RESTRequest(HTTPVerb verb, UUID id, String url, Bundle extraParams) {
+	public RESTRequest(HTTPVerb verb, String id, String url, Bundle extraParams) {
 		super();
 		mVerb = verb;
 		mID = id;
 		mUrl = url;
+		mPending = false;
 		mExtraParams = extraParams;
 		mHeaders = new ArrayList<SerializableHeader>();
 		mOnFailedRequestListeners = new HashMap<OnFailedRequestListener, ListenerState>();
@@ -291,7 +303,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * 
 	 * @see RESTRequest#mID
 	 */
-	public UUID getID() {
+	public String getID() {
 		return mID;
 	}
 	
@@ -506,12 +518,62 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 		this.mUrl = url;
 	}
 
+	/**
+	 * Getter for {@link RESTRequest#mResultCode}
+	 * 
+	 * @return
+	 * 		The request result code
+	 * 
+	 * @see RESTRequest#mResultCode
+	 * @see RESTRequest#setResultCode(int)
+	 * 
+	 */
 	public int getResultCode() {
 		return mResultCode;
 	}
 
+	/**
+	 * Set the request's result code
+	 * 
+	 * @param resultCode
+	 * 		The result code to set
+	 * 
+	 * @see RESTRequest#mResultCode
+	 * @see RESTRequest#getResultCode()
+	 * 
+	 */
 	public void setResultCode(int resultCode) {
 		mResultCode = resultCode;
+	}
+	
+	/**
+	 * Getter for {@link RESTRequest#mPending}
+	 * 
+	 * @return
+	 * 		True if the request is pending, false otherwise
+	 * 
+	 * @see RESTRequest#mPending
+	 * @see RESTRequest#setPending(boolean)
+	 * 
+	 * @since 0.6.0
+	 */
+	public boolean isPending() {
+		return mPending;
+	}
+
+	/**
+	 * Setter for {@link RESTRequest#mPending}
+	 * 
+	 * @param pending
+	 * 		The pending state
+	 * 
+	 * @see RESTRequest#mPending
+	 * @see RESTRequest#isPending()
+	 * 
+	 * @since 0.6.0
+	 */
+	public void setPending(boolean pending) {
+		mPending = pending;
 	}
 
 	/**

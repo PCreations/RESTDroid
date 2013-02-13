@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 import android.content.Context;
+import android.util.Log;
 import fr.pcreations.labs.RESTDroid.exceptions.RESTDroidNotInitializedException;
 
 /**
@@ -100,9 +101,11 @@ public class RESTDroid {
 	public <W extends WebService> WebService getWebService(Class<W> clazz) throws RESTDroidNotInitializedException {
 		if(null == instance)
 			throw new RESTDroidNotInitializedException();
-		if(instance.mWebServices.containsKey(clazz))
+		if(instance.mWebServices.containsKey(clazz)) {
+			Log.i("debug", "webservice ALREADY exists");
 			return instance.mWebServices.get(clazz);
-		
+		}
+		Log.i("debug", "webservice doesn't exists");
 		Class<W> _tempClass;
 		try {
 			_tempClass = (Class<W>) Class.forName(clazz.getName());
