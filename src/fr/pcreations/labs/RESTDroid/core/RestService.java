@@ -51,19 +51,19 @@ public class RestService extends IntentService{
 	 * 
 	 * <p>
 	 * <ul>
-	 * <li><b>key</b> : Unique id of {@link RESTRequest}</li>
+	 * <li><b>key</b> : ID of {@link RESTRequest}</li>
 	 * <li><b>value</b> : Instance of Intent</li>
 	 * </ul>
 	 * </p>
 	 */
-	private HashMap<UUID, Intent> mIntentsMap;
+	private HashMap<String, Intent> mIntentsMap;
 	
 	/**
 	 * Constructor
 	 */
 	public RestService() {
 		super("RestService");
-		mIntentsMap = new HashMap<UUID, Intent>();
+		mIntentsMap = new HashMap<String, Intent>();
 	}
 
 	/**

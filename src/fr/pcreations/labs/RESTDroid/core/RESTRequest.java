@@ -31,11 +31,11 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	private static final long serialVersionUID = -3975518541858101876L;
 	
 	/**
-	 * Unique ID of the request
+	 * ID of the request. Should be unique
 	 * 
 	 * @see RESTRequest#getID()
 	 */
-	private UUID mID;
+	private String mID;
 	
 	/**
 	 * The particular {@link HTTPVerb} for this request
@@ -131,7 +131,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @param clazz
 	 * 		The Class object of the {@link ResourceRepresentation} attached to this request
 	 */
-	public RESTRequest(UUID id, Class<T> clazz) {
+	public RESTRequest(String id, Class<T> clazz) {
 		mID = id;
 		mResourceClass = clazz;
 		mHeaders = new ArrayList<SerializableHeader>();
@@ -148,7 +148,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @param url
 	 * @param extraParams
 	 */
-	public RESTRequest(HTTPVerb verb, UUID id, String url, Bundle extraParams) {
+	public RESTRequest(HTTPVerb verb, String id, String url, Bundle extraParams) {
 		super();
 		mVerb = verb;
 		mID = id;
@@ -291,7 +291,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * 
 	 * @see RESTRequest#mID
 	 */
-	public UUID getID() {
+	public String getID() {
 		return mID;
 	}
 	
@@ -397,6 +397,16 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 		 * 		The result code resulting of all process
 		 */
 		public abstract void onFailedRequest(int resultCode);
+	}
+	
+	public interface OnInitRequestListener {
+		
+		public abstract void onInitRequest();
+		
+	}
+	
+	public void onInitRequest(OnInitRequestListener listener) {
+		listener.onInitRequest();
 	}
 
 	/**

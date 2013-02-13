@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import fr.pcreations.labs.RESTDroid.exceptions.RequestNotFoundException;
 
 /**
@@ -96,7 +97,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	}
 	
 	/**
-	 * Factory of {@link RESTRequest}. Adds {@link RESTRequest} instance in {@link WebService#mRequestCollection}
+	 * Factory of {@link RESTRequest}. Adds {@link RESTRequest} instance in {@link WebService#mRequestCollection} or retrieve it
 	 * 
 	 * @param clazz
 	 * 		Class object of the {@link ResourceRepresentation} which {@link RESTRequest} is dealing with
@@ -108,8 +109,17 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @see WebService#mRequestCollection
 	 * @see WebService#get(RESTRequest, String)
 	 */
-	public <T extends ResourceRepresentation<?>> RESTRequest<T> newRequest(Class<T> clazz) {
-		RESTRequest<T> r = new RESTRequest<T>(generateID(), clazz);
+	@SuppressWarnings("unchecked")
+	public <T extends ResourceRepresentation<?>> RESTRequest<T> createOrGetRequest(String id, Class<T> clazz) {
+		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
+			RESTRequest<?> r = it.next();
+			if(r.getID().equals(id)) {
+				Log.d("debug", "Request ALREADY exists");
+				return (RESTRequest<T>) r;
+			}
+		}
+		Log.d("debug", "NEW request");
+		RESTRequest<T> r = new RESTRequest<T>(id, clazz);
 		mRequestCollection.add(r);
 		return r;
 	}
@@ -337,7 +347,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @throws RequestNotFoundException if {@link RESTRequest} is not found
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends ResourceRepresentation<?>> RESTRequest<T> getRequest(UUID requestID, Class<T> clazz) throws RequestNotFoundException {
+	public <T extends ResourceRepresentation<?>> RESTRequest<T> getRequest(String requestID, Class<T> clazz) throws RequestNotFoundException {
 		for(RESTRequest<? extends ResourceRepresentation<?>> r : mRequestCollection) {
 			if(r.getID().equals(requestID))
 				return (RESTRequest<T>) r;
