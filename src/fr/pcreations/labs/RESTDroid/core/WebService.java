@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 import fr.pcreations.labs.RESTDroid.exceptions.RequestNotFoundException;
 
 /**
@@ -30,7 +31,7 @@ import fr.pcreations.labs.RESTDroid.exceptions.RequestNotFoundException;
  * 
  * @author Pierre Criulanscy
  * 
- * @version 0.5
+ * @version 0.6.0
  * 
  * @see RESTDroid#getWebService(Class)
  * @see Processor#checkRequest(RESTRequest)
@@ -108,22 +109,29 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @see RESTRequest
 	 * @see WebService#mRequestCollection
 	 * @see WebService#get(RESTRequest, String)
+	 * 
+	 * @since 0.6.0
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends ResourceRepresentation<?>> RESTRequest<T> createOrGetRequest(String id, Class<T> clazz) {
 		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
 			RESTRequest<?> r = it.next();
 			if(r.getID().equals(id)) {
-				Log.d("debug", "Request ALREADY exists");
 				return (RESTRequest<T>) r;
 			}
 		}
-		Log.d("debug", "NEW request");
 		RESTRequest<T> r = new RESTRequest<T>(id, clazz);
 		mRequestCollection.add(r);
 		return r;
 	}
 	
+	/**
+	 * Pauses all request listeners
+	 * 
+	 * @see RESTRequest#mOnFailedRequestListeners
+	 * @see RESTRequest#mOnFinishedRequestListeners
+	 * @see RESTRequest#mOnStartedRequestListeners
+	 */
 	public void onPause() {
 		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
 			RESTRequest<?> r = it.next();
@@ -131,6 +139,13 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		}
 	}
 	
+	/**
+	 * Resumes all request listeners and if a listener is triggered remove the request from {@link WebService#mRequestCollection}
+	 * 
+	 * @see RESTRequest#mOnFailedRequestListeners
+	 * @see RESTRequest#mOnFinishedRequestListeners
+	 * @see RESTRequest#mOnStartedRequestListeners
+	 */
 	public void onResume() {
 		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
 			RESTRequest<?> r = it.next();
@@ -274,7 +289,8 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		boolean proceedRequest = true;
 		if(request.getVerb() != HTTPVerb.GET)
 			proceedRequest = mModule.getProcessor().checkRequest(request);
-		if(proceedRequest) {
+		if(proceedRequest && !request.isPending()) {
+			request.setPending(true);
 			Intent i = new Intent(mContext, RestService.class);
 			i.setData(Uri.parse(request.getUrl()));
 			i.putExtra(RestService.REQUEST_KEY, request);
@@ -289,6 +305,8 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 			}
 			mContext.startService(i);
 		}
+		else
+			Toast.makeText(mContext, "Request already pending", Toast.LENGTH_SHORT).show();
 	}
 	
 	/**
@@ -312,6 +330,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 			RESTRequest<?> request = it.next();
 			if(request.getID().equals(r.getID())) {
 				request.setResultCode(resultCode);
+				request.setPending(false);
 				if(resultCode >= 200 && resultCode <= 210) {
 					request.setResourceRepresentation(r.getResourceRepresentation());
 					if(request.triggerOnFinishedRequestListeners())
