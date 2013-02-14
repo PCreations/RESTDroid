@@ -1,5 +1,5 @@
 RESTDroid : REST client library for Android
-=========
+===========================================
 
 Alpha release 0.6.0
 
@@ -14,22 +14,21 @@ RESTDroid in a nutshell :
 *	Requests hold __POJO's__ (can be your database model)
 *	Network calls are __not tied to your Activity__, if the Activity is killed, network / database operations (ore whathever you decided to do) are still running
 *	You can __notify your Activities__ with request listeners
-*	You can __dynamically change the process logic__ via RESTDroid Module (choose to cache & persist, only debug, not cache, or whatever you want/need by creating a new RESTDroid Module)
+*	You can __dynamically change the process logic__ via RESTDroid Module (choose to cache & persist, only debug, not to cache, or whatever you want/need by creating a new RESTDroid Module)
 
 User guide
 ----------
 
 # Getting started
 
-RESTDroid : REST client library for Android
-===========================================
-
-RESTDroid provides a way to handle REST call to REST web-service in Virgil Dobjanschi's pattern A (Google IO 2010) way. RESTDroid packed fundamental logic to handle request, data caching (soon) and data persistence. This logic is not strongly tied to RESTDroid, RESTDroid module lets you decide if you want to implement this logic or another which fits your specifics needs. See below for details.
-
 ## RESTDroid available Modules :
 
 *	[ORMLiteJacksonModule](https://github.com/PCreations/ORMLiteJacksonModule)
 *	[TestModule](https://github.com/PCreations/RESTDroid-Test-Module)
+
+## Forward and return path schema :
+
+![Forward and return parth schema](http://pcreations.fr/labs/RESTDroid/RESTPattern.png)
 
 ## User guide
 
