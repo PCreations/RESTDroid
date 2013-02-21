@@ -1,7 +1,7 @@
 RESTDroid : REST client library for Android
-=========
+===========================================
 
-Alpha release 0.5.1
+Alpha release 0.6.0
 
 RESTDroid provides a way to handle REST call to REST web-service. RESTDroid only packed fundamental logic to handle request. Extends this logic is the role of Module. Here you can found severals Module such as an ORMlite-Jackon module to handle data persistence and mapping/parsing.
 
@@ -14,22 +14,30 @@ RESTDroid in a nutshell :
 *	Requests hold __POJO's__ (can be your database model)
 *	Network calls are __not tied to your Activity__, if the Activity is killed, network / database operations (ore whathever you decided to do) are still running
 *	You can __notify your Activities__ with request listeners
-*	You can __dynamically change the process logic__ via RESTDroid Module (choose to cache & persist, only debug, not cache, or whatever you want/need by creating a new RESTDroid Module)
+*	You can __dynamically change the process logic__ via RESTDroid Module (choose to cache & persist, only debug, not to cache, or whatever you want/need by creating a new RESTDroid Module)
+
+For contributors
+----------------
+
+#TO DO FOR V1
+
+*	Create a "Main" Service to holds request creation (in order to avoid string ID)
+*	Create a CacheManager to handles cache (add a method to DaoAccess to manage that)
+*	Use HttpConnection instead of apache HTTP client
 
 User guide
 ----------
 
 # Getting started
 
-RESTDroid : REST client library for Android
-===========================================
-
-RESTDroid provides a way to handle REST call to REST web-service in Virgil Dobjanschi's pattern A (Google IO 2010) way. RESTDroid packed fundamental logic to handle request, data caching (soon) and data persistence. This logic is not strongly tied to RESTDroid, RESTDroid module lets you decide if you want to implement this logic or another which fits your specifics needs. See below for details.
-
 ## RESTDroid available Modules :
 
 *	[ORMLiteJacksonModule](https://github.com/PCreations/ORMLiteJacksonModule)
 *	[TestModule](https://github.com/PCreations/RESTDroid-Test-Module)
+
+## Forward and return path schema :
+
+![Forward and return parth schema](http://pcreations.fr/labs/RESTDroid/RESTPattern.png)
 
 ## User guide
 
