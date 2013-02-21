@@ -16,7 +16,7 @@ import java.util.List;
  * 
  * @see ResourceRepresentation
  */
-public interface DaoAccess<T extends ResourceRepresentation<?>> {
+public interface Persistable<T extends ResourceRepresentation<?>> {
 
 	/**
 	 * This method has to create a new resource or update it if already exists.

@@ -3,7 +3,7 @@ package fr.pcreations.labs.RESTDroid.core;
 /**
  * <b>Class used to hold all your specifics needs without editing the core classes</b>
  * <p>
- * A module has to be register on {@link WebService} instance. It provides {@link Processor}, {@link ParserFactory} and {@link DaoFactory} that will be used during all process
+ * A module has to be register on {@link WebService} instance. It provides {@link Processor}, {@link ParserFactory} and {@link PersistableFactory} that will be used during all process
  * </p>
  * 
  * @author Pierre Criulanscy
@@ -12,7 +12,7 @@ package fr.pcreations.labs.RESTDroid.core;
  * 
  * @see Processor
  * @see ParserFactory
- * @see DaoFactory
+ * @see PersistableFactory
  * @see WebService#registerModule(Module)
  */
 abstract public class Module {
@@ -23,7 +23,7 @@ abstract public class Module {
 	protected Processor mProcessor;
 	
 	/**
-	 * Initialize the {@link Processor} and the {@link ParserFactory} and {@link DaoFactory} of the processor
+	 * Initialize the {@link Processor} and the {@link ParserFactory} and {@link PersistableFactory} of the processor
 	 * 
 	 * @see Module#setProcessor()
 	 * @see Module#setParserFactory()
@@ -54,12 +54,12 @@ abstract public class Module {
 	abstract public ParserFactory setParserFactory();
 	
 	/**
-	 * Return the {@link DaoFactory} you want for this module
+	 * Return the {@link PersistableFactory} you want for this module
 	 * 
 	 * @return
-	 * 		Instance of {@link DaoFactory}
+	 * 		Instance of {@link PersistableFactory}
 	 */
-	abstract public DaoFactory setDaoFactory();
+	abstract public PersistableFactory setDaoFactory();
 
 	/**
 	 * Getter for {@link Processor} field

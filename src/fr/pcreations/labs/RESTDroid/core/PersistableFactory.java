@@ -9,24 +9,24 @@ import java.util.HashMap;
  * 
  * @version 0.5
  */
-abstract public class DaoFactory {
+abstract public class PersistableFactory {
 	
 	/**
 	 * HashMap to store Dao as Singleton
 	 * <p>
 	 * <ul>
 	 * <li><b>key</b> : {@link ResourceRepresentation} Class object</li>
-	 * <li><b>value</b> : {@link DaoAccess} instance</li>
+	 * <li><b>value</b> : {@link Persistable} instance</li>
 	 * </ul>
 	 * </p>
 	 */
-	protected HashMap<Class<? extends ResourceRepresentation<?>>, DaoAccess<? extends ResourceRepresentation<?>>> mDaos;
+	protected HashMap<Class<? extends ResourceRepresentation<?>>, Persistable<? extends ResourceRepresentation<?>>> mDaos;
 
 	/**
 	 * Constructor
 	 */
-	public DaoFactory() {
-		mDaos = new HashMap<Class<? extends ResourceRepresentation<?>>, DaoAccess<? extends ResourceRepresentation<?>>>();
+	public PersistableFactory() {
+		mDaos = new HashMap<Class<? extends ResourceRepresentation<?>>, Persistable<? extends ResourceRepresentation<?>>>();
 	}
 	
 	/**
@@ -47,9 +47,9 @@ return dao;
 	 * @return
 	 * 		The Dao instance
 	 * 
-	 * @see DaoAccess
+	 * @see Persistable
 	 * @see ResourceRepresentation
 	 */
-	public abstract <D extends DaoAccess<T>, T extends ResourceRepresentation<?>> D getDao(Class<T> clazz);
+	public abstract <D extends Persistable<T>, T extends ResourceRepresentation<?>> D getDao(Class<T> clazz);
 	
 }

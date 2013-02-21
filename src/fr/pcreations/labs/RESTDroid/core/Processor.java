@@ -29,10 +29,10 @@ public abstract class Processor {
 	protected RESTServiceCallback mRESTServiceCallback;
 	
 	/**
-	 * Instance of {@link DaoFactory}
+	 * Instance of {@link PersistableFactory}
 	 */
 	
-	protected DaoFactory mDaoFactory;
+	protected PersistableFactory mDaoFactory;
 	
 	/**
 	 * Instance of {@link ParserFactory}
@@ -197,14 +197,14 @@ public abstract class Processor {
 	}
 	
 	/**
-	 * Set the {@link DaoFactory}
+	 * Set the {@link PersistableFactory}
 	 * 
 	 * @param d
-	 * 		Instance of {@link DaoFactory}
+	 * 		Instance of {@link PersistableFactory}
 	 * 
 	 * @see Processor#mDaoFactory
 	 */
-	public void setDaoFactory(DaoFactory d) {
+	public void setDaoFactory(PersistableFactory d) {
 		mDaoFactory = d;
 	}
 	
@@ -282,7 +282,7 @@ public abstract class Processor {
 						break;
                 }
                 try {
-                    DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
+                    Persistable<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
                     dao.updateOrCreate(resource);
                 } catch (SQLException e) {
                     // TODO Auto-generated catch block
@@ -313,7 +313,7 @@ public abstract class Processor {
 			if(statusCode >= 200 && statusCode <= 210) {
 	            if(r.getVerb() == HTTPVerb.DELETE) {
 	            	ResourceRepresentation<?> resource = r.getResourceRepresentation();
-	                DaoAccess<ResourceRepresentation<?>> dao = getResourceDao(resource);
+	                Persistable<ResourceRepresentation<?>> dao = getResourceDao(resource);
 	                dao.deleteResource(resource);
 	            }
 	            else if(r.getVerb() == HTTPVerb.GET) {
@@ -324,13 +324,13 @@ public abstract class Processor {
 	    				e.printStackTrace();
 	    			}
 	                ResourceRepresentation<?> resource = r.getResourceRepresentation();
-	                DaoAccess<ResourceRepresentation<?>> dao = getResourceDao(resource);
+	                Persistable<ResourceRepresentation<?>> dao = getResourceDao(resource);
 	                ResourceRepresentation<?> oldResource = dao.findById(resource.getId());
 	                dao.deleteResource(oldResource);
 	            }
 			}
             if(r.getResourceRepresentation() != null) { //POST PUT GET
-            	DaoAccess<ResourceRepresentation<?>> dao = getResourceDao(r.getResourceRepresentation());
+            	Persistable<ResourceRepresentation<?>> dao = getResourceDao(r.getResourceRepresentation());
             	r.getResourceRepresentation().setResultCode(statusCode);
             	r.getResourceRepresentation().setTransactingFlag(false);
             	if(statusCode >= 200 && statusCode <= 210)
@@ -345,15 +345,15 @@ public abstract class Processor {
 	}
 	
 	/**
-	 * Shortcut to retrieve Dao from Processor via {@link DaoFactory}
+	 * Shortcut to retrieve Dao from Processor via {@link PersistableFactory}
 	 * 
 	 * @param r
 	 * 		The {@link ResourceRepresentation} you want the dao
 	 * 
 	 * @return
-	 * 		Instance of {@link DaoAccess}
+	 * 		Instance of {@link Persistable}
 	 */
-	protected DaoAccess<ResourceRepresentation<?>> getResourceDao(ResourceRepresentation<?> r) {
+	protected Persistable<ResourceRepresentation<?>> getResourceDao(ResourceRepresentation<?> r) {
 		return mDaoFactory.getDao(r.getClass());
 	}
 
@@ -387,7 +387,7 @@ public abstract class Processor {
 	 */
 	public boolean checkRequest(RESTRequest<? extends ResourceRepresentation<?>> request) {
 		ResourceRepresentation<?> requestResource = request.getResourceRepresentation();
-		DaoAccess<ResourceRepresentation<?>> dao = mDaoFactory.getDao(requestResource.getClass());
+		Persistable<ResourceRepresentation<?>> dao = mDaoFactory.getDao(requestResource.getClass());
 		try {
 			ResourceRepresentation<?> resource = dao.findById(request.getResourceRepresentation().getId());
 			if(null != resource) {
