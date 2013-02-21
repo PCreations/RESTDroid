@@ -16,6 +16,15 @@ RESTDroid in a nutshell :
 *	You can __notify your Activities__ with request listeners
 *	You can __dynamically change the process logic__ via RESTDroid Module (choose to cache & persist, only debug, not to cache, or whatever you want/need by creating a new RESTDroid Module)
 
+For contributors
+----------------
+
+#TO DO FOR V1
+
+*	Create a "Main" Service to holds request creation (in order to avoid string ID)
+*	Create a CacheManager to handles cache (add a method to DaoAccess to manage that)
+*	Use HttpConnection instead of apache HTTP client
+
 User guide
 ----------
 
