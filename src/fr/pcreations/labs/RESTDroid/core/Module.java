@@ -8,7 +8,7 @@ package fr.pcreations.labs.RESTDroid.core;
  * 
  * @author Pierre Criulanscy
  *
- * @version 0.5
+ * @version 0.6.1
  * 
  * @see Processor
  * @see ParserFactory
@@ -32,7 +32,7 @@ abstract public class Module {
 	public void init() {
 		mProcessor = setProcessor();
 		mProcessor.setParserFactory(setParserFactory());
-		mProcessor.setDaoFactory(setDaoFactory());
+		mProcessor.setPersistableFactory(setPersistableFactory());
 	}
 	
 	/**
@@ -59,7 +59,7 @@ abstract public class Module {
 	 * @return
 	 * 		Instance of {@link PersistableFactory}
 	 */
-	abstract public PersistableFactory setDaoFactory();
+	abstract public PersistableFactory setPersistableFactory();
 
 	/**
 	 * Getter for {@link Processor} field
