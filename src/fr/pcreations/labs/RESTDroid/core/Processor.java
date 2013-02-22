@@ -1,10 +1,10 @@
 package fr.pcreations.labs.RESTDroid.core;
 
 import java.io.InputStream;
-import java.sql.SQLException;
+import java.util.Iterator;
 
 import fr.pcreations.labs.RESTDroid.core.HttpRequestHandler.ProcessorCallback;
-import fr.pcreations.labs.RESTDroid.exceptions.DaoFactoryNotInitializedException;
+import fr.pcreations.labs.RESTDroid.exceptions.PersistableFactoryNotInitializedException;
 import fr.pcreations.labs.RESTDroid.exceptions.ParsingException;
 
 /**
@@ -12,7 +12,7 @@ import fr.pcreations.labs.RESTDroid.exceptions.ParsingException;
  * 
  * @author Pierre Criulanscy
  * 
- * @version 0.5
+ * @version 0.6.1
  *
  */
 public abstract class Processor {
@@ -32,7 +32,7 @@ public abstract class Processor {
 	 * Instance of {@link PersistableFactory}
 	 */
 	
-	protected PersistableFactory mDaoFactory;
+	protected PersistableFactory mPersistableFactory;
 	
 	/**
 	 * Instance of {@link ParserFactory}
@@ -202,10 +202,10 @@ public abstract class Processor {
 	 * @param d
 	 * 		Instance of {@link PersistableFactory}
 	 * 
-	 * @see Processor#mDaoFactory
+	 * @see Processor#mPersistableFactory
 	 */
-	public void setDaoFactory(PersistableFactory d) {
-		mDaoFactory = d;
+	public void setPersistableFactory(PersistableFactory d) {
+		mPersistableFactory = d;
 	}
 	
 	/**
@@ -255,41 +255,51 @@ public abstract class Processor {
 	 * @param r
 	 * 		The actual {@link RESTRequest}
 	 */
+	@SuppressWarnings("unchecked")
 	protected void mirrorServerState(RESTRequest<ResourceRepresentation<?>> r){
         if(r.getVerb() != HTTPVerb.GET) {
-            if(null == mDaoFactory) {
+            if(null == mPersistableFactory) {
                 try {
-					throw new DaoFactoryNotInitializedException();
-				} catch (DaoFactoryNotInitializedException e) {
+					throw new PersistableFactoryNotInitializedException();
+				} catch (PersistableFactoryNotInitializedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
             }
             if(null != r.getResourceRepresentation()) {
                 ResourceRepresentation<?> resource = r.getResourceRepresentation();
-                resource.setTransactingFlag(true);
-                switch(r.getVerb()) {
-                    case POST:
-                            resource.setState(RequestState.STATE_POSTING);
-                            break;
-                    case PUT:
-                            resource.setState(RequestState.STATE_UPDATING);
-                            break;
-                    case DELETE:
-                            resource.setState(RequestState.STATE_DELETING);
-                            break;
-					default:
-						break;
-                }
                 try {
-                    Persistable<ResourceRepresentation<?>> dao = mDaoFactory.getDao(resource.getClass());
-                    dao.updateOrCreate(resource);
-                } catch (SQLException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+	                if(resource instanceof ResourceList) {
+	                	for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourceList<?>) resource).getResourcesList().iterator(); it.hasNext();) {
+	                		mirrorServerStateRoutine(r.getVerb(), it.next());
+	                	}
+	                }
+	                else
+	                	mirrorServerStateRoutine(r.getVerb(), resource);
+                } catch(Exception e) {
+	        	   e.printStackTrace();
+	           }
             }
         }
+	}
+	
+	protected void mirrorServerStateRoutine(HTTPVerb verb, ResourceRepresentation<?> resource) throws Exception {
+		resource.setTransactingFlag(true);
+        switch(verb) {
+            case POST:
+                    resource.setState(RequestState.STATE_POSTING);
+                    break;
+            case PUT:
+                    resource.setState(RequestState.STATE_UPDATING);
+                    break;
+            case DELETE:
+                    resource.setState(RequestState.STATE_DELETING);
+                    break;
+			default:
+				break;
+        }
+        Persistable<ResourceRepresentation<?>> persistable = mPersistableFactory.getPersistable(resource.getClass());
+        persistable.updateOrCreate(resource);
 	}
 	
 	/**
@@ -308,13 +318,22 @@ public abstract class Processor {
 	 * @return
 	 * 		The updated (or not) status code
 	 */
+	@SuppressWarnings("unchecked")
 	protected int updateLocalResource(int statusCode, RESTRequest<ResourceRepresentation<?>> r, InputStream resultStream) {
 		try {
 			if(statusCode >= 200 && statusCode <= 210) {
 	            if(r.getVerb() == HTTPVerb.DELETE) {
 	            	ResourceRepresentation<?> resource = r.getResourceRepresentation();
-	                Persistable<ResourceRepresentation<?>> dao = getResourceDao(resource);
-	                dao.deleteResource(resource);
+	            	if(resource instanceof ResourceList) {
+	                	for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourceList<?>) resource).getResourcesList().iterator(); it.hasNext();) {
+	                		Persistable<ResourceRepresentation<?>> persistable = getResourcePersistable(resource);
+	    	                persistable.deleteResource(it.next());
+	                	}
+	                }
+	                else {
+	                	Persistable<ResourceRepresentation<?>> persistable = getResourcePersistable(resource);
+		                persistable.deleteResource(resource);
+	                }
 	            }
 	            else if(r.getVerb() == HTTPVerb.GET) {
 	                try {
@@ -324,37 +343,58 @@ public abstract class Processor {
 	    				e.printStackTrace();
 	    			}
 	                ResourceRepresentation<?> resource = r.getResourceRepresentation();
-	                Persistable<ResourceRepresentation<?>> dao = getResourceDao(resource);
-	                ResourceRepresentation<?> oldResource = dao.findById(resource.getId());
-	                dao.deleteResource(oldResource);
+	                Persistable<ResourceRepresentation<?>> persistable = getResourcePersistable(resource);
+	                if(resource instanceof ResourceList) {
+	                	for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourceList<?>) resource).getResourcesList().iterator(); it.hasNext();) {
+	                		ResourceRepresentation<?> current = it.next();
+	                		ResourceRepresentation<?> oldResource = persistable.findById(current.getId());
+	    	                persistable.deleteResource(oldResource);
+	                	}
+	                }
+	                else {
+		                ResourceRepresentation<?> oldResource = persistable.findById(resource.getId());
+		                persistable.deleteResource(oldResource);
+	                }
 	            }
 			}
             if(r.getResourceRepresentation() != null) { //POST PUT GET
-            	Persistable<ResourceRepresentation<?>> dao = getResourceDao(r.getResourceRepresentation());
-            	r.getResourceRepresentation().setResultCode(statusCode);
-            	r.getResourceRepresentation().setTransactingFlag(false);
-            	if(statusCode >= 200 && statusCode <= 210)
-            		r.getResourceRepresentation().setState(RequestState.STATE_OK);
-                dao.updateOrCreate(r.getResourceRepresentation());
+            	ResourceRepresentation<?> resource = r.getResourceRepresentation();
+            	if(resource instanceof ResourceList) {
+            		for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourceList<?>) resource).getResourcesList().iterator(); it.hasNext();) {
+                		updateLocalResourceRoutine(statusCode, it.next());
+                	}
+            	}
+            	else {
+            		updateLocalResourceRoutine(statusCode, resource);
+            	}
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 		return statusCode;
 	}
 	
+	protected void updateLocalResourceRoutine(int statusCode, ResourceRepresentation<?> resource) throws Exception {
+		Persistable<ResourceRepresentation<?>> persistable = getResourcePersistable(resource);
+		resource.setResultCode(statusCode);
+		resource.setTransactingFlag(false);
+    	if(statusCode >= 200 && statusCode <= 210)
+    		resource.setState(RequestState.STATE_OK);
+    	persistable.updateOrCreate(resource);
+	}
+	
 	/**
-	 * Shortcut to retrieve Dao from Processor via {@link PersistableFactory}
+	 * Shortcut to retrieve Persistable class from Processor via {@link PersistableFactory}
 	 * 
 	 * @param r
-	 * 		The {@link ResourceRepresentation} you want the dao
+	 * 		The {@link ResourceRepresentation} you want the Persistable class
 	 * 
 	 * @return
 	 * 		Instance of {@link Persistable}
 	 */
-	protected Persistable<ResourceRepresentation<?>> getResourceDao(ResourceRepresentation<?> r) {
-		return mDaoFactory.getDao(r.getClass());
+	protected Persistable<ResourceRepresentation<?>> getResourcePersistable(ResourceRepresentation<?> r) {
+		return mPersistableFactory.getPersistable(r.getClass());
 	}
 
 	/**
@@ -387,9 +427,9 @@ public abstract class Processor {
 	 */
 	public boolean checkRequest(RESTRequest<? extends ResourceRepresentation<?>> request) {
 		ResourceRepresentation<?> requestResource = request.getResourceRepresentation();
-		Persistable<ResourceRepresentation<?>> dao = mDaoFactory.getDao(requestResource.getClass());
+		Persistable<ResourceRepresentation<?>> persistable = mPersistableFactory.getPersistable(requestResource.getClass());
 		try {
-			ResourceRepresentation<?> resource = dao.findById(request.getResourceRepresentation().getId());
+			ResourceRepresentation<?> resource = persistable.findById(request.getResourceRepresentation().getId());
 			if(null != resource) {
 				if(!resource.getTransactingFlag()) {
 					if(resource.getResultCode() == 200) {
@@ -399,7 +439,7 @@ public abstract class Processor {
 				}
 				return false;
 			}
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -1,8 +1,8 @@
 package fr.pcreations.labs.RESTDroid.core;
 
-import fr.pcreations.labs.RESTDroid.core.RESTRequest.OnFinishedRequestListener;
-import fr.pcreations.labs.RESTDroid.core.RESTRequest.OnFailedRequestListener;
-import fr.pcreations.labs.RESTDroid.core.RESTRequest.OnStartedRequestListener;
+import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFailedRequestListener;
+import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFinishedRequestListener;
+import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnStartedRequestListener;
 
 /**
  * <b>Enum which represents ListenerState</b>
