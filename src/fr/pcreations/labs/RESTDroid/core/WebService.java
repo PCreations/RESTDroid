@@ -113,15 +113,14 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @since 0.6.0
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends ResourceRepresentation<?>> RESTRequest<T> createOrGetRequest(String id, Class<T> clazz) {
+	public <T extends ResourceRepresentation<?>> RESTRequest<T> retrieveRequest(String url) {
+		RESTRequest<T> r = null;
 		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
-			RESTRequest<?> r = it.next();
-			if(r.getID().equals(id)) {
+			r = (RESTRequest<T>) it.next();
+			if(r.getUrl().equals(url)) {
 				return (RESTRequest<T>) r;
 			}
 		}
-		RESTRequest<T> r = new RESTRequest<T>(id, clazz);
-		mRequestCollection.add(r);
 		return r;
 	}
 	
@@ -165,9 +164,17 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 * @see WebService#get(RESTRequest, String, Bundle)
 	 */
-	protected void get(RESTRequest<? extends ResourceRepresentation<?>> r, String uri) {
-		initRequest(r, HTTPVerb.GET,  uri);
-		initAndStartService(r);
+	protected <R extends ResourceRepresentation<?>> RESTRequest<R> get(Class<R> clazz, String uri) {
+		RESTRequest<R> request = retrieveRequest(uri);
+		if(null != request) {
+			Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "SIZE = " + String.valueOf(mRequestCollection.size()));
+			return request;
+		}
+		request = new RESTRequest<R>(generateID(), clazz);
+		mRequestCollection.add(request);
+		initRequest(request, HTTPVerb.GET,  uri);
+		Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "SIZE = " + String.valueOf(mRequestCollection.size()));
+		return request;
 	}
 	
 	/**
@@ -277,6 +284,11 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		r.setExtraParams(extraParams);
 	}
 	
+	public void executeRequest(RESTRequest<? extends ResourceRepresentation<?>> r) {
+		if(!r.isPending())
+			initAndStartService(r);
+	}
+	
 	/**
 	 * Initializes and starts the service if the request has to be re-sent
 	 * 
@@ -296,9 +308,11 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 			i.putExtra(RestService.REQUEST_KEY, request);
 			i.putExtra(RestService.RECEIVER_KEY, mReceiver);
 			
+			Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "startedListeners");
 			/* Trigger OnStartedRequest listener */
 			for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
 				RESTRequest<?> r = it.next();
+				Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "UUID = " + r.getID());
 				if(request.getID().equals(r.getID())) {
 					r.triggerOnStartedRequestListeners();
 				}

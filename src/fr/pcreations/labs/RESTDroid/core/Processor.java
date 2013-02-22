@@ -1,7 +1,6 @@
 package fr.pcreations.labs.RESTDroid.core;
 
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.Iterator;
 
 import fr.pcreations.labs.RESTDroid.core.HttpRequestHandler.ProcessorCallback;
