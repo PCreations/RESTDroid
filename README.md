@@ -1,7 +1,7 @@
 RESTDroid : REST client library for Android
 ===========================================
 
-Alpha release 0.6.0
+Alpha release 0.7.0
 
 RESTDroid provides a way to handle REST call to REST web-service. RESTDroid only packed fundamental logic to handle request. Extends this logic is the role of Module. Here you can found severals Module such as an ORMlite-Jackon module to handle data persistence and mapping/parsing.
 
@@ -369,8 +369,6 @@ public class TestActivity extends Activity {
 
 	private DebugWebService ws;
 	private RESTRequest&lt;TestObject> getTestRequest;
-
-	public final static String GET_TEST_REQUEST_ID = "get_test_request_id";
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -379,14 +377,48 @@ public class TestActivity extends Activity {
         try {
 			ws = (TestWebService) RESTDroid.getInstance().getWebService(TestWebService.class);
 			ws.registerModule(new TestModule());
-			getTestRequest = ws.createOrGetRequest(GET_TEST_REQUEST_ID, TestObject.class);
-			ws.getTest(getTestRequest, "mG2hB0Xvco"); /* we want to retrieve the object with id "mG2hB0Xvco" from the server */
+			getTestRequest = ws.getTest(TestObject.class, "mG2hB0Xvco"); /* we want to retrieve the object with id "mG2hB0Xvco" from the 
+			server */
+			getTestRequest.setRequestListeners(new TestRequestListeners()); /* we now register RequestListeners class */
+			ws.executeRequest(getTestRequest) /* and we execute the request */
 		} catch (RESTDroidNotInitializedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         setContentView(R.layout.activity_main);
-       
+    }
+
+    public class TestRequestListeners extends RequestListeners {
+    	private OnStartedRequestListener onStart = new OnStartedRequestListener() {
+
+    		public void onStartedRequest() {
+    			Log.i(TestWebService.TAG, "getTestRequest has started");
+    		}
+    		
+    	};
+    	
+    	private OnFinishedRequestListener onFinished = new OnFinishedRequestListener() {
+
+    		public void onFinishedRequest(int resultCode) {
+    			Log.i(TestWebService.TAG, "getTestRequest has finished with code " + resultCode);
+    		}
+    		
+    	};
+    	
+    	private OnFailedRequestListener onFailed = new OnFailedRequestListener() {
+    		
+    		public void onFailedRequest(int resultCode) {
+    			Log.i(TestWebService.TAG, "getTestRequest has failed with code " + resultCode);
+    		}
+    		
+    	};
+    	
+    	public TestRequestListeners() {
+    		super();
+    		addOnStartedRequestListener(onStart);
+    		addOnFinishedRequestListener(onFinished);
+    		addOnFailedRequestListener(onFailed);
+    	}
     }
 
 }
