@@ -5,6 +5,53 @@ import java.util.Map.Entry;
 
 import android.util.Log;
 
+/**
+ * <b>Holder class for request listeners</b>
+ * 
+ * <p>
+ * You can create an inner class in your Activity which extends this class to fit your needs.
+ * 
+ * <pre>
+public class TestRequestListeners extends RequestListeners {
+	private OnStartedRequestListener onStart = new OnStartedRequestListener() {
+
+		public void onStartedRequest() {
+			//TODO
+		}
+		
+	};
+	
+	private OnFinishedRequestListener onFinished = new OnFinishedRequestListener() {
+
+		public void onFinishedRequest(int resultCode) {
+			//TODO
+		}
+		
+	};
+	
+	private OnFailedRequestListener onFailed = new OnFailedRequestListener() {
+		
+		public void onFailedRequest(int resultCode) {
+			//TODO
+		}
+		
+	};
+	
+	public TestRequestListeners() {
+		super();
+		addOnStartedRequestListener(onStart);
+		addOnFinishedRequestListener(onFinished);
+		addOnFailedRequestListener(onFailed);
+	}
+}
+ * </pre>
+ * </p>
+ * 
+ * @author Pierre Criulanscy
+ * 
+ * @version 0.7.0
+ *
+ */
 public class RequestListeners {
 
 	/**
@@ -12,8 +59,8 @@ public class RequestListeners {
 	 * 
 	 * @see OnStartedRequestListener
 	 * @see ListenerState
-	 * @see RESTRequest#getOnStartedRequestListener()
-	 * @see RESTRequest#setOnStartedRequestListener(OnStartedRequestListener)
+	 * @see RequestListeners#getOnStartedRequestListener()
+	 * @see RequestListeners#setOnStartedRequestListener(OnStartedRequestListener)
 	 */
 	protected transient HashMap<OnStartedRequestListener, ListenerState> mOnStartedRequestListeners;
 	
@@ -22,8 +69,8 @@ public class RequestListeners {
 	 * 
 	 * @see OnFinishedRequestListener
 	 * @see ListenerState
-	 * @see RESTRequest#getOnFinishedRequestListener()
-	 * @see RESTRequest#setOnFinishedRequestListener(OnFinishedRequestListener)
+	 * @see RequestListeners#getOnFinishedRequestListener()
+	 * @see RequestListeners#setOnFinishedRequestListener(OnFinishedRequestListener)
 	 */
 	protected transient HashMap<OnFinishedRequestListener, ListenerState> mOnFinishedRequestListeners;
 	
@@ -32,8 +79,8 @@ public class RequestListeners {
 	 * 
 	 * @see OnFailedRequestListener
 	 * @see ListenerState
-	 * @see RESTRequest#getOnFailedRequestListener()
-	 * @see RESTRequest#setOnFailedRequestListener(OnFailedRequestListener)
+	 * @see RequestListeners#getOnFailedRequestListener()
+	 * @see RequestListeners#setOnFailedRequestListener(OnFailedRequestListener)
 	 */
 	protected transient HashMap<OnFailedRequestListener, ListenerState> mOnFailedRequestListeners;
 	
@@ -50,8 +97,8 @@ public class RequestListeners {
 	 * 		Instance of {@link OnStartedRequestListener}
 	 * 
 	 * @see OnStartedRequestListener
-	 * @see RESTRequest#mOnStartedRequestListener
-	 * @see RESTRequest#getOnStartedRequestListener()
+	 * @see RequestListeners#mOnStartedRequestListener
+	 * @see RequestListeners#getOnStartedRequestListener()
 	 */
 	public void addOnStartedRequestListener(OnStartedRequestListener listener) {
 		if(!mOnStartedRequestListeners.containsKey(listener))
@@ -65,20 +112,12 @@ public class RequestListeners {
 	 * 		Instance of {@link OnFinishedRequestListener}
 	 * 
 	 * @see OnFinishedRequestListener
-	 * @see RESTRequest#mOnFinishedRequestListener
-	 * @see RESTRequest#getOnFinishedRequestListener()
+	 * @see RequestListeners#mOnFinishedRequestListener
+	 * @see RequestListeners#getOnFinishedRequestListener()
 	 */
-	public void addOnFinishedRequestListener(OnFinishedRequestListener listener) {
-		for(Entry<OnFinishedRequestListener, ListenerState> l : mOnFinishedRequestListeners.entrySet()) {
-			Log.e("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", l.toString());
-			Log.e("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", String.valueOf(l == listener));
-		}
-		Log.e("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", listener.toString());
-		
-		if(!mOnFinishedRequestListeners.containsKey(listener)) {
-			Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "add listeners");
+	public void addOnFinishedRequestListener(OnFinishedRequestListener listener) {		
+		if(!mOnFinishedRequestListeners.containsKey(listener))
 			mOnFinishedRequestListeners.put(listener, ListenerState.SET);
-		}
 	}
 	
 	/**
@@ -88,8 +127,8 @@ public class RequestListeners {
 	 * 		Instance of {@link OnFailedRequestListener}
 	 * 
 	 * @see OnFailedRequestListener
-	 * @see RESTRequest#mOnFailedRequestListener
-	 * @see RESTRequest#getOnFailedRequestListener()
+	 * @see RequestListeners#mOnFailedRequestListener
+	 * @see RequestListeners#getOnFailedRequestListener()
 	 */
 	public void addOnFailedRequestListener(OnFailedRequestListener listener) {
 		if(!mOnFailedRequestListeners.containsKey(listener))
@@ -98,11 +137,11 @@ public class RequestListeners {
 	
 	/**
 	 * @return
-	 * 		{@link RESTRequest#mOnStartedRequestListeners}
+	 * 		{@link RequestListeners#mOnStartedRequestListeners}
 	 * 
 	 * @see OnStartedRequestListeners
-	 * @see RESTRequest#mOnStartedRequestListeners
-	 * @see RESTRequest#addOnStartedRequestListener(OnStartedRequestListener)
+	 * @see RequestListeners#mOnStartedRequestListeners
+	 * @see RequestListeners#addOnStartedRequestListener(OnStartedRequestListener)
 	 */
 	public HashMap<OnStartedRequestListener, ListenerState> getOnStartedRequestListeners() {
 		return mOnStartedRequestListeners;
@@ -110,11 +149,11 @@ public class RequestListeners {
 	
 	/**
 	 * @return
-	 * 		{@link RESTRequest#mOnFinishedRequestListeners}
+	 * 		{@link RequestListeners#mOnFinishedRequestListeners}
 	 * 
 	 * @see OnFinishedRequestListeners
-	 * @see RESTRequest#mOnFinishedRequestListeners
-	 * @see RESTRequest#addOnFinishedRequestListener(OnFinishedRequestListener)
+	 * @see RequestListeners#mOnFinishedRequestListeners
+	 * @see RequestListeners#addOnFinishedRequestListener(OnFinishedRequestListener)
 	 */
 	public HashMap<OnFinishedRequestListener, ListenerState> getOnFinishedRequestListeners() {
 		return mOnFinishedRequestListeners;
@@ -122,11 +161,11 @@ public class RequestListeners {
 	
 	/**
 	 * @return
-	 * 		{@link RESTRequest#mOnFailedRequestListeners}
+	 * 		{@link RequestListeners#mOnFailedRequestListeners}
 	 * 
 	 * @see OnFailedRequestListeners
-	 * @see RESTRequest#mOnFailedRequestListeners
-	 * @see RESTRequest#addOnFailedRequestListener(OnFailedRequestListener)
+	 * @see RequestListeners#mOnFailedRequestListeners
+	 * @see RequestListeners#addOnFailedRequestListener(OnFailedRequestListener)
 	 */
 	public HashMap<OnFailedRequestListener, ListenerState> getOnFailedRequestListeners() {
 		return mOnFailedRequestListeners;
@@ -137,7 +176,7 @@ public class RequestListeners {
 	 * 
 	 * @author Pierre Criulanscy
 	 * 
-	 * @version 0.5
+	 * @version 0.7.0
 	 *
 	 */
 	public interface OnStartedRequestListener {
@@ -153,7 +192,7 @@ public class RequestListeners {
 	 * 
 	 * @author Pierre Criulanscy
 	 * 
-	 * @version 0.5
+	 * @version 0.7.0
 	 *
 	 */
 	public interface OnFinishedRequestListener {
@@ -172,7 +211,7 @@ public class RequestListeners {
 	 * 
 	 * @author Pierre Criulanscy
 	 * 
-	 * @version 0.5
+	 * @version 0.7.0
 	 */
 	public interface OnFailedRequestListener {
 		
