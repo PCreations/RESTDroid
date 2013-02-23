@@ -84,13 +84,13 @@ public class HttpRequestHandler {
 	 * </ul>
 	 * </p>
 	 */
-	private HashMap<String, HTTPContainer> httpRequests;
+	private HashMap<UUID, HTTPContainer> httpRequests;
 	
 	/**
 	 * Constructor
 	 */
 	public HttpRequestHandler() {
-		httpRequests = new HashMap<String, HTTPContainer>();
+		httpRequests = new HashMap<UUID, HTTPContainer>();
 	}
 	
 	/**

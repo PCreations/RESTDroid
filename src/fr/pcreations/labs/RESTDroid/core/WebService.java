@@ -31,7 +31,7 @@ import fr.pcreations.labs.RESTDroid.exceptions.RequestNotFoundException;
  * 
  * @author Pierre Criulanscy
  * 
- * @version 0.6.0
+ * @version 0.7.0
  * 
  * @see RESTDroid#getWebService(Class)
  * @see Processor#checkRequest(RESTRequest)
@@ -113,15 +113,14 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @since 0.6.0
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends ResourceRepresentation<?>> RESTRequest<T> createOrGetRequest(String id, Class<T> clazz) {
+	public <T extends ResourceRepresentation<?>> RESTRequest<T> retrieveRequest(String url) {
+		RESTRequest<T> r = null;
 		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
-			RESTRequest<?> r = it.next();
-			if(r.getID().equals(id)) {
+			r = (RESTRequest<T>) it.next();
+			if(r.getUrl().equals(url)) {
 				return (RESTRequest<T>) r;
 			}
 		}
-		RESTRequest<T> r = new RESTRequest<T>(id, clazz);
-		mRequestCollection.add(r);
 		return r;
 	}
 	
@@ -155,26 +154,28 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	}
 	
 	/**
-	 * Initializes and prepares a GET request
+	 * Initializes and prepares a GET request or retrieve it if already pending.
 	 * 
-	 * @param r
-	 * 		Instance of {@link RESTRequest}
+	 * @param clazz
+	 * 		Class of ResourceRepresentation holds by request
 	 * 
 	 * @param uri
 	 * 		Uri to fetch
 	 * 
 	 * @see WebService#get(RESTRequest, String, Bundle)
 	 */
-	protected void get(RESTRequest<? extends ResourceRepresentation<?>> r, String uri) {
-		initRequest(r, HTTPVerb.GET,  uri);
-		initAndStartService(r);
+	protected <R extends ResourceRepresentation<?>> RESTRequest<R> get(Class<R> clazz, String uri) {
+		RESTRequest<R> request = requestRoutine(clazz, uri);
+		initRequest(request, HTTPVerb.GET,  uri);
+		Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "SIZE = " + String.valueOf(mRequestCollection.size()));
+		return request;
 	}
 	
 	/**
-	 * Initializes and prepares a GET request with extra parameters
+	 * Initializes and prepares a GET request or retrieve it if already pending.
 	 * 
-	 * @param r
-	 * 		Instance of {@link RESTRequest}
+	 * @param clazz
+	 * 		Class of ResourceRepresentation holds by request
 	 * 
 	 * @param uri
 	 * 		Uri to fetch
@@ -184,62 +185,84 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 * @see WebService#get(RESTRequest, String)
 	 */
-	protected void get(RESTRequest<? extends ResourceRepresentation<?>> r, String uri, Bundle extraParams) {
-		initRequest(r, HTTPVerb.GET, uri, extraParams);
-		initAndStartService(r);
+	protected <R extends ResourceRepresentation<?>> RESTRequest<R> get(Class<R> clazz, String uri, Bundle extraParams) {
+		RESTRequest<R> request = requestRoutine(clazz, uri);
+		initRequest(request, HTTPVerb.GET, uri, extraParams);
+		return request;
 	}
 	
 	/**
-	 * Initializes and prepares a POST request
+	 * Initializes and prepares a POST request or retrieve it if already pending.
 	 * 
-	 * @param r
-	 * 		Instance of {@link RESTRequest}
+	 * @param clazz
+	 * 		Class of ResourceRepresentation holds by request
 	 * @param uri
 	 * 		URI to retrieve
 	 * @param resource
 	 * 		Resource to send
 	 * 
 	 */
-	protected void post(RESTRequest<? extends ResourceRepresentation<?>> r, String uri, ResourceRepresentation<?> resource) {
-		//initPostHeaders(r);
-		r.setResourceRepresentation(resource);
-		initRequest(r, HTTPVerb.POST,  uri);
-		initAndStartService(r);
+	protected <R extends ResourceRepresentation<?>> RESTRequest<R> post(Class<R> clazz, String uri, ResourceRepresentation<?> resource) {
+		RESTRequest<R> request = requestRoutine(clazz, uri);
+		request.setResourceRepresentation(resource);
+		return request;
 	}
 	
 	/**
-	 * Initializes and prepares a PUT request
+	 * Initializes and prepares a PUT request or retrieve it if already pending.
 	 * 
-	 * @param r
-	 * 		Instance of {@link RESTRequest}
+	 * @param clazz
+	 * 		Class of ResourceRepresentation holds by request
 	 * @param uri
 	 * 		URI to fetch
 	 * @param resource
 	 * 		Resource to send
 	 * 
 	 */
-	protected void put(RESTRequest<? extends ResourceRepresentation<?>> r, String uri, ResourceRepresentation<?> resource) {
-		r.setResourceRepresentation(resource);
-		initRequest(r, HTTPVerb.PUT,  uri);
-		initAndStartService(r);
+	protected <R extends ResourceRepresentation<?>> RESTRequest<R> put(Class<R> clazz, String uri, ResourceRepresentation<?> resource) {
+		RESTRequest<R> request = requestRoutine(clazz, uri);
+		request.setResourceRepresentation(resource);
+		initRequest(request, HTTPVerb.PUT,  uri);
+		return request;
 	}
 	
 	/**
-	 * Initializes and prepares a DELETE request
+	 * Initializes and prepares a DELETE request or retrieve it if already pending.
 	 * 
-	 * @param r
-	 * 		Instance of {@link RESTRequest}
+	 * @param clazz
+	 * 		Class of ResourceRepresentation holds by request
 	 * @param uri
 	 * 		Uri to fetch
 	 * @param resource
 	 * 		Resource to send
 	 */
-	protected void delete(RESTRequest<? extends ResourceRepresentation<?>> r, String uri, ResourceRepresentation<?> resource) {
-		r.setResourceRepresentation(resource);
-		initRequest(r, HTTPVerb.DELETE, uri);
-		initAndStartService(r);
+	protected <R extends ResourceRepresentation<?>> RESTRequest<R> delete(Class<R> clazz, String uri, ResourceRepresentation<?> resource) {
+		RESTRequest<R> request = requestRoutine(clazz, uri);
+		request.setResourceRepresentation(resource);
+		initRequest(request, HTTPVerb.DELETE, uri);
+		return request;
 	}
 	
+	/**
+	 * Create or retrieve {@link RESTRequest} if it is already pending
+	 * 
+	 * @param clazz
+	 * 		Class of ResourceRepresentation holds by request
+	 * @param uri
+	 * 		Uri to fetch
+	 * @return
+	 * 		New instance of {@link RESTRequest} or instance already pending
+	 */
+	protected <R extends ResourceRepresentation<?>> RESTRequest<R> requestRoutine(Class<R> clazz, String uri) {
+		RESTRequest<R> request = retrieveRequest(uri);
+		if(null != request) {
+			Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "SIZE = " + String.valueOf(mRequestCollection.size()));
+			return request;
+		}
+		request = new RESTRequest<R>(generateID(), clazz);
+		mRequestCollection.add(request);
+		return request;
+	}
 	/**
 	 * Initializes a request by setting verb and uri
 	 * 
@@ -277,6 +300,20 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		r.setExtraParams(extraParams);
 	}
 	
+	
+	/**
+	 * Executes a {@link RESTRequest}
+	 * 
+	 * @param r
+	 * 		The request to execute
+	 * 
+	 * @since 0.7.0
+	 */
+	public void executeRequest(RESTRequest<? extends ResourceRepresentation<?>> r) {
+		if(!r.isPending())
+			initAndStartService(r);
+	}
+	
 	/**
 	 * Initializes and starts the service if the request has to be re-sent
 	 * 
@@ -296,9 +333,11 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 			i.putExtra(RestService.REQUEST_KEY, request);
 			i.putExtra(RestService.RECEIVER_KEY, mReceiver);
 			
+			Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "startedListeners");
 			/* Trigger OnStartedRequest listener */
 			for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
 				RESTRequest<?> r = it.next();
+				Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "UUID = " + r.getID());
 				if(request.getID().equals(r.getID())) {
 					r.triggerOnStartedRequestListeners();
 				}
@@ -321,6 +360,11 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 
 	/**
 	 * Receive result from {@link RestService} and fires callbacks corresponding to the request'state
+	 * 
+	 * @param resultCode
+	 * 		The result code send by the {@link RestService}
+	 * @param resultData
+	 * 		Bundle with result data
 	 */
 	@Override
 	public void onReceiveResult(int resultCode, Bundle resultData) {

@@ -56,14 +56,14 @@ public class RestService extends IntentService{
 	 * </ul>
 	 * </p>
 	 */
-	private HashMap<String, Intent> mIntentsMap;
+	private HashMap<UUID, Intent> mIntentsMap;
 	
 	/**
 	 * Constructor
 	 */
 	public RestService() {
 		super("RestService");
-		mIntentsMap = new HashMap<String, Intent>();
+		mIntentsMap = new HashMap<UUID, Intent>();
 	}
 
 	/**
