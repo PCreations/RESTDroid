@@ -1,5 +1,6 @@
 package fr.pcreations.labs.RESTDroid.core;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 
@@ -12,7 +13,7 @@ import fr.pcreations.labs.RESTDroid.exceptions.ParsingException;
  * 
  * @author Pierre Criulanscy
  * 
- * @version 0.6.1
+ * @version 0.7.1
  *
  */
 public abstract class Processor {
@@ -168,7 +169,7 @@ public abstract class Processor {
 	}
 	
 	/**
-	 * Handles the binder callback from {@link HttpRequestHandler} by updating status code calling {@link Processor#preRequestProcess(RESTRequest)} hook and fires {@link RESTServiceCallback}
+	 * Handles the binder callback from {@link HttpRequestHandler} by updating status code calling {@link Processor#postRequestProcess(int, RESTRequest, InputStream)} hook, set the result stream in {@link RESTRequest} and fires {@link RESTServiceCallback}
 	 * 
 	 * @param statusCode
 	 *		Status code returned by {@link HttpRequestHandler}
@@ -180,8 +181,14 @@ public abstract class Processor {
 	 * 		The server response
 	 */
 	protected void handleHttpRequestHandlerCallback(int statusCode, RESTRequest<ResourceRepresentation<?>> request, InputStream resultStream) {
-        statusCode = postRequestProcess(statusCode, request, resultStream);
-        mRESTServiceCallback.callAction(statusCode, request);
+        try {
+			request.setResultStream(resultStream);
+			statusCode = postRequestProcess(statusCode, request, request.getResultStream());
+	        mRESTServiceCallback.callAction(statusCode, request);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**

@@ -1,5 +1,10 @@
 package fr.pcreations.labs.RESTDroid.core;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -49,7 +54,7 @@ public class TestRequestListeners extends RequestListeners {
  * 
  * @author Pierre Criulanscy
  * 
- * @version 0.7.0
+ * @version 0.7.1
  *
  */
 public class RequestListeners {
@@ -222,6 +227,46 @@ public class RequestListeners {
 		 * 		The result code resulting of all process
 		 */
 		public abstract void onFailedRequest(int resultCode);
+	}
+	
+	/**
+	 * Helper method to display server's response stream as String
+	 * 
+	 * @param is
+	 * 		The InputStream to display as String
+	 * 
+	 * @return
+	 * 		The String created from InputStream
+	 */
+	protected String inputStreamToString(InputStream is) {
+        BufferedReader bufferedReader;
+		try {
+			bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+			StringBuilder inputStringBuilder = new StringBuilder();
+	        String line;
+			try {
+				line = bufferedReader.readLine();
+				while(line != null){
+		            inputStringBuilder.append(line);inputStringBuilder.append('\n');
+		            try {
+						line = bufferedReader.readLine();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		        }
+				return inputStringBuilder.toString();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        return null;
 	}
 	
 }
