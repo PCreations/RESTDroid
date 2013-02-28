@@ -113,15 +113,15 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @since 0.6.0
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends ResourceRepresentation<?>> RESTRequest<T> retrieveRequest(String url) {
-		RESTRequest<T> r = null;
+	public <T extends ResourceRepresentation<?>> RESTRequest<T> retrieveRequest(Class<T> clazz, String url) {
+		RESTRequest<T> r;
 		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
 			r = (RESTRequest<T>) it.next();
-			if(r.getUrl().equals(url)) {
-				return (RESTRequest<T>) r;
+			if(r.getUrl().equals(url) && clazz.equals(r.getResourceClass())) {
+				return r;
 			}
 		}
-		return r;
+		return null;
 	}
 	
 	/**
@@ -254,9 +254,8 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 		New instance of {@link RESTRequest} or instance already pending
 	 */
 	protected <R extends ResourceRepresentation<?>> RESTRequest<R> requestRoutine(Class<R> clazz, String uri) {
-		RESTRequest<R> request = retrieveRequest(uri);
+		RESTRequest<R> request = retrieveRequest(clazz, uri);
 		if(null != request) {
-			Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "SIZE = " + String.valueOf(mRequestCollection.size()));
 			return request;
 		}
 		request = new RESTRequest<R>(generateID(), clazz);
@@ -333,11 +332,9 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 			i.putExtra(RestService.REQUEST_KEY, request);
 			i.putExtra(RestService.RECEIVER_KEY, mReceiver);
 			
-			Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "startedListeners");
 			/* Trigger OnStartedRequest listener */
 			for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
 				RESTRequest<?> r = it.next();
-				Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "UUID = " + r.getID());
 				if(request.getID().equals(r.getID())) {
 					r.triggerOnStartedRequestListeners();
 				}

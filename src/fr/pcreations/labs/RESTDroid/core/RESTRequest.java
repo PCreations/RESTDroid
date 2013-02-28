@@ -1,5 +1,6 @@
 package fr.pcreations.labs.RESTDroid.core;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnStartedRequestListen
  * @param <T>
  * 		The {@link ResourceRepresentation} class that request deals with
  * 
- * @version 0.7.0
+ * @version 0.7.1
  */
 public class RESTRequest<T extends ResourceRepresentation<?>> implements Serializable {
 	
@@ -69,6 +70,16 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @since 0.6.0
 	 */
 	private boolean mPending;
+	
+	/**
+	 * The server response
+	 * 
+	 * @see RESTRequest#getResponseStream()
+	 * @see RESTRequest#setResponseStream()
+	 * 
+	 * @since 0.7.1
+	 */
+	private InputStream mResultStream;
 	
 	/**
 	 * Defines extra parameters for request
@@ -418,6 +429,36 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 */
 	public void setPending(boolean pending) {
 		mPending = pending;
+	}
+
+	/**
+	 * Getter for {@link RESTRequest#mResultStream}
+	 * 
+	 * @return
+	 * 		The server's result stream
+	 * 
+	 * @see RESTRequest#mResultStream
+	 * @see RESTRequest#setResultStream(InputStream)
+	 * 
+	 * @since 0.7.1
+	 */
+	public InputStream getResultStream() {
+		return mResultStream;
+	}
+
+	/**
+	 * Setter for {@link RESTRequest#mResultStream}
+	 * 
+	 * @param mResultStream
+	 * 		The server's result stream
+	 * 
+	 * @see RESTRequest#mResultStream
+	 * @see RESTRequest#getResultStream()
+	 * 
+	 * @since 0.7.1
+	 */
+	public void setResultStream(InputStream mResultStream) {
+		this.mResultStream = mResultStream;
 	}
 
 	/**
