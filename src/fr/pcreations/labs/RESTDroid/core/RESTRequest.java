@@ -1,5 +1,8 @@
 package fr.pcreations.labs.RESTDroid.core;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -79,7 +82,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * 
 	 * @since 0.7.1
 	 */
-	private InputStream mResultStream;
+	private ByteArrayOutputStream mByteArrayResultStream;
 	
 	/**
 	 * Defines extra parameters for request
@@ -443,7 +446,8 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @since 0.7.1
 	 */
 	public InputStream getResultStream() {
-		return mResultStream;
+		InputStream is = new ByteArrayInputStream(mByteArrayResultStream.toByteArray());
+		return is;
 	}
 
 	/**
@@ -451,14 +455,21 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * 
 	 * @param mResultStream
 	 * 		The server's result stream
+	 * @throws IOException 
 	 * 
 	 * @see RESTRequest#mResultStream
 	 * @see RESTRequest#getResultStream()
 	 * 
 	 * @since 0.7.1
 	 */
-	public void setResultStream(InputStream mResultStream) {
-		this.mResultStream = mResultStream;
+	public void setResultStream(InputStream mResultStream) throws IOException {
+		mByteArrayResultStream = new ByteArrayOutputStream();
+	    byte[] buffer = new byte[1024];
+	    int len;
+	    while ((len = mResultStream.read(buffer)) > -1 ) {
+	    	mByteArrayResultStream.write(buffer, 0, len);
+	    }
+	    mByteArrayResultStream.flush();
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package fr.pcreations.labs.RESTDroid.core;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -366,10 +367,15 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	@Override
 	public void onReceiveResult(int resultCode, Bundle resultData) {
 		RESTRequest<?> r = (RESTRequest<?>) resultData.getSerializable(RestService.REQUEST_KEY);
-		//Log.w(RestService.TAG, "dans onReceiveResult" + r.getResourceRepresentation().toString());
 		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
 			RESTRequest<?> request = it.next();
 			if(request.getID().equals(r.getID())) {
+				try {
+					request.setResultStream(r.getResultStream());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				request.setResultCode(resultCode);
 				request.setPending(false);
 				if(resultCode >= 200 && resultCode <= 210) {
