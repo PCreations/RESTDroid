@@ -463,13 +463,15 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @since 0.7.1
 	 */
 	public void setResultStream(InputStream mResultStream) throws IOException {
-		mByteArrayResultStream = new ByteArrayOutputStream();
-	    byte[] buffer = new byte[1024];
-	    int len;
-	    while ((len = mResultStream.read(buffer)) > -1 ) {
-	    	mByteArrayResultStream.write(buffer, 0, len);
-	    }
-	    mByteArrayResultStream.flush();
+		if(null != mResultStream) {
+			mByteArrayResultStream = new ByteArrayOutputStream();
+		    byte[] buffer = new byte[1024];
+		    int len;
+		    while ((len = mResultStream.read(buffer)) > -1 ) {
+		    	mByteArrayResultStream.write(buffer, 0, len);
+		    }
+		    mByteArrayResultStream.flush();
+		}
 	}
 
 	/**
