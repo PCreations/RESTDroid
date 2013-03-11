@@ -5,11 +5,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFailedRequestListener;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFinishedRequestListener;
@@ -575,8 +579,28 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 		return mRequestListeners;
 	}
 
-	public void setRequestListeners(RequestListeners mRequestListeners) {
-		this.mRequestListeners = mRequestListeners;
+	public <L> void setRequestListeners(Activity a, Class<L> clazz) {
+		
+		try {
+			Constructor<L> ctor = clazz.getConstructor(a.getClass());
+			mRequestListeners = (RequestListeners) ctor.newInstance(a);
+			mRequestListeners.setRequest(this);
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**

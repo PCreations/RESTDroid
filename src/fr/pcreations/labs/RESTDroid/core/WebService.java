@@ -328,6 +328,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		boolean proceedRequest = true;
 		if(request.getVerb() != HTTPVerb.GET)
 			proceedRequest = mModule.getProcessor().checkRequest(request);
+		Toast.makeText(mContext, "proceed = " + proceedRequest + " | isPending " + request.isPending(), Toast.LENGTH_SHORT).show();
 		if(proceedRequest && !request.isPending()) {
 			request.setPending(true);
 			Intent i = new Intent(mContext, RestService.class);
@@ -344,8 +345,8 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 			}
 			mContext.startService(i);
 		}
-		else
-			Toast.makeText(mContext, "Request already pending", Toast.LENGTH_SHORT).show();
+		/*else
+			Toast.makeText(mContext, "Request already pending", Toast.LENGTH_SHORT).show();*/
 	}
 	
 	/**

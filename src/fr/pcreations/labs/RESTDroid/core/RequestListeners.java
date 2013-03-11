@@ -54,7 +54,7 @@ public class TestRequestListeners extends RequestListeners {
  * 
  * @author Pierre Criulanscy
  * 
- * @version 0.7.1
+ * @version 0.7.2
  *
  */
 public class RequestListeners {
@@ -89,10 +89,16 @@ public class RequestListeners {
 	 */
 	protected transient HashMap<OnFailedRequestListener, ListenerState> mOnFailedRequestListeners;
 	
+	protected transient RESTRequest<? extends ResourceRepresentation<?>> mRequest;
+	
 	public RequestListeners() {
 		mOnFailedRequestListeners = new HashMap<OnFailedRequestListener, ListenerState>();
 		mOnFinishedRequestListeners = new HashMap<OnFinishedRequestListener, ListenerState>();
 		mOnStartedRequestListeners = new HashMap<OnStartedRequestListener, ListenerState>();
+	}
+	
+	public void setRequest(RESTRequest<? extends ResourceRepresentation<?>> r) {
+		mRequest = r;
 	}
 	
 	/**
