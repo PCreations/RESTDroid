@@ -446,6 +446,8 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @since 0.7.1
 	 */
 	public InputStream getResultStream() {
+		if(null == mByteArrayResultStream)
+			return null;
 		InputStream is = new ByteArrayInputStream(mByteArrayResultStream.toByteArray());
 		return is;
 	}
