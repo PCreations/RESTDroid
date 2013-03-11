@@ -82,7 +82,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * 
 	 * @since 0.7.1
 	 */
-	private ByteArrayOutputStream mByteArrayResultStream;
+	private transient ByteArrayOutputStream mByteArrayResultStream;
 	
 	/**
 	 * Defines extra parameters for request

@@ -1,19 +1,23 @@
 package fr.pcreations.labs.RESTDroid.core;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 
+import android.util.Log;
 import fr.pcreations.labs.RESTDroid.core.HttpRequestHandler.ProcessorCallback;
-import fr.pcreations.labs.RESTDroid.exceptions.PersistableFactoryNotInitializedException;
 import fr.pcreations.labs.RESTDroid.exceptions.ParsingException;
+import fr.pcreations.labs.RESTDroid.exceptions.PersistableFactoryNotInitializedException;
 
 /**
  * <b>Processor class handle request call via {@link HttpRequestHandler}. It manages pre-process and post-process logic . Pre-process and post-process are defined as hooks in order to defined specific logics for you're application</b>
  * 
  * @author Pierre Criulanscy
  * 
- * @version 0.7.1
+ * @version 0.7.2
  *
  */
 public abstract class Processor {
@@ -141,9 +145,9 @@ public abstract class Processor {
 		mHttpRequestHandler.setProcessorCallback(new ProcessorCallback() {
 
 			@Override
-			public void callAction(int statusCode, RESTRequest<ResourceRepresentation<?>> request, InputStream resultStream) {
+			public void callAction(int statusCode, RESTRequest<ResourceRepresentation<?>> request) {
 				// TODO Auto-generated method stub
-				handleHttpRequestHandlerCallback(statusCode, request, resultStream);
+				handleHttpRequestHandlerCallback(statusCode, request);
 			}
 			
 		});
@@ -177,18 +181,41 @@ public abstract class Processor {
 	 * @param request
 	 *		The actual {@link ResourceRepresentation}
 	 *
-	 * @param resultStream
-	 * 		The server response
 	 */
-	protected void handleHttpRequestHandlerCallback(int statusCode, RESTRequest<ResourceRepresentation<?>> request, InputStream resultStream) {
-        try {
-			request.setResultStream(resultStream);
-			statusCode = postRequestProcess(statusCode, request, request.getResultStream());
-	        mRESTServiceCallback.callAction(statusCode, request);
-		} catch (IOException e) {
+	protected void handleHttpRequestHandlerCallback(int statusCode, RESTRequest<ResourceRepresentation<?>> request) {
+        statusCode = postRequestProcess(statusCode, request, request.getResultStream());
+		mRESTServiceCallback.callAction(statusCode, request);
+	}
+	
+	protected String inputStreamToString(InputStream is) {
+        BufferedReader bufferedReader;
+		try {
+			bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+			StringBuilder inputStringBuilder = new StringBuilder();
+	        String line;
+			try {
+				line = bufferedReader.readLine();
+				while(line != null){
+		            inputStringBuilder.append(line);inputStringBuilder.append('\n');
+		            try {
+						line = bufferedReader.readLine();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		        }
+				return inputStringBuilder.toString();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        
+		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        
+        return null;
 	}
 	
 	/**

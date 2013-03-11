@@ -42,7 +42,7 @@ import android.util.Log;
  * 
  * @author Pierre Criulanscy
  * 
- * @version 0.5
+ * @version 0.7.2
  *
  */
 public class HttpRequestHandler {
@@ -108,7 +108,14 @@ public class HttpRequestHandler {
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			mProcessorCallback.callAction(URI_SYNTAX_EXCEPTION, r, null);
+			try {
+				r.setResultStream(null);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} finally {
+				mProcessorCallback.callAction(URI_SYNTAX_EXCEPTION, r);
+			}
 		}
 	}
 	
@@ -130,7 +137,14 @@ public class HttpRequestHandler {
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			mProcessorCallback.callAction(URI_SYNTAX_EXCEPTION, r, null);
+			try {
+				r.setResultStream(null);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} finally {
+				mProcessorCallback.callAction(URI_SYNTAX_EXCEPTION, r);
+			}
 		}
 	}
 	
@@ -152,9 +166,15 @@ public class HttpRequestHandler {
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			mProcessorCallback.callAction(URI_SYNTAX_EXCEPTION, r, null);
+			try {
+				r.setResultStream(null);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} finally {
+				mProcessorCallback.callAction(URI_SYNTAX_EXCEPTION, r);
+			}
 		}
-		
 	}
 	
 	/**
@@ -172,6 +192,14 @@ public class HttpRequestHandler {
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			try {
+				r.setResultStream(null);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} finally {
+				mProcessorCallback.callAction(URI_SYNTAX_EXCEPTION, r);
+			}
 		}
 	}
 	
@@ -199,6 +227,7 @@ public class HttpRequestHandler {
 	    			StatusLine responseStatus = response.getStatusLine();
 	    			statusCode                = responseStatus != null ? responseStatus.getStatusCode() : 0;
 	    			IS = responseEntity.getContent();
+	    			request.setResultStream(IS);
 	    		} catch (ClientProtocolException e) {
 	    			// TODO Auto-generated catch block
 	    			statusCode = CLIENT_PROTOCOL_EXCEPTION;
@@ -227,7 +256,7 @@ public class HttpRequestHandler {
 	    				e.printStackTrace();
 	    			}
 	    		}
-	    		mProcessorCallback.callAction(statusCode, request, IS);
+	    		mProcessorCallback.callAction(statusCode, request);
 	        }
 	    }).start();
 	}
@@ -253,12 +282,14 @@ public class HttpRequestHandler {
 	    		HttpEntity responseEntity = null;
 	    		int statusCode = 0;
 	    		InputStream IS = null;
+	    		
 	    		try {
 	    			response = currentHttpContainer.execute();
 	    			responseEntity = response.getEntity();
 	    			StatusLine responseStatus = response.getStatusLine();
 	    			statusCode                = responseStatus != null ? responseStatus.getStatusCode() : 0;
 	    			IS = responseEntity.getContent();
+	    			request.setResultStream(IS);
 	    			//Log.e(RestService.TAG, "IS RESPONSE SERVER = " + inputStreamToString(IS));
 	    		} catch (ClientProtocolException e) {
 	    			// TODO Auto-generated catch block
@@ -280,7 +311,7 @@ public class HttpRequestHandler {
 	    				statusCode = IO_EXCEPTION;
 	    			//e.printStackTrace();
 	    		} finally {
-		    		mProcessorCallback.callAction(statusCode, request, IS);
+		    		mProcessorCallback.callAction(statusCode, request);
 	    			try {
 	    				if(null != responseEntity)
 	    					responseEntity.consumeContent();
@@ -298,7 +329,7 @@ public class HttpRequestHandler {
 	 * 
 	 * @author Pierre Criulanscy
 	 *
-	 * @version 0.5
+	 * @version 0.7.2
 	 */
 	public interface ProcessorCallback {
 		
@@ -311,10 +342,8 @@ public class HttpRequestHandler {
 		 * @param request
 		 * 		Instance of the current {@link RESTRequest}
 		 * 
-		 * @param resultStream
-		 * 		Server response
 		 */
-		abstract public void callAction(int statusCode, RESTRequest<ResourceRepresentation<?>> request, InputStream resultStream);
+		abstract public void callAction(int statusCode, RESTRequest<ResourceRepresentation<?>> request);
 	}
 	
 	/**
