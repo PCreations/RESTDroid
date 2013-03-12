@@ -32,6 +32,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 
 import android.util.Log;
@@ -364,7 +365,7 @@ public class HttpRequestHandler {
 	 * 
 	 * @author Pierre Criulanscy
 	 * 
-	 * @version 0.5
+	 * @version 0.7.2.1
 	 */
 	private class HTTPContainer {
 		
@@ -470,7 +471,7 @@ public class HttpRequestHandler {
 				mRequest.setHeader("Accept", "application/json");
 				mRequest.setHeader("Content-type", "application/json");
 				String str = inputStreamToString(holder);
-				StringEntity se = new StringEntity(str);
+				StringEntity se = new StringEntity(str, HTTP.UTF_8);
 				if(mRequest instanceof HttpPost) {
 					((HttpPost) mRequest).setEntity(se);
 				}
