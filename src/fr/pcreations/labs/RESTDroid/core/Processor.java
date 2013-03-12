@@ -457,7 +457,7 @@ public abstract class Processor {
 	 * 		The actual {@link ResourceRepresentation}
 	 * 
 	 * @return
-	 * 		False if the request has to be resent, true otherwise
+	 * 		True if the request has to be resent, false otherwise
 	 */
 	public boolean checkRequest(RESTRequest<? extends ResourceRepresentation<?>> request) {
 		ResourceRepresentation<?> requestResource = request.getResourceRepresentation();
@@ -467,7 +467,7 @@ public abstract class Processor {
 			if(null != resource) {
 				if(!resource.getTransactingFlag()) {
 					if(resource.getResultCode() == 200) {
-						return false;
+						return true;
 					}
 					return true;
 				}

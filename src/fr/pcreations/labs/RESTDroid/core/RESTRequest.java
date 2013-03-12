@@ -7,12 +7,15 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 
 import android.app.Activity;
+import android.app.DownloadManager.Request;
 import android.content.Context;
 import android.os.Bundle;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFailedRequestListener;
@@ -27,7 +30,7 @@ import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnStartedRequestListen
  * @param <T>
  * 		The {@link ResourceRepresentation} class that request deals with
  * 
- * @version 0.7.1
+ * @version 0.7.2
  */
 public class RESTRequest<T extends ResourceRepresentation<?>> implements Serializable {
 	
@@ -118,6 +121,14 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 */
 	private Class<T> mResourceClass;
 	
+	/**
+	 *  Instance of {@link RequestListeners}
+	 *  
+	 *  @see RESTRequest#setRequestListeners(Activity, Class)
+	 *  @see RESTRequest#getRequestListeners()
+	 *  
+	 *  @since 0.7.1
+	 */
 	private transient RequestListeners mRequestListeners;
 	
 	/**
@@ -575,10 +586,32 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 		mExtraParams = extraParams;
 	}
 	
+	/**
+	 * Getter for {@link RESTRequest#mRequestListeners}
+	 * 
+	 * @return
+	 * 		{@link RESTRequest#mRequestListeners}
+	 * 
+	 * @see RESTRequest#mRequestListeners
+	 * @see RequestListeners
+	 * @see RESTRequest#setRequestListeners(Activity, Class)
+	 * 
+	 * @since 0.7.1
+	 */
 	public RequestListeners getRequestListeners() {
 		return mRequestListeners;
 	}
-
+	
+	/**
+	 * Setter for {@link RESTRequest#mRequestListeners}. Dynamically instanciate new instance of the specified {@link RequestListeners} class.
+	 * 
+	 * @param a
+	 * 		Context activity where the {@link RequestListeners} inner class is defined
+	 * @param clazz
+	 * 		{@link RESTRequest} Class object holding by this {@link RequestListeners} class
+	 * 
+	 * @since 0.7.1
+	 */
 	public <L> void setRequestListeners(Activity a, Class<L> clazz) {
 		
 		try {

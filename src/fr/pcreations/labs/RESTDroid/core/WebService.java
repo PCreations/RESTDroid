@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
 import fr.pcreations.labs.RESTDroid.exceptions.RequestNotFoundException;
 
 /**
@@ -53,7 +52,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	/**
 	 * Collection of {@link RESTRequest}
 	 */
-	protected List<RESTRequest<?>> mRequestCollection;
+	protected List<RESTRequest<? extends ResourceRepresentation<?>>> mRequestCollection;
 	
 	/**
 	 * {@link Module} actually registered to this WebService instance
@@ -328,7 +327,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		boolean proceedRequest = true;
 		if(request.getVerb() != HTTPVerb.GET)
 			proceedRequest = mModule.getProcessor().checkRequest(request);
-		if(proceedRequest && !request.isPending()) {
+		if(proceedRequest) {
 			request.setPending(true);
 			Intent i = new Intent(mContext, RestService.class);
 			i.setData(Uri.parse(request.getUrl()));
@@ -344,8 +343,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 			}
 			mContext.startService(i);
 		}
-		else
-			Toast.makeText(mContext, "Request already pending", Toast.LENGTH_SHORT).show();
+			
 	}
 	
 	/**
