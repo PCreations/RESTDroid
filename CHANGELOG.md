@@ -1,3 +1,6 @@
+#Change log 0.7.2.1
+*	Hotfix : Set default charset to UTF-8
+
 #Change log 0.7.2
 *	Fix bug when dealing with post request (request was not correctly initialized)
 *	Fixed bug when calling getResultStream() when request's result stream is null
