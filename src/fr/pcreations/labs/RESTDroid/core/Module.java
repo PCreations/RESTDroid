@@ -27,7 +27,7 @@ abstract public class Module {
 	 * 
 	 * @see Module#setProcessor()
 	 * @see Module#setParserFactory()
-	 * @see Module#setDaoFactory()
+	 * @see Module#setPersistableFactory()
 	 */
 	public void init() {
 		mProcessor = setProcessor();

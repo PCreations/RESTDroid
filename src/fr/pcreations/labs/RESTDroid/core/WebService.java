@@ -108,7 +108,6 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 * @see RESTRequest
 	 * @see WebService#mRequestCollection
-	 * @see WebService#get(RESTRequest, String)
 	 * 
 	 * @since 0.6.0
 	 */

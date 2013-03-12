@@ -84,8 +84,8 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	/**
 	 * The server response
 	 * 
-	 * @see RESTRequest#getResponseStream()
-	 * @see RESTRequest#setResponseStream()
+	 * @see RESTRequest#getResultStream()
+	 * @see RESTRequest#setResultStream(InputStream)
 	 * 
 	 * @since 0.7.1
 	 */
@@ -171,9 +171,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * Pauses the listeners by setting their state to {@link ListenerState#UNSET}
 	 * 
 	 * @see RESTRequest#resumeListeners()
-	 * @see RESTRequest#mOnFailedRequestListeners
-	 * @see RESTRequest#mOnFinishedRequestListeners
-	 * @see RESTRequest#mOnStartedRequestListeners
+	 * @see RequestListeners
 	 */
 	public void pauseListeners() {
 		if(mRequestListeners != null) {
@@ -196,9 +194,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * 		True if listener(s) was triggered, false otherwise
 	 * 
 	 * @see RESTRequest#pauseListeners()
-	 * @see RESTRequest#mOnFailedRequestListeners
-	 * @see RESTRequest#mOnFinishedRequestListeners
-	 * @see RESTRequest#mOnStartedRequestListeners
+	 * @see RequestListeners
 	 */
 	public boolean resumeListeners() {
 		boolean listenerTriggered = false;
@@ -284,7 +280,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @return
 	 * 		True if a listener was triggered, false otherwise
 	 * 
-	 * @see RESTRequest#mOnStartedRequestListeners
+	 * @see RequestListeners#mOnStartedRequestListeners
 	 */
 	public boolean triggerOnStartedRequestListeners() {
 		boolean listenerFired = false;
@@ -313,7 +309,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @return
 	 * 		True if a listener was triggered, false otherwise
 	 * 
-	 * @see RESTRequest#mOnFinishedRequestListeners
+	 * @see RequestListeners#mOnFinishedRequestListeners
 	 */
 	public boolean triggerOnFinishedRequestListeners() {
 		boolean listenerFired = false;
@@ -342,7 +338,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @return
 	 * 		True if a listener was triggered, false otherwise
 	 * 
-	 * @see RESTRequest#mOnFailedRequestListeners
+	 * @see RequestListeners#mOnFailedRequestListeners
 	 */
 	public boolean triggerOnFailedRequestListeners() {
 		boolean listenerFired = false;
@@ -450,12 +446,12 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	}
 
 	/**
-	 * Getter for {@link RESTRequest#mResultStream}
+	 * Getter for {@link RESTRequest#mByteArrayResultStream}. Returns a new InputStream each time
 	 * 
 	 * @return
 	 * 		The server's result stream
 	 * 
-	 * @see RESTRequest#mResultStream
+	 * @see RESTRequest#mByteArrayResultStream
 	 * @see RESTRequest#setResultStream(InputStream)
 	 * 
 	 * @since 0.7.1
@@ -468,13 +464,13 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	}
 
 	/**
-	 * Setter for {@link RESTRequest#mResultStream}
+	 * Setter for {@link RESTRequest#mByteArrayResultStream}
 	 * 
 	 * @param mResultStream
 	 * 		The server's result stream
 	 * @throws IOException 
 	 * 
-	 * @see RESTRequest#mResultStream
+	 * @see RESTRequest#mByteArrayResultStream
 	 * @see RESTRequest#getResultStream()
 	 * 
 	 * @since 0.7.1
