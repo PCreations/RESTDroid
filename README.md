@@ -400,8 +400,8 @@ public class TestActivity extends Activity {
     	private OnFinishedRequestListener onFinished = new OnFinishedRequestListener() {
 
     		public void onFinishedRequest(int resultCode) {
-    			Log.i(TestWebService.TAG, this.inputStreamToString(this.getResultStream())); //You can access the server response by calling getResultStream()
-    			Log.i(TestWebService.TAG, (Test)this.mRequest.getResourceRepresentation().toString()); //You can access the request wich is holding this RequestListeners class via member mRequest
+    			Log.i(TestWebService.TAG, inputStreamToString(this.getResultStream())); //You can access the server response by calling RequestListeners#getResultStream()
+    			Log.i(TestWebService.TAG, (Test) mRequest.getResourceRepresentation().toString()); //You can access the request wich is holding this RequestListeners class via member RequestListener#mRequest
     			Log.i(TestWebService.TAG, "getTestRequest has finished with code " + resultCode);
     		}
     		
