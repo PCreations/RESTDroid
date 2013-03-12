@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
 import fr.pcreations.labs.RESTDroid.exceptions.RequestNotFoundException;
 
 /**
@@ -53,7 +52,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	/**
 	 * Collection of {@link RESTRequest}
 	 */
-	protected List<RESTRequest<?>> mRequestCollection;
+	protected List<RESTRequest<? extends ResourceRepresentation<?>>> mRequestCollection;
 	
 	/**
 	 * {@link Module} actually registered to this WebService instance
@@ -109,12 +108,11 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 * @see RESTRequest
 	 * @see WebService#mRequestCollection
-	 * @see WebService#get(RESTRequest, String)
 	 * 
 	 * @since 0.6.0
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends ResourceRepresentation<?>> RESTRequest<T> retrieveRequest(Class<T> clazz, String url) {
+	protected <T extends ResourceRepresentation<?>> RESTRequest<T> retrieveRequest(Class<T> clazz, String url) {
 		RESTRequest<T> r;
 		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
 			r = (RESTRequest<T>) it.next();
@@ -206,6 +204,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	protected <R extends ResourceRepresentation<?>> RESTRequest<R> post(Class<R> clazz, String uri, ResourceRepresentation<?> resource) {
 		RESTRequest<R> request = requestRoutine(clazz, uri);
 		request.setResourceRepresentation(resource);
+		initRequest(request, HTTPVerb.POST,  uri);
 		return request;
 	}
 	
@@ -323,10 +322,11 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @see Processor#checkRequest(RESTRequest)
 	 */
 	protected void initAndStartService(RESTRequest<? extends ResourceRepresentation<?>> request){
+		Log.i(RestService.TAG, request.toString());
 		boolean proceedRequest = true;
 		if(request.getVerb() != HTTPVerb.GET)
 			proceedRequest = mModule.getProcessor().checkRequest(request);
-		if(proceedRequest && !request.isPending()) {
+		if(proceedRequest) {
 			request.setPending(true);
 			Intent i = new Intent(mContext, RestService.class);
 			i.setData(Uri.parse(request.getUrl()));
@@ -342,8 +342,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 			}
 			mContext.startService(i);
 		}
-		else
-			Toast.makeText(mContext, "Request already pending", Toast.LENGTH_SHORT).show();
+			
 	}
 	
 	/**
@@ -413,7 +412,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @throws RequestNotFoundException if {@link RESTRequest} is not found
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends ResourceRepresentation<?>> RESTRequest<T> getRequest(String requestID, Class<T> clazz) throws RequestNotFoundException {
+	public <T extends ResourceRepresentation<?>> RESTRequest<T> getRequest(UUID requestID, Class<T> clazz) throws RequestNotFoundException {
 		for(RESTRequest<? extends ResourceRepresentation<?>> r : mRequestCollection) {
 			if(r.getID().equals(requestID))
 				return (RESTRequest<T>) r;

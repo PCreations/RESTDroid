@@ -54,7 +54,7 @@ public class TestRequestListeners extends RequestListeners {
  * 
  * @author Pierre Criulanscy
  * 
- * @version 0.7.1
+ * @version 0.7.2
  *
  */
 public class RequestListeners {
@@ -64,8 +64,8 @@ public class RequestListeners {
 	 * 
 	 * @see OnStartedRequestListener
 	 * @see ListenerState
-	 * @see RequestListeners#getOnStartedRequestListener()
-	 * @see RequestListeners#setOnStartedRequestListener(OnStartedRequestListener)
+	 * @see RequestListeners#getOnStartedRequestListeners()
+	 * @see RequestListeners#setOnStartedRequestListeners(OnStartedRequestListeners)
 	 */
 	protected transient HashMap<OnStartedRequestListener, ListenerState> mOnStartedRequestListeners;
 	
@@ -74,8 +74,8 @@ public class RequestListeners {
 	 * 
 	 * @see OnFinishedRequestListener
 	 * @see ListenerState
-	 * @see RequestListeners#getOnFinishedRequestListener()
-	 * @see RequestListeners#setOnFinishedRequestListener(OnFinishedRequestListener)
+	 * @see RequestListeners#getOnFinishedRequestListeners()
+	 * @see RequestListeners#setOnFinishedRequestListeners(OnFinishedRequestListeners)
 	 */
 	protected transient HashMap<OnFinishedRequestListener, ListenerState> mOnFinishedRequestListeners;
 	
@@ -84,15 +84,32 @@ public class RequestListeners {
 	 * 
 	 * @see OnFailedRequestListener
 	 * @see ListenerState
-	 * @see RequestListeners#getOnFailedRequestListener()
-	 * @see RequestListeners#setOnFailedRequestListener(OnFailedRequestListener)
+	 * @see RequestListeners#getOnFailedRequestListeners()
+	 * @see RequestListeners#setOnFailedRequestListeners(OnFailedRequestListeners)
 	 */
 	protected transient HashMap<OnFailedRequestListener, ListenerState> mOnFailedRequestListeners;
+	
+	/**
+	 * {@link RESTRequest} holding by this {@link RequestListeners} class
+	 * 
+	 * @see RequestListeners#setRequest(RESTRequest);
+	 */
+	protected transient RESTRequest<? extends ResourceRepresentation<?>> mRequest;
 	
 	public RequestListeners() {
 		mOnFailedRequestListeners = new HashMap<OnFailedRequestListener, ListenerState>();
 		mOnFinishedRequestListeners = new HashMap<OnFinishedRequestListener, ListenerState>();
 		mOnStartedRequestListeners = new HashMap<OnStartedRequestListener, ListenerState>();
+	}
+	
+	/**
+	 * Setter for {@link RequestListeners#mRequest}
+	 * 
+	 * @param r
+	 * 		Instance of {@link RESTRequest}
+	 */
+	public void setRequest(RESTRequest<? extends ResourceRepresentation<?>> r) {
+		mRequest = r;
 	}
 	
 	/**
@@ -102,8 +119,8 @@ public class RequestListeners {
 	 * 		Instance of {@link OnStartedRequestListener}
 	 * 
 	 * @see OnStartedRequestListener
-	 * @see RequestListeners#mOnStartedRequestListener
-	 * @see RequestListeners#getOnStartedRequestListener()
+	 * @see RequestListeners#mOnStartedRequestListeners
+	 * @see RequestListeners#getOnStartedRequestListeners()
 	 */
 	public void addOnStartedRequestListener(OnStartedRequestListener listener) {
 		if(!mOnStartedRequestListeners.containsKey(listener))
@@ -117,8 +134,8 @@ public class RequestListeners {
 	 * 		Instance of {@link OnFinishedRequestListener}
 	 * 
 	 * @see OnFinishedRequestListener
-	 * @see RequestListeners#mOnFinishedRequestListener
-	 * @see RequestListeners#getOnFinishedRequestListener()
+	 * @see RequestListeners#mOnFinishedRequestListeners
+	 * @see RequestListeners#getOnFinishedRequestListeners()
 	 */
 	public void addOnFinishedRequestListener(OnFinishedRequestListener listener) {		
 		if(!mOnFinishedRequestListeners.containsKey(listener))
@@ -132,8 +149,8 @@ public class RequestListeners {
 	 * 		Instance of {@link OnFailedRequestListener}
 	 * 
 	 * @see OnFailedRequestListener
-	 * @see RequestListeners#mOnFailedRequestListener
-	 * @see RequestListeners#getOnFailedRequestListener()
+	 * @see RequestListeners#mOnFailedRequestListeners
+	 * @see RequestListeners#getOnFailedRequestListeners()
 	 */
 	public void addOnFailedRequestListener(OnFailedRequestListener listener) {
 		if(!mOnFailedRequestListeners.containsKey(listener))

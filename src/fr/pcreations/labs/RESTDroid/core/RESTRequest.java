@@ -5,11 +5,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import android.app.Activity;
+import android.app.DownloadManager.Request;
+import android.content.Context;
 import android.os.Bundle;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFailedRequestListener;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFinishedRequestListener;
@@ -23,7 +30,7 @@ import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnStartedRequestListen
  * @param <T>
  * 		The {@link ResourceRepresentation} class that request deals with
  * 
- * @version 0.7.1
+ * @version 0.7.2
  */
 public class RESTRequest<T extends ResourceRepresentation<?>> implements Serializable {
 	
@@ -77,12 +84,12 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	/**
 	 * The server response
 	 * 
-	 * @see RESTRequest#getResponseStream()
-	 * @see RESTRequest#setResponseStream()
+	 * @see RESTRequest#getResultStream()
+	 * @see RESTRequest#setResultStream(InputStream)
 	 * 
 	 * @since 0.7.1
 	 */
-	private ByteArrayOutputStream mByteArrayResultStream;
+	private transient ByteArrayOutputStream mByteArrayResultStream;
 	
 	/**
 	 * Defines extra parameters for request
@@ -114,6 +121,14 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 */
 	private Class<T> mResourceClass;
 	
+	/**
+	 *  Instance of {@link RequestListeners}
+	 *  
+	 *  @see RESTRequest#setRequestListeners(Activity, Class)
+	 *  @see RESTRequest#getRequestListeners()
+	 *  
+	 *  @since 0.7.1
+	 */
 	private transient RequestListeners mRequestListeners;
 	
 	/**
@@ -156,9 +171,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * Pauses the listeners by setting their state to {@link ListenerState#UNSET}
 	 * 
 	 * @see RESTRequest#resumeListeners()
-	 * @see RESTRequest#mOnFailedRequestListeners
-	 * @see RESTRequest#mOnFinishedRequestListeners
-	 * @see RESTRequest#mOnStartedRequestListeners
+	 * @see RequestListeners
 	 */
 	public void pauseListeners() {
 		if(mRequestListeners != null) {
@@ -181,9 +194,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * 		True if listener(s) was triggered, false otherwise
 	 * 
 	 * @see RESTRequest#pauseListeners()
-	 * @see RESTRequest#mOnFailedRequestListeners
-	 * @see RESTRequest#mOnFinishedRequestListeners
-	 * @see RESTRequest#mOnStartedRequestListeners
+	 * @see RequestListeners
 	 */
 	public boolean resumeListeners() {
 		boolean listenerTriggered = false;
@@ -269,7 +280,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @return
 	 * 		True if a listener was triggered, false otherwise
 	 * 
-	 * @see RESTRequest#mOnStartedRequestListeners
+	 * @see RequestListeners#mOnStartedRequestListeners
 	 */
 	public boolean triggerOnStartedRequestListeners() {
 		boolean listenerFired = false;
@@ -298,7 +309,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @return
 	 * 		True if a listener was triggered, false otherwise
 	 * 
-	 * @see RESTRequest#mOnFinishedRequestListeners
+	 * @see RequestListeners#mOnFinishedRequestListeners
 	 */
 	public boolean triggerOnFinishedRequestListeners() {
 		boolean listenerFired = false;
@@ -327,7 +338,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @return
 	 * 		True if a listener was triggered, false otherwise
 	 * 
-	 * @see RESTRequest#mOnFailedRequestListeners
+	 * @see RequestListeners#mOnFailedRequestListeners
 	 */
 	public boolean triggerOnFailedRequestListeners() {
 		boolean listenerFired = false;
@@ -435,41 +446,45 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	}
 
 	/**
-	 * Getter for {@link RESTRequest#mResultStream}
+	 * Getter for {@link RESTRequest#mByteArrayResultStream}. Returns a new InputStream each time
 	 * 
 	 * @return
 	 * 		The server's result stream
 	 * 
-	 * @see RESTRequest#mResultStream
+	 * @see RESTRequest#mByteArrayResultStream
 	 * @see RESTRequest#setResultStream(InputStream)
 	 * 
 	 * @since 0.7.1
 	 */
 	public InputStream getResultStream() {
+		if(null == mByteArrayResultStream)
+			return null;
 		InputStream is = new ByteArrayInputStream(mByteArrayResultStream.toByteArray());
 		return is;
 	}
 
 	/**
-	 * Setter for {@link RESTRequest#mResultStream}
+	 * Setter for {@link RESTRequest#mByteArrayResultStream}
 	 * 
 	 * @param mResultStream
 	 * 		The server's result stream
 	 * @throws IOException 
 	 * 
-	 * @see RESTRequest#mResultStream
+	 * @see RESTRequest#mByteArrayResultStream
 	 * @see RESTRequest#getResultStream()
 	 * 
 	 * @since 0.7.1
 	 */
 	public void setResultStream(InputStream mResultStream) throws IOException {
-		mByteArrayResultStream = new ByteArrayOutputStream();
-	    byte[] buffer = new byte[1024];
-	    int len;
-	    while ((len = mResultStream.read(buffer)) > -1 ) {
-	    	mByteArrayResultStream.write(buffer, 0, len);
-	    }
-	    mByteArrayResultStream.flush();
+		if(null != mResultStream) {
+			mByteArrayResultStream = new ByteArrayOutputStream();
+		    byte[] buffer = new byte[1024];
+		    int len;
+		    while ((len = mResultStream.read(buffer)) > -1 ) {
+		    	mByteArrayResultStream.write(buffer, 0, len);
+		    }
+		    mByteArrayResultStream.flush();
+		}
 	}
 
 	/**
@@ -567,12 +582,54 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 		mExtraParams = extraParams;
 	}
 	
+	/**
+	 * Getter for {@link RESTRequest#mRequestListeners}
+	 * 
+	 * @return
+	 * 		{@link RESTRequest#mRequestListeners}
+	 * 
+	 * @see RESTRequest#mRequestListeners
+	 * @see RequestListeners
+	 * @see RESTRequest#setRequestListeners(Activity, Class)
+	 * 
+	 * @since 0.7.1
+	 */
 	public RequestListeners getRequestListeners() {
 		return mRequestListeners;
 	}
-
-	public void setRequestListeners(RequestListeners mRequestListeners) {
-		this.mRequestListeners = mRequestListeners;
+	
+	/**
+	 * Setter for {@link RESTRequest#mRequestListeners}. Dynamically instanciate new instance of the specified {@link RequestListeners} class.
+	 * 
+	 * @param a
+	 * 		Context activity where the {@link RequestListeners} inner class is defined
+	 * @param clazz
+	 * 		{@link RESTRequest} Class object holding by this {@link RequestListeners} class
+	 * 
+	 * @since 0.7.1
+	 */
+	public <L> void setRequestListeners(Activity a, Class<L> clazz) {
+		
+		try {
+			Constructor<L> ctor = clazz.getConstructor(a.getClass());
+			mRequestListeners = (RequestListeners) ctor.newInstance(a);
+			mRequestListeners.setRequest(this);
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
