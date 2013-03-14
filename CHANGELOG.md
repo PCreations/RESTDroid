@@ -1,3 +1,6 @@
+#Change log 0.7.2.2
+*	Hotfixes : Removes useless res/ files and 3 seconds test latency in HttpRequestHandler
+
 #Change log 0.7.2.1
 *	Hotfix : Set default charset to UTF-8
 

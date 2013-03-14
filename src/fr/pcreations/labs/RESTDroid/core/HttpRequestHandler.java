@@ -270,14 +270,9 @@ public class HttpRequestHandler {
 	 * 
 	 */
 	private void processRequest(final RESTRequest<ResourceRepresentation<?>> request) {
+		Log.e("ormlitejackson", "HTTPRequestHandler processRequest");
 		new Thread(new Runnable() {
 	        public void run() {
-	    		try {
-					Thread.sleep(3000);
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 	    		HTTPContainer currentHttpContainer = httpRequests.get(request.getID());
 	    		HttpResponse response = null;
 	    		HttpEntity responseEntity = null;
