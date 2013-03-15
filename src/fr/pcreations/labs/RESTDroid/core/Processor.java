@@ -377,15 +377,17 @@ public abstract class Processor {
 	    				e.printStackTrace();
 	    			}
 	                Resource resource = r.getResource();
-	                Persistable<Resource> persistable = getResourcePersistable(resource);
+	                Persistable<Resource> persistable;
 	                if(resource instanceof ResourcesList) {
 	                	for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourcesList) resource).getResourcesList().iterator(); it.hasNext();) {
 	                		ResourceRepresentation<?> current = it.next();
+	                		persistable = getResourcePersistable(current);
 	                		ResourceRepresentation<?> oldResource = (ResourceRepresentation<?>) persistable.findById(current.getId());
 	    	                persistable.deleteResource(oldResource);
 	                	}
 	                }
 	                else {
+	                	persistable = getResourcePersistable(resource);
 		                ResourceRepresentation<?> oldResource = (ResourceRepresentation<?>) persistable.findById(((ResourceRepresentation<?>) resource).getId());
 		                persistable.deleteResource(oldResource);
 	                }
@@ -410,6 +412,7 @@ public abstract class Processor {
 	}
 	
 	protected void updateLocalResourceRoutine(int statusCode, ResourceRepresentation<?> resource) throws Exception {
+		Log.i("UPDATE", "updateLocalResource");
 		Persistable<Resource> persistable = getResourcePersistable(resource);
 		resource.setResultCode(statusCode);
 		resource.setTransactingFlag(false);

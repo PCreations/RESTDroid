@@ -40,6 +40,6 @@ public interface Parser<T extends Resource> {
 	 * 
 	 * @throws ParsingException
 	 */
-	public <R extends Resource> InputStream parseToInputStream(R resource) throws ParsingException;
+	public InputStream parseToInputStream(T resource) throws ParsingException;
 	
 }
