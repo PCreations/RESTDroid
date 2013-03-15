@@ -20,13 +20,13 @@ abstract public class PersistableFactory {
 	 * </ul>
 	 * </p>
 	 */
-	protected HashMap<Class<? extends ResourceRepresentation<?>>, Persistable<? extends ResourceRepresentation<?>>> mPersistables;
+	protected HashMap<Class<? extends Resource>, Persistable<? extends Resource>> mPersistables;
 
 	/**
 	 * Constructor
 	 */
 	public PersistableFactory() {
-		mPersistables = new HashMap<Class<? extends ResourceRepresentation<?>>, Persistable<? extends ResourceRepresentation<?>>>();
+		mPersistables = new HashMap<Class<? extends Resource>, Persistable<? extends Resource>>();
 	}
 	
 	/**
@@ -50,6 +50,6 @@ return persistable;
 	 * @see Persistable
 	 * @see ResourceRepresentation
 	 */
-	public abstract <P extends Persistable<T>, T extends ResourceRepresentation<?>> P getPersistable(Class<T> clazz);
+	public abstract <P extends Persistable<T>, T extends Resource> P getPersistable(Class<T> clazz);
 	
 }

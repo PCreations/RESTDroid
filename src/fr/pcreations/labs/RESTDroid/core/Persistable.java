@@ -16,7 +16,7 @@ import java.util.List;
  * 
  * @see ResourceRepresentation
  */
-public interface Persistable<T extends ResourceRepresentation<?>> {
+public interface Persistable<T extends Resource> {
 
 	/**
 	 * This method has to create a new resource or update it if already exists.

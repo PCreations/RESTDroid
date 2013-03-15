@@ -4,7 +4,9 @@ import java.util.List;
 
 public interface ResourcesList {
 
-	abstract public List<? extends ResourceRepresentation<?>> getResourcesList(); 
+	abstract public List<ResourceRepresentation<?>> getResourcesList(); 
 	
-	abstract public void setResourcesList(List<? extends ResourceRepresentation<?>> list);
+	abstract public void setResourcesList(List<ResourceRepresentation<?>> list);
+	
+	abstract public boolean addInList(ResourceRepresentation<?> resourceRepresentation);
 }

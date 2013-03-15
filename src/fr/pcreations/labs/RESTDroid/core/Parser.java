@@ -14,7 +14,7 @@ import fr.pcreations.labs.RESTDroid.exceptions.ParsingException;
  * 
  * @version 0.5
  */
-public interface Parser<T extends ResourceRepresentation<?>> {
+public interface Parser<T extends Resource> {
 
 	/**
 	 * Use this method to return parsed {@link ResourceRepresentation} from InputStream
@@ -40,6 +40,6 @@ public interface Parser<T extends ResourceRepresentation<?>> {
 	 * 
 	 * @throws ParsingException
 	 */
-	public <R extends ResourceRepresentation<?>> InputStream parseToInputStream(R resource) throws ParsingException;
+	public <R extends Resource> InputStream parseToInputStream(R resource) throws ParsingException;
 	
 }

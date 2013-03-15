@@ -552,7 +552,8 @@ public class RESTRequest<T extends Resource> implements Serializable {
 	 * @see RESTRequest#mResource
 	 * @see RESTRequest#getResourceRepresentation()
 	 */
-	public void setResource(T mResourceRepresentation) {
+	@SuppressWarnings("unchecked")
+	public void setResource(Resource mResourceRepresentation) {
 		this.mResource = (T) mResourceRepresentation;
 	}
 
