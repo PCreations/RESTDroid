@@ -94,7 +94,7 @@ public class RequestListeners {
 	 * 
 	 * @see RequestListeners#setRequest(RESTRequest);
 	 */
-	protected transient RESTRequest<? extends ResourceRepresentation<?>> mRequest;
+	protected transient RESTRequest<? extends Resource> mRequest;
 	
 	public RequestListeners() {
 		mOnFailedRequestListeners = new HashMap<OnFailedRequestListener, ListenerState>();
@@ -108,7 +108,7 @@ public class RequestListeners {
 	 * @param r
 	 * 		Instance of {@link RESTRequest}
 	 */
-	public void setRequest(RESTRequest<? extends ResourceRepresentation<?>> r) {
+	public void setRequest(RESTRequest<? extends Resource> r) {
 		mRequest = r;
 	}
 	

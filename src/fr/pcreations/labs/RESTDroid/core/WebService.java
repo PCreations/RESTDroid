@@ -52,7 +52,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	/**
 	 * Collection of {@link RESTRequest}
 	 */
-	protected List<RESTRequest<? extends ResourceRepresentation<?>>> mRequestCollection;
+	protected List<RESTRequest<? extends Resource>> mRequestCollection;
 	
 	/**
 	 * {@link Module} actually registered to this WebService instance
@@ -77,7 +77,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		mContext = context;
 		mReceiver = new RestResultReceiver(new Handler());
         mReceiver.setReceiver(this);
-        mRequestCollection = new ArrayList<RESTRequest<?>>();
+        mRequestCollection = new ArrayList<RESTRequest<? extends Resource>>();
 	}
 	
 	/**
@@ -112,7 +112,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @since 0.6.0
 	 */
 	@SuppressWarnings("unchecked")
-	protected <T extends ResourceRepresentation<?>> RESTRequest<T> retrieveRequest(Class<T> clazz, String url) {
+	protected <T extends Resource> RESTRequest<T> retrieveRequest(Class<T> clazz, String url) {
 		RESTRequest<T> r;
 		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
 			r = (RESTRequest<T>) it.next();
@@ -131,8 +131,8 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @see RESTRequest#mOnStartedRequestListeners
 	 */
 	public void onPause() {
-		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
-			RESTRequest<?> r = it.next();
+		for(Iterator<RESTRequest<? extends Resource>> it = mRequestCollection.iterator(); it.hasNext();) {
+			RESTRequest<? extends Resource> r = it.next();
 			r.pauseListeners();
 		}
 	}
@@ -145,8 +145,8 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @see RESTRequest#mOnStartedRequestListeners
 	 */
 	public void onResume() {
-		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
-			RESTRequest<?> r = it.next();
+		for(Iterator<RESTRequest<? extends Resource>> it = mRequestCollection.iterator(); it.hasNext();) {
+			RESTRequest<? extends Resource> r = it.next();
 			if(r.resumeListeners())
 				it.remove();
 		}
@@ -163,7 +163,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 * @see WebService#get(RESTRequest, String, Bundle)
 	 */
-	protected <R extends ResourceRepresentation<?>> RESTRequest<R> get(Class<R> clazz, String uri) {
+	protected <R extends Resource> RESTRequest<R> get(Class<R> clazz, String uri) {
 		RESTRequest<R> request = requestRoutine(clazz, uri);
 		initRequest(request, HTTPVerb.GET,  uri);
 		Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "SIZE = " + String.valueOf(mRequestCollection.size()));
@@ -184,7 +184,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 * @see WebService#get(RESTRequest, String)
 	 */
-	protected <R extends ResourceRepresentation<?>> RESTRequest<R> get(Class<R> clazz, String uri, Bundle extraParams) {
+	protected <R extends Resource> RESTRequest<R> get(Class<R> clazz, String uri, Bundle extraParams) {
 		RESTRequest<R> request = requestRoutine(clazz, uri);
 		initRequest(request, HTTPVerb.GET, uri, extraParams);
 		return request;
@@ -201,9 +201,9 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 		Resource to send
 	 * 
 	 */
-	protected <R extends ResourceRepresentation<?>> RESTRequest<R> post(Class<R> clazz, String uri, ResourceRepresentation<?> resource) {
+	protected <R extends Resource> RESTRequest<R> post(Class<R> clazz, String uri, ResourceRepresentation<?> resource) {
 		RESTRequest<R> request = requestRoutine(clazz, uri);
-		request.setResourceRepresentation(resource);
+		request.setResource(resource);
 		initRequest(request, HTTPVerb.POST,  uri);
 		return request;
 	}
@@ -219,9 +219,9 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 		Resource to send
 	 * 
 	 */
-	protected <R extends ResourceRepresentation<?>> RESTRequest<R> put(Class<R> clazz, String uri, ResourceRepresentation<?> resource) {
+	protected <R extends Resource> RESTRequest<R> put(Class<R> clazz, String uri, Resource resource) {
 		RESTRequest<R> request = requestRoutine(clazz, uri);
-		request.setResourceRepresentation(resource);
+		request.setResource(resource);
 		initRequest(request, HTTPVerb.PUT,  uri);
 		return request;
 	}
@@ -236,9 +236,9 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @param resource
 	 * 		Resource to send
 	 */
-	protected <R extends ResourceRepresentation<?>> RESTRequest<R> delete(Class<R> clazz, String uri, ResourceRepresentation<?> resource) {
+	protected <R extends Resource> RESTRequest<R> delete(Class<R> clazz, String uri, Resource resource) {
 		RESTRequest<R> request = requestRoutine(clazz, uri);
-		request.setResourceRepresentation(resource);
+		request.setResource(resource);
 		initRequest(request, HTTPVerb.DELETE, uri);
 		return request;
 	}
@@ -253,7 +253,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @return
 	 * 		New instance of {@link RESTRequest} or instance already pending
 	 */
-	protected <R extends ResourceRepresentation<?>> RESTRequest<R> requestRoutine(Class<R> clazz, String uri) {
+	protected <R extends Resource> RESTRequest<R> requestRoutine(Class<R> clazz, String uri) {
 		RESTRequest<R> request = retrieveRequest(clazz, uri);
 		if(null != request) {
 			return request;
@@ -274,7 +274,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 * @see WebService#initRequest(RESTRequest, HTTPVerb, String, Bundle)
 	 */
-	protected void initRequest(RESTRequest<? extends ResourceRepresentation<?>> r, HTTPVerb verb, String uri) {
+	protected void initRequest(RESTRequest<? extends Resource> r, HTTPVerb verb, String uri) {
 		r.setVerb(verb);
 		r.setUrl(uri);
 	}
@@ -293,7 +293,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 * @see WebService#initRequest(RESTRequest, HTTPVerb, String)
 	 */
-	protected void initRequest(RESTRequest<? extends ResourceRepresentation<?>> r, HTTPVerb verb, String uri, Bundle extraParams) {
+	protected void initRequest(RESTRequest<? extends Resource> r, HTTPVerb verb, String uri, Bundle extraParams) {
 		r.setVerb(verb);
 		r.setUrl(uri);
 		r.setExtraParams(extraParams);
@@ -308,7 +308,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 * @since 0.7.0
 	 */
-	public void executeRequest(RESTRequest<? extends ResourceRepresentation<?>> r) {
+	public void executeRequest(RESTRequest<? extends Resource> r) {
 		if(!r.isPending())
 			initAndStartService(r);
 	}
@@ -321,7 +321,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 * @see Processor#checkRequest(RESTRequest)
 	 */
-	protected void initAndStartService(RESTRequest<? extends ResourceRepresentation<?>> request){
+	protected void initAndStartService(RESTRequest<? extends Resource> request){
 		Log.i(RestService.TAG, request.toString());
 		boolean proceedRequest = true;
 		if(request.getVerb() != HTTPVerb.GET)
@@ -334,8 +334,8 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 			i.putExtra(RestService.RECEIVER_KEY, mReceiver);
 			
 			/* Trigger OnStartedRequest listener */
-			for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
-				RESTRequest<?> r = it.next();
+			for(Iterator<RESTRequest<? extends Resource>> it = mRequestCollection.iterator(); it.hasNext();) {
+				RESTRequest<? extends Resource> r = it.next();
 				if(request.getID().equals(r.getID())) {
 					r.triggerOnStartedRequestListeners();
 				}
@@ -378,12 +378,12 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 				request.setResultCode(resultCode);
 				request.setPending(false);
 				if(resultCode >= 200 && resultCode <= 210) {
-					request.setResourceRepresentation(r.getResourceRepresentation());
+					request.setResource(r.getResource());
 					if(request.triggerOnFinishedRequestListeners())
 						it.remove();
 				}
 				else {
-					request.setResourceRepresentation(r.getResourceRepresentation());
+					request.setResource(r.getResource());
 					if(request.triggerOnFailedRequestListeners())
 						it.remove();
 				}
@@ -412,8 +412,8 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @throws RequestNotFoundException if {@link RESTRequest} is not found
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends ResourceRepresentation<?>> RESTRequest<T> getRequest(UUID requestID, Class<T> clazz) throws RequestNotFoundException {
-		for(RESTRequest<? extends ResourceRepresentation<?>> r : mRequestCollection) {
+	public <T extends Resource> RESTRequest<T> getRequest(UUID requestID, Class<T> clazz) throws RequestNotFoundException {
+		for(RESTRequest<? extends Resource> r : mRequestCollection) {
 			if(r.getID().equals(requestID))
 				return (RESTRequest<T>) r;
 		}
@@ -423,12 +423,12 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	/**
 	 * Provides a way to retry failed requests
 	 */
-	public void retryFailedRequest() {
-		for(RESTRequest<? extends ResourceRepresentation<?>> r : mRequestCollection) {
-			ResourceRepresentation<?> resource = r.getResourceRepresentation();
+	/*public void retryFailedRequest() {
+		for(RESTRequest<? extends Resource> r : mRequestCollection) {
+			ResourceRepresentation<?> resource = r.getResource();
 			if(!resource.getTransactingFlag() && resource.getState() != RequestState.STATE_OK && (resource.getResultCode() < 200 || resource.getResultCode() > 210)) {
 				initAndStartService(r);
 			}
 		}
-	}
+	}*/
 }

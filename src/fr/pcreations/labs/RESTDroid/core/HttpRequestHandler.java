@@ -102,7 +102,7 @@ public class HttpRequestHandler {
 	 * 
 	 * @see HttpRequestHandler#processRequest(RESTRequest)
 	 */
-	public void get(RESTRequest<ResourceRepresentation<?>> r) {
+	public void get(RESTRequest<? extends Resource> r) {
 		try {
 			httpRequests.put(r.getID(), new HTTPContainer(new HttpGet(), new URI(r.getUrl()), r.getHeaders()));
 			processRequest(r);
@@ -131,7 +131,7 @@ public class HttpRequestHandler {
 	 * 
 	 * @see HttpRequestHandler#processRequest(RESTRequest, InputStream)
 	 */
-	public void post(RESTRequest<ResourceRepresentation<?>> r, InputStream holder) {
+	public void post(RESTRequest<? extends Resource> r, InputStream holder) {
 		try {
 			httpRequests.put(r.getID(), new HTTPContainer(new HttpPost(r.getUrl()), new URI(r.getUrl()), r.getHeaders()));
 			processRequest(r, holder);
@@ -160,7 +160,7 @@ public class HttpRequestHandler {
 	 * 
 	 * @see HttpRequestHandler#processRequest(RESTRequest, InputStream)
 	 */
-	public void put(RESTRequest<ResourceRepresentation<?>> r, InputStream holder) {
+	public void put(RESTRequest<? extends Resource> r, InputStream holder) {
 		try {
 			httpRequests.put(r.getID(), new HTTPContainer(new HttpPut(r.getUrl()), new URI(r.getUrl()), r.getHeaders()));
 			processRequest(r, holder);
@@ -186,7 +186,7 @@ public class HttpRequestHandler {
 	 * 
 	 * @see HttpRequestHandler#processRequest(RESTRequest)
 	 */
-	public void delete(RESTRequest<ResourceRepresentation<?>> r) {
+	public void delete(RESTRequest<? extends Resource> r) {
 		try {
 			httpRequests.put(r.getID(), new HTTPContainer(new HttpDelete(r.getUrl()), new URI(r.getUrl()), r.getHeaders()));
 			processRequest(r);
@@ -214,7 +214,7 @@ public class HttpRequestHandler {
 	 * @param holder
 	 * 		InputStream holding post data
 	 */
-	private void processRequest(final RESTRequest<ResourceRepresentation<?>> request, final InputStream holder) {
+	private void processRequest(final RESTRequest<? extends Resource> request, final InputStream holder) {
 		new Thread(new Runnable() {
 	        public void run() {
 	    		HTTPContainer currentHttpContainer = httpRequests.get(request.getID());
@@ -269,7 +269,7 @@ public class HttpRequestHandler {
 	 * 		Instance of {@link RESTRequest}
 	 * 
 	 */
-	private void processRequest(final RESTRequest<ResourceRepresentation<?>> request) {
+	private void processRequest(final RESTRequest<? extends Resource> request) {
 		Log.e("ormlitejackson", "HTTPRequestHandler processRequest");
 		new Thread(new Runnable() {
 	        public void run() {
@@ -339,7 +339,7 @@ public class HttpRequestHandler {
 		 * 		Instance of the current {@link RESTRequest}
 		 * 
 		 */
-		abstract public void callAction(int statusCode, RESTRequest<ResourceRepresentation<?>> request);
+		abstract public void callAction(int statusCode, RESTRequest<? extends Resource> request);
 	}
 	
 	/**

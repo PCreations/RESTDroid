@@ -59,7 +59,7 @@ public abstract class Processor {
 	 * 
 	 * @throws Exception
 	 */
-	abstract protected void preRequestProcess(RESTRequest<ResourceRepresentation<?>> r) throws Exception;
+	abstract protected void preRequestProcess(RESTRequest<? extends Resource> r) throws Exception;
 	
 	/**
 	 * Hook for logic just before a GET request
@@ -67,7 +67,7 @@ public abstract class Processor {
 	 * @param r
 	 * 		The {@link RESTRequest} instance
 	 */
-	abstract protected void preGetRequest(RESTRequest<ResourceRepresentation<?>> r);
+	abstract protected void preGetRequest(RESTRequest<? extends Resource> r);
 	
 	/**
 	 * Hook for logic just before a DELETE request
@@ -75,7 +75,7 @@ public abstract class Processor {
 	 * @param r
 	 * 		The {@link RESTRequest} instance
 	 */
-	abstract protected void preDeleteRequest(RESTRequest<ResourceRepresentation<?>> r);
+	abstract protected void preDeleteRequest(RESTRequest<? extends Resource> r);
 	
 	/**
 	 * Hook for logic just before a POST request
@@ -86,7 +86,7 @@ public abstract class Processor {
 	 * @return
 	 * 		This method must returns an InputStream (typically result of {@link ResourceRepresentation} parsing. See {@link Parser})
 	 */
-	abstract protected InputStream prePostRequest(RESTRequest<ResourceRepresentation<?>> r);
+	abstract protected InputStream prePostRequest(RESTRequest<? extends Resource> r);
 	
 	/**
 	 * Hook for logic just before a PUT request
@@ -97,7 +97,7 @@ public abstract class Processor {
 	 * @return
 	 * 		This method must returns an InputStream (typically result of {@link ResourceRepresentation} parsing. See {@link Parser})
 	 */
-	abstract protected InputStream prePutRequest(RESTRequest<ResourceRepresentation<?>> r);
+	abstract protected InputStream prePutRequest(RESTRequest<? extends Resource> r);
 	
 	/**
 	 * Hook for logic just after the request is executed (regardless of the request's HTTP verb)
@@ -114,7 +114,7 @@ public abstract class Processor {
 	 * @return
 	 * 		The status code
 	 */
-	abstract protected int postRequestProcess(int statusCode, RESTRequest<ResourceRepresentation<?>> r, InputStream resultStream);
+	abstract protected int postRequestProcess(int statusCode, RESTRequest<? extends Resource> r, InputStream resultStream);
 	
 	/**
 	 * Calls {@link Processor#preRequestProcess(RESTRequest)} and {@link Processor#process(RESTRequest)}
@@ -124,7 +124,7 @@ public abstract class Processor {
 	 * 
 	 * @throws Exception
 	 */
-	protected void process(RESTRequest<ResourceRepresentation<?>> r) throws Exception {
+	protected void process(RESTRequest<? extends Resource> r) throws Exception {
 		preRequestProcess(r);
 		processRequest(r);
 	}
@@ -141,11 +141,11 @@ public abstract class Processor {
 	 * @see Processor#preDeleteRequest(RESTRequest)
 	 * @see ProcessorCallback
 	 */
-	protected void processRequest(RESTRequest<ResourceRepresentation<?>> r) {
+	protected void processRequest(RESTRequest<? extends Resource> r) {
 		mHttpRequestHandler.setProcessorCallback(new ProcessorCallback() {
 
 			@Override
-			public void callAction(int statusCode, RESTRequest<ResourceRepresentation<?>> request) {
+			public void callAction(int statusCode, RESTRequest<? extends Resource> request) {
 				// TODO Auto-generated method stub
 				handleHttpRequestHandlerCallback(statusCode, request);
 			}
@@ -182,7 +182,7 @@ public abstract class Processor {
 	 *		The actual {@link ResourceRepresentation}
 	 *
 	 */
-	protected void handleHttpRequestHandlerCallback(int statusCode, RESTRequest<ResourceRepresentation<?>> request) {
+	protected void handleHttpRequestHandlerCallback(int statusCode, RESTRequest<? extends Resource> request) {
         statusCode = postRequestProcess(statusCode, request, request.getResultStream());
 		mRESTServiceCallback.callAction(statusCode, request);
 	}
@@ -272,7 +272,7 @@ public abstract class Processor {
 		 * @param r
 		 * 		The actual {@link ResourceRepresentation}
 		 */
-		abstract public void callAction(int statusCode, RESTRequest<ResourceRepresentation<?>> r);
+		abstract public void callAction(int statusCode, RESTRequest<? extends Resource> r);
 	}
 	
 	/**
@@ -290,7 +290,7 @@ public abstract class Processor {
 	 * 		The actual {@link RESTRequest}
 	 */
 	@SuppressWarnings("unchecked")
-	protected void mirrorServerState(RESTRequest<ResourceRepresentation<?>> r){
+	protected void mirrorServerState(RESTRequest<? extends Resource> r){
         if(r.getVerb() != HTTPVerb.GET) {
             if(null == mPersistableFactory) {
                 try {
@@ -300,16 +300,16 @@ public abstract class Processor {
 					e.printStackTrace();
 				}
             }
-            if(null != r.getResourceRepresentation()) {
-                ResourceRepresentation<?> resource = r.getResourceRepresentation();
+            if(null != r.getResource()) {
+                Resource resource = r.getResource();
                 try {
-	                if(resource instanceof ResourceList) {
-	                	for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourceList<?>) resource).getResourcesList().iterator(); it.hasNext();) {
+	                if(resource instanceof ResourcesList) {
+	                	for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ( (ResourcesList) resource).getResourcesList().iterator(); it.hasNext();) {
 	                		mirrorServerStateRoutine(r.getVerb(), it.next());
 	                	}
 	                }
-	                else
-	                	mirrorServerStateRoutine(r.getVerb(), resource);
+	                else 
+	                	mirrorServerStateRoutine(r.getVerb(), (ResourceRepresentation<?>)resource);
                 } catch(Exception e) {
 	        	   e.printStackTrace();
 	           }
@@ -353,53 +353,55 @@ public abstract class Processor {
 	 * 		The updated (or not) status code
 	 */
 	@SuppressWarnings("unchecked")
-	protected int updateLocalResource(int statusCode, RESTRequest<ResourceRepresentation<?>> r, InputStream resultStream) {
+	protected int updateLocalResource(int statusCode, RESTRequest<? extends Resource> r, InputStream resultStream) {
 		try {
 			if(statusCode >= 200 && statusCode <= 210) {
 	            if(r.getVerb() == HTTPVerb.DELETE) {
-	            	ResourceRepresentation<?> resource = r.getResourceRepresentation();
-	            	if(resource instanceof ResourceList) {
-	                	for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourceList<?>) resource).getResourcesList().iterator(); it.hasNext();) {
-	                		Persistable<ResourceRepresentation<?>> persistable = getResourcePersistable(resource);
+	            	Resource resource = r.getResource();
+	            	if(resource instanceof ResourcesList) {
+	                	for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourcesList) resource).getResourcesList().iterator(); it.hasNext();) {
+	                		Persistable<Resource> persistable = getResourcePersistable(resource);
 	    	                persistable.deleteResource(it.next());
 	                	}
 	                }
 	                else {
-	                	Persistable<ResourceRepresentation<?>> persistable = getResourcePersistable(resource);
-		                persistable.deleteResource(resource);
+	                	Persistable<Resource> persistable = getResourcePersistable(resource);
+		                persistable.deleteResource((ResourceRepresentation<?>)resource);
 	                }
 	            }
 	            else if(r.getVerb() == HTTPVerb.GET) {
 	                try {
-	    				r.setResourceRepresentation(parseToObject(resultStream, r.getResourceClass()));
+	    				r.setResource(parseToObject(resultStream, r.getResourceClass()));
 	    			} catch (ParsingException e) {
 	    				statusCode = -10;
 	    				e.printStackTrace();
 	    			}
-	                ResourceRepresentation<?> resource = r.getResourceRepresentation();
-	                Persistable<ResourceRepresentation<?>> persistable = getResourcePersistable(resource);
-	                if(resource instanceof ResourceList) {
-	                	for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourceList<?>) resource).getResourcesList().iterator(); it.hasNext();) {
+	                Resource resource = r.getResource();
+	                Persistable<Resource> persistable;
+	                if(resource instanceof ResourcesList) {
+	                	for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourcesList) resource).getResourcesList().iterator(); it.hasNext();) {
 	                		ResourceRepresentation<?> current = it.next();
-	                		ResourceRepresentation<?> oldResource = persistable.findById(current.getId());
+	                		persistable = getResourcePersistable(current);
+	                		ResourceRepresentation<?> oldResource = (ResourceRepresentation<?>) persistable.findById(current.getId());
 	    	                persistable.deleteResource(oldResource);
 	                	}
 	                }
 	                else {
-		                ResourceRepresentation<?> oldResource = persistable.findById(resource.getId());
+	                	persistable = getResourcePersistable(resource);
+		                ResourceRepresentation<?> oldResource = (ResourceRepresentation<?>) persistable.findById(((ResourceRepresentation<?>) resource).getId());
 		                persistable.deleteResource(oldResource);
 	                }
 	            }
 			}
-            if(r.getResourceRepresentation() != null) { //POST PUT GET
-            	ResourceRepresentation<?> resource = r.getResourceRepresentation();
-            	if(resource instanceof ResourceList) {
-            		for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourceList<?>) resource).getResourcesList().iterator(); it.hasNext();) {
+            if(r.getResource() != null) { //POST PUT GET
+            	Resource resource = r.getResource();
+            	if(resource instanceof ResourcesList) {
+            		for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourcesList) resource).getResourcesList().iterator(); it.hasNext();) {
                 		updateLocalResourceRoutine(statusCode, it.next());
                 	}
             	}
             	else {
-            		updateLocalResourceRoutine(statusCode, resource);
+            		updateLocalResourceRoutine(statusCode, (ResourceRepresentation<?>)resource);
             	}
             }
         } catch (Exception e) {
@@ -410,7 +412,8 @@ public abstract class Processor {
 	}
 	
 	protected void updateLocalResourceRoutine(int statusCode, ResourceRepresentation<?> resource) throws Exception {
-		Persistable<ResourceRepresentation<?>> persistable = getResourcePersistable(resource);
+		Log.i("UPDATE", "updateLocalResource");
+		Persistable<Resource> persistable = getResourcePersistable(resource);
 		resource.setResultCode(statusCode);
 		resource.setTransactingFlag(false);
     	if(statusCode >= 200 && statusCode <= 210)
@@ -421,14 +424,14 @@ public abstract class Processor {
 	/**
 	 * Shortcut to retrieve Persistable class from Processor via {@link PersistableFactory}
 	 * 
-	 * @param r
+	 * @param resource
 	 * 		The {@link ResourceRepresentation} you want the Persistable class
 	 * 
 	 * @return
 	 * 		Instance of {@link Persistable}
 	 */
-	protected Persistable<ResourceRepresentation<?>> getResourcePersistable(ResourceRepresentation<?> r) {
-		return mPersistableFactory.getPersistable(r.getClass());
+	protected Persistable<Resource> getResourcePersistable(Resource resource) {
+		return mPersistableFactory.getPersistable(resource.getClass());
 	}
 
 	/**
@@ -459,25 +462,41 @@ public abstract class Processor {
 	 * @return
 	 * 		True if the request has to be resent, false otherwise
 	 */
-	public boolean checkRequest(RESTRequest<? extends ResourceRepresentation<?>> request) {
-		ResourceRepresentation<?> requestResource = request.getResourceRepresentation();
+	public boolean checkRequest(RESTRequest<? extends Resource> request) {
+		Resource requestResource = request.getResource();
 		Persistable<ResourceRepresentation<?>> persistable = mPersistableFactory.getPersistable(requestResource.getClass());
-		try {
-			ResourceRepresentation<?> resource = persistable.findById(request.getResourceRepresentation().getId());
-			if(null != resource) {
-				if(!resource.getTransactingFlag()) {
-					if(resource.getResultCode() == 200) {
+		Resource resource = request.getResource();
+		if(resource instanceof ResourceRepresentation) {
+			try {
+				ResourceRepresentation<?> r = persistable.findById(((ResourceRepresentation<?>) request.getResource()).getId());
+				if(null != r) {
+					if(!r.getTransactingFlag()) {
+						if(r.getResultCode() == 200) {
+							return true;
+						}
 						return true;
 					}
-					return true;
+					return false;
 				}
-				return false;
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return true;
 		}
-		return true;
+		else {
+			int countResourcesNotSync = 0;
+			for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourcesList) resource).getResourcesList().iterator(); it.hasNext();) {
+        		ResourceRepresentation<?> current = it.next();
+        		if(!current.getTransactingFlag()) {
+        			if(!(current.getResultCode() >= 200 && current.getResultCode() <= 210))
+        				countResourcesNotSync++;
+        		}
+        	}
+			if(countResourcesNotSync == ((ResourcesList) resource).getResourcesList().size()) //request has failed
+				return true;
+			return false;
+		}
 	}
 	
 	/**
@@ -494,7 +513,7 @@ public abstract class Processor {
 	 * 
 	 * @throws ParsingException
 	 */
-	protected <R extends ResourceRepresentation<?>> R parseToObject(InputStream content, Class<R> clazz) throws ParsingException {
+	protected <R extends Resource> R parseToObject(InputStream content, Class<R> clazz) throws ParsingException {
 		Parser<R> p = mParserFactory.getParser(clazz);
 		return p.parseToObject(content);
 	}
@@ -510,7 +529,7 @@ public abstract class Processor {
 	 * 
 	 * @throws ParsingException
 	 */
-	protected <R extends ResourceRepresentation<?>> InputStream parseToInputStream(R resource) throws ParsingException {
+	protected <R extends Resource> InputStream parseToInputStream(R resource) throws ParsingException {
 		Parser<R> p = mParserFactory.getParser(resource.getClass());
 		return p.parseToInputStream(resource);
 	}
