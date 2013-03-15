@@ -1,3 +1,5 @@
 package fr.pcreations.labs.RESTDroid.core;
 
-public interface Resource {}
+import java.io.Serializable;
+
+public interface Resource extends Serializable {}
