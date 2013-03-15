@@ -1,9 +1,9 @@
 RESTDroid : REST client library for Android
 ===========================================
 
-Alpha release 0.7.2.2
+Alpha release 0.7.2.2 : Testers and contributors are welcome :)
 
-RESTDroid provides a way to handle REST call to REST web-service. RESTDroid only packed fundamental logic to handle request. Extends this logic is the role of Module. Here you can found severals Module such as an ORMlite-Jackon module to handle data persistence and mapping/parsing.
+RESTDroid provides a way to handle REST call to REST web-service. RESTDroid only packed fundamental logic to handle request but comes with additionnal logic such as automatic data persistency with remote server. Using or extending this logic is the role of Module. Here you can found severals Module such as an ORMlite-Jackon module to handle data persistence and mapping/parsing.
 
 [RESTDroid Documentation](http://pcreations.fr/labs/RESTDroid/doc)
 
@@ -15,15 +15,18 @@ RESTDroid in a nutshell :
 *	Network calls are __not tied to your Activity__, if the Activity is killed, network / database operations (ore whathever you decided to do) are still running
 *	You can __notify your Activities__ with request listeners
 *	You can __dynamically change the process logic__ via RESTDroid Module (choose to cache & persist, only debug, not to cache, or whatever you want/need by creating a new RESTDroid Module)
+*	You can know at any moment if a particular local resource is remotely syncronized. Data persistence between local and remote is automatically handles.
 
-For contributors
+Futures features for v1
 ----------------
 
-#TO DO FOR V1
+#ROADMAP
 
-*	Create a "Main" Service to holds request creation (in order to avoid string ID)
-*	Create a CacheManager to handles cache (add a method to DaoAccess to manage that)
+*	ResourceList class to handle POJO's list
+*	Give to the user the possibility to choose a cache limit for any request and also a default action when request has failed (such as automatically retry the request every 10s, retry the request when a futur request will be sent successfully, etc.)
 *	Use HttpConnection instead of apache HTTP client
+*	Handle authentication and certificate
+*	Create a good Exception handling model
 
 User guide
 ----------
@@ -33,7 +36,7 @@ User guide
 ## RESTDroid available Modules :
 
 *	[ORMLiteJacksonModule](https://github.com/PCreations/ORMLiteJacksonModule)
-*	[TestModule](https://github.com/PCreations/RESTDroid-Test-Module)
+*	[TestModule](https://github.com/PCreations/RESTDroid-Test-Module) (not up to date)
 
 ## Forward and return path schema :
 
