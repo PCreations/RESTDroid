@@ -12,7 +12,7 @@ import java.io.Serializable;
  * 
  * @version 0.5
  */
-public interface ResourceRepresentation<ID> extends Serializable {
+public interface ResourceRepresentation<ID> extends Serializable, Resource {
 	
 	/**
 	 * Getter for id field
