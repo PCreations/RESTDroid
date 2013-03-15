@@ -32,7 +32,7 @@ import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnStartedRequestListen
  * 
  * @version 0.7.2
  */
-public class RESTRequest<T extends ResourceRepresentation<?>> implements Serializable {
+public class RESTRequest<T extends Resource> implements Serializable {
 	
 	/**
 	 * 
@@ -112,10 +112,10 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * @see RESTRequest#getResourceRepresentation()
 	 * @see RESTRequest#setResourceRepresentation(ResourceRepresentation)
 	 */
-	private T mResourceRepresentation;
+	private T mResource;
 	
 	/**
-	 * The Class object of {@link ResourceRepresentation} attached to this request. Useful when {@link RESTRequest#mResourceRepresentation} is null
+	 * The Class object of {@link ResourceRepresentation} attached to this request. Useful when {@link RESTRequest#mResource} is null
 	 * 
 	 * @see RESTRequest#getResourceClass()
 	 */
@@ -522,11 +522,11 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * 		The {@link RESTRequest}'s {@link ResourceRepresentation}
 	 * 
 	 * @see ResourceRepresentation
-	 * @see RESTRequest#mResourceRepresentation
+	 * @see RESTRequest#mResource
 	 * @see RESTRequest#setResourceRepresentation(ResourceRepresentation)
 	 */
-	public T getResourceRepresentation() {
-		return mResourceRepresentation;
+	public T getResource() {
+		return mResource;
 	}
 	
 	/**
@@ -549,12 +549,11 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 	 * 		Instance of {@link ResourceRepresentation}
 	 * 
 	 * @see ResourceRepresentation
-	 * @see RESTRequest#mResourceRepresentation
+	 * @see RESTRequest#mResource
 	 * @see RESTRequest#getResourceRepresentation()
 	 */
-	@SuppressWarnings("unchecked")
-	public void setResourceRepresentation(ResourceRepresentation<?> mResourceRepresentation) {
-		this.mResourceRepresentation = (T) mResourceRepresentation;
+	public void setResource(T mResourceRepresentation) {
+		this.mResource = (T) mResourceRepresentation;
 	}
 
 	/**
@@ -670,7 +669,7 @@ public class RESTRequest<T extends ResourceRepresentation<?>> implements Seriali
 		str += null != mID ? "Request[id] = " +mID.toString() : "Request[id] = null";
 		str += null != mVerb ? "[verb] = " + mVerb.name() : "[verb] = null";
 		str += null != mUrl ? "[url] = " + mUrl : "[url] = null";
-		str += null != mResourceRepresentation ? mResourceRepresentation.toString() : "[ResourceRepresentation] = null";
+		str += null != mResource ? mResource.toString() : "[ResourceRepresentation] = null";
 		return str;
 	}
 
