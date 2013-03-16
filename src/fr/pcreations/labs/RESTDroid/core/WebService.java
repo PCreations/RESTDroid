@@ -78,6 +78,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		mReceiver = new RestResultReceiver(new Handler());
         mReceiver.setReceiver(this);
         mRequestCollection = new ArrayList<RESTRequest<? extends Resource>>();
+        CacheManager.setCacheDir(context.getCacheDir());
 	}
 	
 	/**
@@ -163,8 +164,9 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 * @see WebService#get(RESTRequest, String, Bundle)
 	 */
-	protected <R extends Resource> RESTRequest<R> get(Class<R> clazz, String uri) {
+	protected <R extends Resource> RESTRequest<R> get(Class<R> clazz, String uri, long expirationTime) {
 		RESTRequest<R> request = requestRoutine(clazz, uri);
+		request.setExpirationTime(expirationTime);
 		initRequest(request, HTTPVerb.GET,  uri);
 		Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "SIZE = " + String.valueOf(mRequestCollection.size()));
 		return request;
@@ -184,8 +186,9 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 * @see WebService#get(RESTRequest, String)
 	 */
-	protected <R extends Resource> RESTRequest<R> get(Class<R> clazz, String uri, Bundle extraParams) {
+	protected <R extends Resource> RESTRequest<R> get(Class<R> clazz, String uri, long expirationTime, Bundle extraParams) {
 		RESTRequest<R> request = requestRoutine(clazz, uri);
+		request.setExpirationTime(expirationTime);
 		initRequest(request, HTTPVerb.GET, uri, extraParams);
 		return request;
 	}
@@ -381,6 +384,14 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 					request.setResource(r.getResource());
 					if(request.triggerOnFinishedRequestListeners())
 						it.remove();
+					if(request.getVerb() == HTTPVerb.GET && resultCode != 210) {
+						try {
+							CacheManager.cacheRequest(request);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
 				}
 				else {
 					request.setResource(r.getResource());

@@ -7,16 +7,12 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 
 import android.app.Activity;
-import android.app.DownloadManager.Request;
-import android.content.Context;
 import android.os.Bundle;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFailedRequestListener;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFinishedRequestListener;
@@ -130,6 +126,8 @@ public class RESTRequest<T extends Resource> implements Serializable {
 	 *  @since 0.7.1
 	 */
 	private transient RequestListeners mRequestListeners;
+	
+	private long mExpirationTime;
 	
 	/**
 	 * Constructor
@@ -663,6 +661,14 @@ public class RESTRequest<T extends Resource> implements Serializable {
 	 */
 	public void addHeader(String name, String value) {
 		mHeaders.add(new SerializableHeader(name, value));
+	}
+	
+	public void setExpirationTime(long expirationTime) {
+		mExpirationTime = expirationTime;
+	}
+	
+	public long getExpirationTime() {
+		return mExpirationTime;
 	}
 	
 	public String toString() {

@@ -1,5 +1,6 @@
 package fr.pcreations.labs.RESTDroid.core;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.UUID;
 

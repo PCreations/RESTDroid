@@ -1,12 +1,14 @@
 package fr.pcreations.labs.RESTDroid.core;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 
+import android.content.Context;
 import android.util.Log;
 import fr.pcreations.labs.RESTDroid.core.HttpRequestHandler.ProcessorCallback;
 import fr.pcreations.labs.RESTDroid.exceptions.ParsingException;
@@ -126,7 +128,21 @@ public abstract class Processor {
 	 */
 	protected void process(RESTRequest<? extends Resource> r) throws Exception {
 		preRequestProcess(r);
-		processRequest(r);
+		if(r.getVerb() == HTTPVerb.GET) {
+			final File file = new File(CacheManager.getCacheDir(), String.valueOf(r.getUrl().hashCode()));
+			Log.e(RestService.TAG, "LAST MODIFIED BEFORE UDPATE = " + String.valueOf(file.lastModified()));
+			InputStream cacheStream = CacheManager.getRequestFromCache(r);
+			if(cacheStream != null) {
+				r.setResultStream(cacheStream);
+				r.setResource(parseToObject(r.getResultStream(), r.getResourceClass()));
+				r.setResultCode(210);
+				mRESTServiceCallback.callAction(210, r);
+			}
+			else
+				processRequest(r);
+		}
+		else
+			processRequest(r);
 	}
 	
 	/**
@@ -462,6 +478,7 @@ public abstract class Processor {
 	 * @return
 	 * 		True if the request has to be resent, false otherwise
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean checkRequest(RESTRequest<? extends Resource> request) {
 		Resource requestResource = request.getResource();
 		Persistable<ResourceRepresentation<?>> persistable = mPersistableFactory.getPersistable(requestResource.getClass());

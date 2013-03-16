@@ -1,6 +1,5 @@
 package fr.pcreations.labs.RESTDroid.core;
 
-import java.io.Serializable;
 
 /**
  * <b>Interface which represents application items that have to be synchronized with the server</b>
