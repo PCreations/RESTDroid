@@ -1,3 +1,6 @@
+#change log 0.7.2.3
+*	Hotfix : Remove useless import android.download.Request
+
 #Change log 0.7.2.2
 *	Hotfixes : Removes useless res/ files and 3 seconds test latency in HttpRequestHandler
 

@@ -7,21 +7,16 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 
 import android.app.Activity;
-import android.app.DownloadManager.Request;
-import android.content.Context;
 import android.os.Bundle;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFailedRequestListener;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFinishedRequestListener;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnStartedRequestListener;
-
 /**
  * <b>Holder class for all request stuff. Provides some listener to handle specific logic in Activity when request starts, succeed or failed</b>
  * 
