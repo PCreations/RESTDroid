@@ -54,6 +54,9 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 */
 	protected List<RESTRequest<? extends ResourceRepresentation<?>>> mRequestCollection;
 	
+	
+	protected RequestQueue mRequestQueue;
+	
 	/**
 	 * {@link Module} actually registered to this WebService instance
 	 */
@@ -78,6 +81,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		mReceiver = new RestResultReceiver(new Handler());
         mReceiver.setReceiver(this);
         mRequestCollection = new ArrayList<RESTRequest<?>>();
+        mRequestQueue = new RequestQueue();
 	}
 	
 	/**
