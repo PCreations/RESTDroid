@@ -1,3 +1,6 @@
+#change log 0.7.2.3
+*	Hotfixes : Remove useless import android.download.Request and rename MainActivity of RESTDroid project
+
 #Change log 0.7.2.2
 *	Hotfixes : Removes useless res/ files and 3 seconds test latency in HttpRequestHandler
 

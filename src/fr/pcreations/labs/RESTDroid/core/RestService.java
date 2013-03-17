@@ -79,6 +79,7 @@ public class RestService extends IntentService{
 		Bundle bundle = intent.getExtras();
 		@SuppressWarnings("unchecked")
 		RESTRequest<? extends Resource> r = (RESTRequest<? extends Resource>) bundle.getSerializable(RestService.REQUEST_KEY);
+		Log.i("intentfix", "put " + String.valueOf(r.getID()) + "in intentsMap");
 		mIntentsMap.put(r.getID(), intent);
 		RestService.processor.setRESTServiceCallback(new RESTServiceCallback() {
 

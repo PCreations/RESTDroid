@@ -54,6 +54,9 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 */
 	protected List<RESTRequest<? extends Resource>> mRequestCollection;
 	
+	
+	protected RequestQueue mRequestQueue;
+	
 	/**
 	 * {@link Module} actually registered to this WebService instance
 	 */
@@ -79,6 +82,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
         mReceiver.setReceiver(this);
         mRequestCollection = new ArrayList<RESTRequest<? extends Resource>>();
         CacheManager.setCacheDir(context.getCacheDir());
+        mRequestQueue = new RequestQueue();
 	}
 	
 	/**
