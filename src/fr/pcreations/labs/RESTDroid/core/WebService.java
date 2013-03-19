@@ -197,7 +197,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @see WebService#get(RESTRequest, String, Bundle)
 	 */
 	protected <R extends Resource> RESTRequest<R> get(Class<R> clazz, String uri, long expirationTime) {
-		RESTRequest<R> request = requestRoutine(clazz, uri, null);
+		RESTRequest<R> request = requestRoutine(clazz, uri, null, true);
 		request.setExpirationTime(expirationTime);
 		initRequest(request, HTTPVerb.GET,  uri);
 		Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "SIZE = " + String.valueOf(mRequestCollection.size()));
@@ -219,7 +219,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @see WebService#get(RESTRequest, String)
 	 */
 	protected <R extends Resource> RESTRequest<R> get(Class<R> clazz, String uri, long expirationTime, Bundle extraParams) {
-		RESTRequest<R> request = requestRoutine(clazz, uri, null);
+		RESTRequest<R> request = requestRoutine(clazz, uri, null, true);
 		request.setExpirationTime(expirationTime);
 		initRequest(request, HTTPVerb.GET, uri, extraParams);
 		return request;
@@ -237,7 +237,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 */
 	protected <R extends Resource> RESTRequest<R> post(Class<R> clazz, String uri, ResourceRepresentation<?> resource) {
-		RESTRequest<R> request = requestRoutine(clazz, uri, resource);
+		RESTRequest<R> request = requestRoutine(clazz, uri, resource, false);
 		request.setResource(resource);
 		initRequest(request, HTTPVerb.POST,  uri);
 		return request;
@@ -255,7 +255,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 */
 	protected <R extends Resource> RESTRequest<R> put(Class<R> clazz, String uri, Resource resource) {
-		RESTRequest<R> request = requestRoutine(clazz, uri, resource);
+		RESTRequest<R> request = requestRoutine(clazz, uri, resource, false);
 		request.setResource(resource);
 		initRequest(request, HTTPVerb.PUT,  uri);
 		return request;
@@ -272,7 +272,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 		Resource to send
 	 */
 	protected <R extends Resource> RESTRequest<R> delete(Class<R> clazz, String uri, Resource resource) {
-		RESTRequest<R> request = requestRoutine(clazz, uri, resource);
+		RESTRequest<R> request = requestRoutine(clazz, uri, resource, true);
 		request.setResource(resource);
 		initRequest(request, HTTPVerb.DELETE, uri);
 		return request;
@@ -288,10 +288,13 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @return
 	 * 		New instance of {@link RESTRequest} or instance already pending
 	 */
-	protected <R extends Resource> RESTRequest<R> requestRoutine(Class<R> clazz, String uri, Resource resource) {
-		RESTRequest<R> request = retrieveRequest(clazz, uri, resource);
-		if(null != request) {
-			return request;
+	protected <R extends Resource> RESTRequest<R> requestRoutine(Class<R> clazz, String uri, Resource resource, boolean retrieveRequest) {
+		RESTRequest<R> request;
+		if(retrieveRequest) {
+			request = retrieveRequest(clazz, uri, resource);
+			if(null != request) {
+				return request;
+			}
 		}
 		request = new RESTRequest<R>(generateID(), clazz);
 		request.setResource(resource);
