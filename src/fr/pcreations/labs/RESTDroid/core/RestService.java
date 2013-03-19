@@ -3,6 +3,7 @@ package fr.pcreations.labs.RESTDroid.core;
 import java.io.File;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.Map.Entry;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 import fr.pcreations.labs.RESTDroid.core.Processor.RESTServiceCallback;
+import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnStartedRequestListener;
 
 /**
  * <b>Service class which hold all process populating an Intent map and calling {@link Processor#process(RESTRequest)}</b>
@@ -49,24 +51,13 @@ public class RestService extends IntentService{
 	private static Processor processor = null;
 	
 	/**
-	 * HashMap which stores intent generated for specific {@link RESTRequest}
-	 * 
-	 * <p>
-	 * <ul>
-	 * <li><b>key</b> : ID of {@link RESTRequest}</li>
-	 * <li><b>value</b> : Instance of Intent</li>
-	 * </ul>
-	 * </p>
-	 */
-	private HashMap<UUID, Intent> mIntentsMap;
-	
-	/**
 	 * Constructor
 	 */
 	public RestService() {
 		super("RestService");
-		mIntentsMap = new HashMap<UUID, Intent>();
 	}
+	
+	private Intent mCurrentIntent;
 
 	/**
 	 * Receives the intent and starts the request by calling {@link Processor#process(RESTRequest)}
@@ -76,11 +67,10 @@ public class RestService extends IntentService{
 	 */
 	@Override
 	protected void onHandleIntent(Intent intent){
+		mCurrentIntent = intent;
 		Bundle bundle = intent.getExtras();
 		@SuppressWarnings("unchecked")
 		RESTRequest<? extends Resource> r = (RESTRequest<? extends Resource>) bundle.getSerializable(RestService.REQUEST_KEY);
-		Log.i("intentfix", "put " + String.valueOf(r.getID()) + "in intentsMap");
-		mIntentsMap.put(r.getID(), intent);
 		RestService.processor.setRESTServiceCallback(new RESTServiceCallback() {
 
 			@Override
@@ -100,7 +90,7 @@ public class RestService extends IntentService{
 	
 	/**
 	 * Handles the binder callback fires by the Processor in {@link Processor#postRequestProcess(int, RESTRequest, java.io.InputStream)}
-	 * Current intent is retrieved in {@link RestService#mIntentsMap} in order to send results to {@link RestResultReceiver}
+	 * Current intent is retrieved in {@link RestService#intentsMap} in order to send results to {@link RestResultReceiver}
 	 * 
 	 * @param statusCode
 	 * 		The status code resulting of all process
@@ -110,16 +100,15 @@ public class RestService extends IntentService{
 	 * 
 	 * @see Processor#postRequestProcess(int, RESTRequest, java.io.InputStream)
 	 * @see RestResultReceiver
-	 * @see RestService#mIntentsMap
+	 * @see RestService#intentsMap
 	 */
 	private void handleRESTServiceCallback(int statusCode, RESTRequest<? extends Resource> r) {
-		Intent currentIntent = mIntentsMap.get(r.getID());
-		Bundle bundle = currentIntent.getExtras();
+		Bundle bundle = mCurrentIntent.getExtras();
 		ResultReceiver receiver = bundle.getParcelable(RestService.RECEIVER_KEY);
 		//Log.e(RestService.TAG, "resource dans handleRESTServiceCallback = " + r.getResourceRepresentation().toString());
 		Bundle resultData = new Bundle();
         resultData.putSerializable(RestService.REQUEST_KEY, r);
-        resultData.putParcelable(RestService.INTENT_KEY, currentIntent);
+        resultData.putParcelable(RestService.INTENT_KEY, mCurrentIntent);
         receiver.send(statusCode, resultData);
 	}
 	
