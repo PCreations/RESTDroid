@@ -2,6 +2,7 @@ package fr.pcreations.labs.RESTDroid.core;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -53,6 +54,18 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * Collection of {@link RESTRequest}
 	 */
 	protected List<RESTRequest<? extends ResourceRepresentation<?>>> mRequestCollection;
+
+	/**
+	 * HashMap which stores intent generated for specific {@link RESTRequest}
+	 * 
+	 * <p>
+	 * <ul>
+	 * <li><b>key</b> : ID of {@link RESTRequest}</li>
+	 * <li><b>value</b> : Instance of Intent</li>
+	 * </ul>
+	 * </p>
+	 */
+	private HashMap<UUID, Intent> mIntentsMap;
 	
 	/**
 	 * {@link Module} actually registered to this WebService instance
@@ -78,6 +91,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		mReceiver = new RestResultReceiver(new Handler());
         mReceiver.setReceiver(this);
         mRequestCollection = new ArrayList<RESTRequest<?>>();
+        mIntentsMap = new HashMap<UUID, Intent>();
 	}
 	
 	/**
@@ -112,12 +126,25 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @since 0.6.0
 	 */
 	@SuppressWarnings("unchecked")
-	protected <T extends ResourceRepresentation<?>> RESTRequest<T> retrieveRequest(Class<T> clazz, String url) {
+	protected <T extends ResourceRepresentation<?>> RESTRequest<T> retrieveRequest(Class<T> clazz, String url, ResourceRepresentation<?> resource) {
 		RESTRequest<T> r;
+		Log.w("intentinfo", "ACTUAL RESOURCE : " + (null == resource ? "null" : resource.toString()));
+		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
+			RESTRequest<?> request = it.next();
+			Log.v("intentinfo", "IN RESOURCES COLLECTION " + request.getID() + " : " + (request.getResourceRepresentation() == null ? "null" : request.getResourceRepresentation().toString()));
+		}
 		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
 			r = (RESTRequest<T>) it.next();
-			if(r.getUrl().equals(url) && clazz.equals(r.getResourceClass())) {
-				return r;
+			if(r.isPending()) {
+				Log.e("intentinfo", "PENDING " + r.getID() + " : " + r.getResourceRepresentation().toString());
+				if(null == resource) {
+					if(r.getUrl().equals(url) && r.getResourceRepresentation().equals(resource) && r.getResourceClass().equals(clazz))
+						return r;
+				}
+				else if(r.getUrl().equals(url) && r.getResourceRepresentation().equals(resource)) {
+					Log.e("intentinfo", "ACTUAL " + r.getID() + " RESOURCE : " + r.getResourceRepresentation().toString());
+					return r;
+				}
 			}
 		}
 		return null;
@@ -164,7 +191,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @see WebService#get(RESTRequest, String, Bundle)
 	 */
 	protected <R extends ResourceRepresentation<?>> RESTRequest<R> get(Class<R> clazz, String uri) {
-		RESTRequest<R> request = requestRoutine(clazz, uri);
+		RESTRequest<R> request = requestRoutine(clazz, uri, null, true);
 		initRequest(request, HTTPVerb.GET,  uri);
 		Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "SIZE = " + String.valueOf(mRequestCollection.size()));
 		return request;
@@ -185,7 +212,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @see WebService#get(RESTRequest, String)
 	 */
 	protected <R extends ResourceRepresentation<?>> RESTRequest<R> get(Class<R> clazz, String uri, Bundle extraParams) {
-		RESTRequest<R> request = requestRoutine(clazz, uri);
+		RESTRequest<R> request = requestRoutine(clazz, uri, null, true);
 		initRequest(request, HTTPVerb.GET, uri, extraParams);
 		return request;
 	}
@@ -202,7 +229,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 */
 	protected <R extends ResourceRepresentation<?>> RESTRequest<R> post(Class<R> clazz, String uri, ResourceRepresentation<?> resource) {
-		RESTRequest<R> request = requestRoutine(clazz, uri);
+		RESTRequest<R> request = requestRoutine(clazz, uri, resource, false);
 		request.setResourceRepresentation(resource);
 		initRequest(request, HTTPVerb.POST,  uri);
 		return request;
@@ -220,7 +247,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 */
 	protected <R extends ResourceRepresentation<?>> RESTRequest<R> put(Class<R> clazz, String uri, ResourceRepresentation<?> resource) {
-		RESTRequest<R> request = requestRoutine(clazz, uri);
+		RESTRequest<R> request = requestRoutine(clazz, uri, resource, false);
 		request.setResourceRepresentation(resource);
 		initRequest(request, HTTPVerb.PUT,  uri);
 		return request;
@@ -237,7 +264,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 		Resource to send
 	 */
 	protected <R extends ResourceRepresentation<?>> RESTRequest<R> delete(Class<R> clazz, String uri, ResourceRepresentation<?> resource) {
-		RESTRequest<R> request = requestRoutine(clazz, uri);
+		RESTRequest<R> request = requestRoutine(clazz, uri, resource, true);
 		request.setResourceRepresentation(resource);
 		initRequest(request, HTTPVerb.DELETE, uri);
 		return request;
@@ -253,11 +280,14 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @return
 	 * 		New instance of {@link RESTRequest} or instance already pending
 	 */
-	protected <R extends ResourceRepresentation<?>> RESTRequest<R> requestRoutine(Class<R> clazz, String uri) {
-		RESTRequest<R> request = retrieveRequest(clazz, uri);
-		if(null != request) {
-			return request;
-		}
+	protected <R extends ResourceRepresentation<?>> RESTRequest<R> requestRoutine(Class<R> clazz, String uri, ResourceRepresentation<?> resource, boolean retrieveRequest) {
+		RESTRequest<R> request;
+		if(retrieveRequest) {
+			request = retrieveRequest(clazz, uri, resource);
+			if(null != request) {
+				return request;
+			}
+		} 
 		request = new RESTRequest<R>(generateID(), clazz);
 		mRequestCollection.add(request);
 		return request;
@@ -340,6 +370,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 					r.triggerOnStartedRequestListeners();
 				}
 			}
+			mIntentsMap.put(request.getID(), i);
 			mContext.startService(i);
 		}
 			
@@ -389,6 +420,8 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 				}
 				
 				Intent i = resultData.getParcelable(RestService.INTENT_KEY);
+				if(null == mIntentsMap.remove(request.getID()))
+					throw new RuntimeException("Cannot find request in intents map");
 				mContext.stopService(i);
 			}
 		}
