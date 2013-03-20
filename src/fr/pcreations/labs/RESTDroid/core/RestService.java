@@ -1,13 +1,9 @@
 package fr.pcreations.labs.RESTDroid.core;
 
-import java.util.HashMap;
-import java.util.UUID;
-
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
-import android.util.Log;
 import fr.pcreations.labs.RESTDroid.core.Processor.RESTServiceCallback;
 
 /**
@@ -47,24 +43,13 @@ public class RestService extends IntentService{
 	 */
 	private static Processor processor = null;
 	
-	/**
-	 * HashMap which stores intent generated for specific {@link RESTRequest}
-	 * 
-	 * <p>
-	 * <ul>
-	 * <li><b>key</b> : ID of {@link RESTRequest}</li>
-	 * <li><b>value</b> : Instance of Intent</li>
-	 * </ul>
-	 * </p>
-	 */
-	private HashMap<UUID, Intent> mIntentsMap;
+	private Intent mCurrentIntent;
 	
 	/**
 	 * Constructor
 	 */
 	public RestService() {
 		super("RestService");
-		mIntentsMap = new HashMap<UUID, Intent>();
 	}
 
 	/**
@@ -78,7 +63,7 @@ public class RestService extends IntentService{
 		Bundle bundle = intent.getExtras();
 		@SuppressWarnings("unchecked")
 		RESTRequest<ResourceRepresentation<?>> r = (RESTRequest<ResourceRepresentation<?>>) bundle.getSerializable(RestService.REQUEST_KEY);
-		mIntentsMap.put(r.getID(), intent);
+		mCurrentIntent = intent;
 		RestService.processor.setRESTServiceCallback(new RESTServiceCallback() {
 
 			@Override
@@ -111,13 +96,12 @@ public class RestService extends IntentService{
 	 * @see RestService#mIntentsMap
 	 */
 	private void handleRESTServiceCallback(int statusCode, RESTRequest<ResourceRepresentation<?>> r) {
-		Intent currentIntent = mIntentsMap.get(r.getID());
-		Bundle bundle = currentIntent.getExtras();
+		Bundle bundle = mCurrentIntent.getExtras();
 		ResultReceiver receiver = bundle.getParcelable(RestService.RECEIVER_KEY);
 		//Log.e(RestService.TAG, "resource dans handleRESTServiceCallback = " + r.getResourceRepresentation().toString());
 		Bundle resultData = new Bundle();
         resultData.putSerializable(RestService.REQUEST_KEY, r);
-        resultData.putParcelable(RestService.INTENT_KEY, currentIntent);
+        resultData.putParcelable(RestService.INTENT_KEY, mCurrentIntent);
         receiver.send(statusCode, resultData);
 	}
 	
