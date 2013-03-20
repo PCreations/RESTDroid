@@ -1,3 +1,6 @@
+#change log 0.7.2.4
+* Hotfixes : Intent maps is now stored in WebService class not in RestService class. WebService tries to retrieve pending request only if request is GET or DELETE
+
 #change log 0.7.2.3
 *	Hotfixes : Remove useless import android.download.Request and rename MainActivity of RESTDroid project
 
