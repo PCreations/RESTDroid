@@ -22,8 +22,8 @@ Futures features for v1
 
 #ROADMAP
 
-*	ResourceList class to handle POJO's list
-*	Give to the user the possibility to choose a cache limit for any request and also a default action when request has failed (such as automatically retry the request every 10s, retry the request when a futur request will be sent successfully, etc.)
+*	ResourceList class to handle POJO's list (in next release)
+*	Give to the user the possibility to choose a cache limit for any request and also a default action when request has failed (such as automatically retry the request every 10s, retry the request when a futur request will be sent successfully, etc.) (in next release)
 *	Use HttpConnection instead of apache HTTP client
 *	Handle authentication and certificate
 *	Create a good Exception handling model
