@@ -2,6 +2,8 @@ package fr.pcreations.labs.RESTDroid.core;
 
 import java.util.HashMap;
 
+import fr.pcreations.labs.RESTDroid.exceptions.NoPersistableFoundException;
+
 /**
  * <b>Base class for DaoFactory that handle creation and access of Persistable classes as Singleton</b>
  * 
@@ -50,6 +52,6 @@ return persistable;
 	 * @see Persistable
 	 * @see ResourceRepresentation
 	 */
-	public abstract <P extends Persistable<T>, T extends ResourceRepresentation<?>> P getPersistable(Class<T> clazz);
+	public abstract <P extends Persistable<T>, T extends ResourceRepresentation<?>> P getPersistable(Class<T> clazz) throws NoPersistableFoundException;
 	
 }

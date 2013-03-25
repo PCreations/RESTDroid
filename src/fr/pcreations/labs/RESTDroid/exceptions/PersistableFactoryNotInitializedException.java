@@ -12,6 +12,6 @@ public class PersistableFactoryNotInitializedException extends Exception {
 
 	public PersistableFactoryNotInitializedException() {
 		super();
-		Log.e(RestService.TAG, "DaoFactory not initialized");
+		Log.e(RestService.TAG, "PersistableFactory not initialized");
 	}
 }

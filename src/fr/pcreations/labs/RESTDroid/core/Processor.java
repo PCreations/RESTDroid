@@ -9,6 +9,8 @@ import java.util.Iterator;
 
 import android.util.Log;
 import fr.pcreations.labs.RESTDroid.core.HttpRequestHandler.ProcessorCallback;
+import fr.pcreations.labs.RESTDroid.exceptions.NoPersistableFoundException;
+import fr.pcreations.labs.RESTDroid.exceptions.ParserFactoryNotInitializedException;
 import fr.pcreations.labs.RESTDroid.exceptions.ParsingException;
 import fr.pcreations.labs.RESTDroid.exceptions.PersistableFactoryNotInitializedException;
 
@@ -332,7 +334,7 @@ public abstract class Processor {
 			default:
 				break;
         }
-        Persistable<ResourceRepresentation<?>> persistable = mPersistableFactory.getPersistable(resource.getClass());
+        Persistable<ResourceRepresentation<?>> persistable = getPersistableFactory().getPersistable(resource.getClass());
         persistable.updateOrCreate(resource);
 	}
 	
@@ -361,7 +363,7 @@ public abstract class Processor {
 	            	if(resource instanceof ResourceList) {
 	                	for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourceList<?>) resource).getResourcesList().iterator(); it.hasNext();) {
 	                		Persistable<ResourceRepresentation<?>> persistable = getResourcePersistable(resource);
-	    	                persistable.deleteResource(it.next());
+	                		persistable.deleteResource(it.next());
 	                	}
 	                }
 	                else {
@@ -426,9 +428,17 @@ public abstract class Processor {
 	 * 
 	 * @return
 	 * 		Instance of {@link Persistable}
+	 * @throws PersistableFactoryNotInitializedException
+	 * 		If no PersistableFactory is set
 	 */
-	protected Persistable<ResourceRepresentation<?>> getResourcePersistable(ResourceRepresentation<?> r) {
-		return mPersistableFactory.getPersistable(r.getClass());
+	protected Persistable<ResourceRepresentation<?>> getResourcePersistable(ResourceRepresentation<?> r) throws PersistableFactoryNotInitializedException {
+		try {
+			return getPersistableFactory().getPersistable(r.getClass());
+		} catch (NoPersistableFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**
@@ -458,10 +468,17 @@ public abstract class Processor {
 	 * 
 	 * @return
 	 * 		True if the request has to be resent, false otherwise
+	 * 
+	 * @throws NoPersistableFoundException
+	 * @throws PersistableFactoryNotInitializedException
+	 * 		If no PersistableFactory is set 
 	 */
-	public boolean checkRequest(RESTRequest<? extends ResourceRepresentation<?>> request) {
+	public boolean checkRequest(RESTRequest<? extends ResourceRepresentation<?>> request) throws NoPersistableFoundException, PersistableFactoryNotInitializedException {
+		if(null == mPersistableFactory) {
+			return true;
+		}
 		ResourceRepresentation<?> requestResource = request.getResourceRepresentation();
-		Persistable<ResourceRepresentation<?>> persistable = mPersistableFactory.getPersistable(requestResource.getClass());
+		Persistable<ResourceRepresentation<?>> persistable = getPersistableFactory().getPersistable(requestResource.getClass());
 		try {
 			ResourceRepresentation<?> resource = persistable.findById(request.getResourceRepresentation().getId());
 			if(null != resource) {
@@ -493,9 +510,11 @@ public abstract class Processor {
 	 * 		An instance of {@link ResourceRepresentation}
 	 * 
 	 * @throws ParsingException
+	 * @throws ParserFactoryNotInitializedException
+	 * 		If no ParserFactory is set
 	 */
-	protected <R extends ResourceRepresentation<?>> R parseToObject(InputStream content, Class<R> clazz) throws ParsingException {
-		Parser<R> p = mParserFactory.getParser(clazz);
+	protected <R extends ResourceRepresentation<?>> R parseToObject(InputStream content, Class<R> clazz) throws ParsingException, ParserFactoryNotInitializedException {
+		Parser<R> p = getParserFactory().getParser(clazz);
 		return p.parseToObject(content);
 	}
 	
@@ -509,10 +528,38 @@ public abstract class Processor {
 	 * 		InputStream holding data parsed from {@link ResourceRepresentation}
 	 * 
 	 * @throws ParsingException
+	 * @throws ParserFactoryNotInitializedException
+	 * 		If no ParserFactory is set
 	 */
-	protected <R extends ResourceRepresentation<?>> InputStream parseToInputStream(R resource) throws ParsingException {
-		Parser<R> p = mParserFactory.getParser(resource.getClass());
+	protected <R extends ResourceRepresentation<?>> InputStream parseToInputStream(R resource) throws ParsingException, ParserFactoryNotInitializedException {
+		Parser<R> p = getParserFactory().getParser(resource.getClass());
 		return p.parseToInputStream(resource);
+	}
+	
+	/**
+	 * Getter for mPersistableFactory
+	 * 
+	 * @return Instance of {@link PersistableFactory}
+	 * 
+	 * @throws PersistableFactoryNotInitializedException 
+	 */
+	protected PersistableFactory getPersistableFactory() throws PersistableFactoryNotInitializedException {
+		if(null == mPersistableFactory)
+			throw new PersistableFactoryNotInitializedException();
+		return mPersistableFactory;
+	}
+	
+	/**
+	 * Getter for mParserFactory
+	 * 
+	 * @return Instance of {@link ParserFactory}
+	 * 
+	 * @throws ParserFactoryNotInitializedException 
+	 */
+	protected ParserFactory getParserFactory() throws ParserFactoryNotInitializedException {
+		if(null == mPersistableFactory)
+			throw new ParserFactoryNotInitializedException();
+		return mParserFactory;
 	}
 
 }

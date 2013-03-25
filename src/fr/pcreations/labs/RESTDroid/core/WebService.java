@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import fr.pcreations.labs.RESTDroid.exceptions.NoPersistableFoundException;
+import fr.pcreations.labs.RESTDroid.exceptions.PersistableFactoryNotInitializedException;
 import fr.pcreations.labs.RESTDroid.exceptions.RequestNotFoundException;
 
 /**
@@ -354,26 +356,34 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	protected void initAndStartService(RESTRequest<? extends ResourceRepresentation<?>> request){
 		Log.i(RestService.TAG, request.toString());
 		boolean proceedRequest = true;
-		if(request.getVerb() != HTTPVerb.GET)
-			proceedRequest = mModule.getProcessor().checkRequest(request);
-		if(proceedRequest) {
-			request.setPending(true);
-			Intent i = new Intent(mContext, RestService.class);
-			i.setData(Uri.parse(request.getUrl()));
-			i.putExtra(RestService.REQUEST_KEY, request);
-			i.putExtra(RestService.RECEIVER_KEY, mReceiver);
-			
-			/* Trigger OnStartedRequest listener */
-			for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
-				RESTRequest<?> r = it.next();
-				if(request.getID().equals(r.getID())) {
-					r.triggerOnStartedRequestListeners();
+		if(request.getVerb() != HTTPVerb.GET) {
+			try {
+				proceedRequest = mModule.getProcessor().checkRequest(request);
+				if(proceedRequest) {
+					request.setPending(true);
+					Intent i = new Intent(mContext, RestService.class);
+					i.setData(Uri.parse(request.getUrl()));
+					i.putExtra(RestService.REQUEST_KEY, request);
+					i.putExtra(RestService.RECEIVER_KEY, mReceiver);
+					
+					/* Trigger OnStartedRequest listener */
+					for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
+						RESTRequest<?> r = it.next();
+						if(request.getID().equals(r.getID())) {
+							r.triggerOnStartedRequestListeners();
+						}
+					}
+					mIntentsMap.put(request.getID(), i);
+					mContext.startService(i);
 				}
+			} catch (NoPersistableFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (PersistableFactoryNotInitializedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			mIntentsMap.put(request.getID(), i);
-			mContext.startService(i);
-		}
-			
+		}	
 	}
 	
 	/**
