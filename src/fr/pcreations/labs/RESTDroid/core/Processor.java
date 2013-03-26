@@ -480,6 +480,8 @@ public abstract class Processor {
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean checkRequest(RESTRequest<? extends Resource> request) {
+		if(null == mPersistableFactory)
+			return true;
 		Resource requestResource = request.getResource();
 		Persistable<ResourceRepresentation<?>> persistable = mPersistableFactory.getPersistable(requestResource.getClass());
 		Resource resource = request.getResource();
