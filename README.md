@@ -1,7 +1,7 @@
 RESTDroid : REST client library for Android
 ===========================================
 
-Alpha release 0.7.2.3 : Testers and contributors are welcome :)
+Alpha release 0.7.2.4 : Testers and contributors are welcome :)
 
 RESTDroid provides a way to handle REST call to REST web-service. RESTDroid only packed fundamental logic to handle request but comes with additionnal logic such as automatic data persistency with remote server. Using or extending this logic is the role of Module. Here you can found severals Module such as an ORMlite-Jackon module to handle data persistence and mapping/parsing.
 
@@ -22,8 +22,8 @@ Futures features for v1
 
 #ROADMAP
 
-*	ResourceList class to handle POJO's list
-*	Give to the user the possibility to choose a cache limit for any request and also a default action when request has failed (such as automatically retry the request every 10s, retry the request when a futur request will be sent successfully, etc.)
+*	ResourceList class to handle POJO's list (in next release)
+*	Give to the user the possibility to choose a cache limit for any request and also a default action when request has failed (such as automatically retry the request every 10s, retry the request when a futur request will be sent successfully, etc.) (in next release)
 *	Use HttpConnection instead of apache HTTP client
 *	Handle authentication and certificate
 *	Create a good Exception handling model
