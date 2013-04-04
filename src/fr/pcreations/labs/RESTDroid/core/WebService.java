@@ -57,7 +57,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	protected List<RESTRequest<? extends Resource>> mRequestCollection;
 	
 	
-	protected RequestQueue mRequestQueue;
+	//protected RequestQueue mRequestQueue;
 	
 	/**
 	 * {@link Module} actually registered to this WebService instance
@@ -96,7 +96,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
         mReceiver.setReceiver(this);
         mRequestCollection = new ArrayList<RESTRequest<? extends Resource>>();
         CacheManager.setCacheDir(context.getCacheDir());
-        mRequestQueue = new RequestQueue();
+        //mRequestQueue = new RequestQueue();
         mIntentsMap = new HashMap<UUID, Intent>();
 	}
 	
@@ -142,7 +142,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
 			r = (RESTRequest<T>) it.next();
 			if(r.isPending()) {
-				Log.e("intentinfo", "PENDING " + r.getID() + " : " + r.getResource().toString());
+				Log.e("intentinfo", "PENDING " + r.getID());
 				if(null == resource) {
 					if(r.getUrl().equals(url) && r.getResourceClass().equals(clazz))
 						return r;
@@ -160,7 +160,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * Pauses all request listeners
 	 * 
 	 * @see RESTRequest#mOnFailedRequestListeners
-	 * @see RESTRequest#mOnFinishedRequestListeners
+	 * @see RESTRequest#mOnSucceedRequestListeners
 	 * @see RESTRequest#mOnStartedRequestListeners
 	 */
 	public void onPause() {
@@ -174,7 +174,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * Resumes all request listeners and if a listener is triggered remove the request from {@link WebService#mRequestCollection}
 	 * 
 	 * @see RESTRequest#mOnFailedRequestListeners
-	 * @see RESTRequest#mOnFinishedRequestListeners
+	 * @see RESTRequest#mOnSucceedRequestListeners
 	 * @see RESTRequest#mOnStartedRequestListeners
 	 */
 	public void onResume() {
@@ -356,7 +356,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		if(!r.isPending())
 			initAndStartService(r);
 		else {
-			Log.i("intentinfo", "REQUEST IS PENDING : " + r.getResource().toString());
+			Log.i("intentinfo", "REQUEST IS PENDING : " + r.getID());
 		}
 	}
 	
@@ -428,8 +428,10 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 				request.setPending(false);
 				if(resultCode >= 200 && resultCode <= 210) {
 					request.setResource(r.getResource());
-					if(request.triggerOnFinishedRequestListeners())
+					if(request.triggerOnSucceedRequestListeners()) {
+						request.triggerOnFinishedRequestListeners();
 						it.remove();
+					}
 					if(request.getVerb() == HTTPVerb.GET && resultCode != 210) {
 						try {
 							CacheManager.cacheRequest(request);
@@ -441,8 +443,9 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 				}
 				else {
 					request.setResource(r.getResource());
-					if(request.triggerOnFailedRequestListeners())
-						it.remove();
+					if(request.triggerOnFailedRequestListeners()) {
+						request.triggerOnFinishedRequestListeners();
+					}
 				}
 				Intent i = resultData.getParcelable(RestService.INTENT_KEY);
 				if(null == mIntentsMap.remove(request.getID()))
@@ -492,4 +495,12 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 			}
 		}
 	}*/
+	
+	public void displayRequest() {
+		Log.i(RestService.TAG, "##### START DISPLAYING REQUEST ####");
+		for(RESTRequest<? extends Resource> r : mRequestCollection) {
+			Log.i(RestService.TAG, "request["+r.getID()+"] = " + r.getResultCode());
+		}
+		Log.i(RestService.TAG, "#####  END DISPLAYING REQUEST  ####");
+	}
 }

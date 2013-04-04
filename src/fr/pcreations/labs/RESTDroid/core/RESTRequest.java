@@ -17,6 +17,7 @@ import android.os.Bundle;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFailedRequestListener;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFinishedRequestListener;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnStartedRequestListener;
+import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnSucceedRequestListener;
 /**
  * <b>Holder class for all request stuff. Provides some listener to handle specific logic in Activity when request starts, succeed or failed</b>
  * 
@@ -178,7 +179,7 @@ public class RESTRequest<T extends Resource> implements Serializable {
 			for(Entry<OnFailedRequestListener, ListenerState> listener : mRequestListeners.getOnFailedRequestListeners().entrySet()) {
 				listener.setValue(ListenerState.UNSET);
 			}
-			for(Entry<OnFinishedRequestListener, ListenerState> listener : mRequestListeners.getOnFinishedRequestListeners().entrySet()) {
+			for(Entry<OnSucceedRequestListener, ListenerState> listener : mRequestListeners.getOnSucceedRequestListeners().entrySet()) {
 				listener.setValue(ListenerState.UNSET);
 			}
 		}
@@ -224,11 +225,11 @@ public class RESTRequest<T extends Resource> implements Serializable {
 						break;
 				}
 			}
-			for(Entry<OnFinishedRequestListener, ListenerState> listener : mRequestListeners.getOnFinishedRequestListeners().entrySet()) {
+			for(Entry<OnSucceedRequestListener, ListenerState> listener : mRequestListeners.getOnSucceedRequestListeners().entrySet()) {
 				switch(listener.getValue()) {
 					case TRIGGER_ME:
 						listener.setValue(ListenerState.TRIGGERED);
-						listener.getKey().onFinishedRequest(mResultCode);
+						listener.getKey().onSucceedRequest(mResultCode);
 						listenerTriggered = true;
 						break;
 					case UNSET:
@@ -306,17 +307,17 @@ public class RESTRequest<T extends Resource> implements Serializable {
 	 * @return
 	 * 		True if a listener was triggered, false otherwise
 	 * 
-	 * @see RequestListeners#mOnFinishedRequestListeners
+	 * @see RequestListeners#mOnSucceedRequestListeners
 	 */
-	public boolean triggerOnFinishedRequestListeners() {
+	public boolean triggerOnSucceedRequestListeners() {
 		boolean listenerFired = false;
 		if(mRequestListeners != null) {
-			for(Entry<OnFinishedRequestListener, ListenerState> listener : mRequestListeners.getOnFinishedRequestListeners().entrySet()) {
+			for(Entry<OnSucceedRequestListener, ListenerState> listener : mRequestListeners.getOnSucceedRequestListeners().entrySet()) {
 				switch(listener.getValue()) {
 					case SET:
 						listener.setValue(ListenerState.TRIGGERED);
 						listenerFired = true;
-						listener.getKey().onFinishedRequest(mResultCode);
+						listener.getKey().onSucceedRequest(mResultCode);
 						break;
 					case UNSET:
 						listener.setValue(ListenerState.TRIGGER_ME);
@@ -346,6 +347,35 @@ public class RESTRequest<T extends Resource> implements Serializable {
 						listener.setValue(ListenerState.TRIGGERED);
 						listenerFired = true;
 						listener.getKey().onFailedRequest(mResultCode);
+						break;
+					case UNSET:
+						listener.setValue(ListenerState.TRIGGER_ME);
+						break;
+					default:
+						break;
+				}
+			}
+		}
+		return listenerFired;
+	}
+	
+	/**
+	 * Triggers {@link OnFinishedRequestListener} if state is set to {@link ListenerState#SET} and updates state to {@link ListenerState#TRIGGERED}. If the listener is unset, state is updated to {@link ListenerState#TRIGGER_ME}
+	 * 
+	 * @return
+	 * 		True if a listener was triggered, false otherwise
+	 * 
+	 * @see RequestListeners#mOnFinishedRequestListeners
+	 */
+	public boolean triggerOnFinishedRequestListeners() {
+		boolean listenerFired = false;
+		if(mRequestListeners != null) {
+			for(Entry<OnFinishedRequestListener, ListenerState> listener : mRequestListeners.getOnFinishedRequestListeners().entrySet()) {
+				switch(listener.getValue()) {
+					case SET:
+						listener.setValue(ListenerState.TRIGGERED);
+						listenerFired = true;
+						listener.getKey().onFinishedRequest(mResultCode);
 						break;
 					case UNSET:
 						listener.setValue(ListenerState.TRIGGER_ME);
