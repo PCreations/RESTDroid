@@ -428,7 +428,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 				request.setPending(false);
 				if(resultCode >= 200 && resultCode <= 210) {
 					request.setResource(r.getResource());
-					if(request.triggerOnFinishedRequestListeners())
+					if(request.triggerOnSucceedRequestListeners())
 						it.remove();
 					if(request.getVerb() == HTTPVerb.GET && resultCode != 210) {
 						try {
