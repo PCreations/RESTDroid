@@ -54,7 +54,7 @@ public class TestRequestListeners extends RequestListeners {
  * 
  * @author Pierre Criulanscy
  * 
- * @version 0.7.2
+ * @version 0.8
  *
  */
 public class RequestListeners {
@@ -214,7 +214,7 @@ public class RequestListeners {
 	 * 
 	 * @author Pierre Criulanscy
 	 * 
-	 * @version 0.7.0
+	 * @version 0.8.0
 	 *
 	 */
 	public interface OnSucceedRequestListener {
