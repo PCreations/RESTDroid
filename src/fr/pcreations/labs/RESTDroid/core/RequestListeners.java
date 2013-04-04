@@ -116,6 +116,7 @@ public class RequestListeners {
 		mOnFailedRequestListeners = new HashMap<OnFailedRequestListener, ListenerState>();
 		mOnSucceedRequestListeners = new HashMap<OnSucceedRequestListener, ListenerState>();
 		mOnStartedRequestListeners = new HashMap<OnStartedRequestListener, ListenerState>();
+		mOnFinishedRequestListeners = new HashMap<OnFinishedRequestListener, ListenerState>();
 	}
 	
 	/**

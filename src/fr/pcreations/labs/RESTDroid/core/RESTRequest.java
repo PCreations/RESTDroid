@@ -15,6 +15,7 @@ import java.util.UUID;
 import android.app.Activity;
 import android.os.Bundle;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFailedRequestListener;
+import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFinishedRequestListener;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnStartedRequestListener;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnSucceedRequestListener;
 /**
@@ -346,6 +347,35 @@ public class RESTRequest<T extends Resource> implements Serializable {
 						listener.setValue(ListenerState.TRIGGERED);
 						listenerFired = true;
 						listener.getKey().onFailedRequest(mResultCode);
+						break;
+					case UNSET:
+						listener.setValue(ListenerState.TRIGGER_ME);
+						break;
+					default:
+						break;
+				}
+			}
+		}
+		return listenerFired;
+	}
+	
+	/**
+	 * Triggers {@link OnFinishedRequestListener} if state is set to {@link ListenerState#SET} and updates state to {@link ListenerState#TRIGGERED}. If the listener is unset, state is updated to {@link ListenerState#TRIGGER_ME}
+	 * 
+	 * @return
+	 * 		True if a listener was triggered, false otherwise
+	 * 
+	 * @see RequestListeners#mOnFinishedRequestListeners
+	 */
+	public boolean triggerOnFinishedRequestListeners() {
+		boolean listenerFired = false;
+		if(mRequestListeners != null) {
+			for(Entry<OnFinishedRequestListener, ListenerState> listener : mRequestListeners.getOnFinishedRequestListeners().entrySet()) {
+				switch(listener.getValue()) {
+					case SET:
+						listener.setValue(ListenerState.TRIGGERED);
+						listenerFired = true;
+						listener.getKey().onFinishedRequest(mResultCode);
 						break;
 					case UNSET:
 						listener.setValue(ListenerState.TRIGGER_ME);

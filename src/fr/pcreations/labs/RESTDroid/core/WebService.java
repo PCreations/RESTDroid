@@ -428,8 +428,10 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 				request.setPending(false);
 				if(resultCode >= 200 && resultCode <= 210) {
 					request.setResource(r.getResource());
-					if(request.triggerOnSucceedRequestListeners())
+					if(request.triggerOnSucceedRequestListeners()) {
+						request.triggerOnFinishedRequestListeners();
 						it.remove();
+					}
 					if(request.getVerb() == HTTPVerb.GET && resultCode != 210) {
 						try {
 							CacheManager.cacheRequest(request);
@@ -441,8 +443,9 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 				}
 				else {
 					request.setResource(r.getResource());
-					if(request.triggerOnFailedRequestListeners())
-						it.remove();
+					if(request.triggerOnFailedRequestListeners()) {
+						request.triggerOnFinishedRequestListeners();
+					}
 				}
 				Intent i = resultData.getParcelable(RestService.INTENT_KEY);
 				if(null == mIntentsMap.remove(request.getID()))
@@ -494,8 +497,10 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	}*/
 	
 	public void displayRequest() {
+		Log.i(RestService.TAG, "##### START DISPLAYING REQUEST ####");
 		for(RESTRequest<? extends Resource> r : mRequestCollection) {
 			Log.i(RestService.TAG, "request["+r.getID()+"] = " + r.getResultCode());
 		}
+		Log.i(RestService.TAG, "#####  END DISPLAYING REQUEST  ####");
 	}
 }
