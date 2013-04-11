@@ -487,12 +487,19 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	/**
 	 * Provides a way to retry failed requests
 	 */
-	/*public void retryFailedRequest() {
+	/*@SuppressWarnings("rawtypes")
+	public void retryFailedRequest() {
 		for(RESTRequest<? extends Resource> r : mRequestCollection) {
-			ResourceRepresentation<?> resource = r.getResource();
-			if(!resource.getTransactingFlag() && resource.getState() != RequestState.STATE_OK && (resource.getResultCode() < 200 || resource.getResultCode() > 210)) {
-				initAndStartService(r);
+			Resource resource = r.getResource();
+			if(null != resource) {
+				if(resource instanceof ResourceRepresentation) {
+					if(!((ResourceRepresentation) resource).getTransactingFlag() && ((ResourceRepresentation) resource).getState() != RequestState.STATE_OK && (((ResourceRepresentation) resource).getResultCode() < 200 || ((ResourceRepresentation) resource).getResultCode() > 210)) {
+						initAndStartService(r);
+					}
+				}
+				
 			}
+			
 		}
 	}*/
 	
