@@ -303,13 +303,7 @@ public abstract class Processor {
             if(null != r.getResourceRepresentation()) {
                 ResourceRepresentation<?> resource = r.getResourceRepresentation();
                 try {
-	                if(resource instanceof ResourceList) {
-	                	for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourceList<?>) resource).getResourcesList().iterator(); it.hasNext();) {
-	                		mirrorServerStateRoutine(r.getVerb(), it.next());
-	                	}
-	                }
-	                else
-	                	mirrorServerStateRoutine(r.getVerb(), resource);
+                	mirrorServerStateRoutine(r.getVerb(), resource);
                 } catch(Exception e) {
 	        	   e.printStackTrace();
 	           }
@@ -358,16 +352,8 @@ public abstract class Processor {
 			if(statusCode >= 200 && statusCode <= 210) {
 	            if(r.getVerb() == HTTPVerb.DELETE) {
 	            	ResourceRepresentation<?> resource = r.getResourceRepresentation();
-	            	if(resource instanceof ResourceList) {
-	                	for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourceList<?>) resource).getResourcesList().iterator(); it.hasNext();) {
-	                		Persistable<ResourceRepresentation<?>> persistable = getResourcePersistable(resource);
-	    	                persistable.deleteResource(it.next());
-	                	}
-	                }
-	                else {
-	                	Persistable<ResourceRepresentation<?>> persistable = getResourcePersistable(resource);
-		                persistable.deleteResource(resource);
-	                }
+                	Persistable<ResourceRepresentation<?>> persistable = getResourcePersistable(resource);
+	                persistable.deleteResource(resource);
 	            }
 	            else if(r.getVerb() == HTTPVerb.GET) {
 	                try {
@@ -378,29 +364,13 @@ public abstract class Processor {
 	    			}
 	                ResourceRepresentation<?> resource = r.getResourceRepresentation();
 	                Persistable<ResourceRepresentation<?>> persistable = getResourcePersistable(resource);
-	                if(resource instanceof ResourceList) {
-	                	for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourceList<?>) resource).getResourcesList().iterator(); it.hasNext();) {
-	                		ResourceRepresentation<?> current = it.next();
-	                		ResourceRepresentation<?> oldResource = persistable.findById(current.getId());
-	    	                persistable.deleteResource(oldResource);
-	                	}
-	                }
-	                else {
-		                ResourceRepresentation<?> oldResource = persistable.findById(resource.getId());
-		                persistable.deleteResource(oldResource);
-	                }
+	                ResourceRepresentation<?> oldResource = persistable.findById(resource.getId());
+	                persistable.deleteResource(oldResource);
 	            }
 			}
             if(r.getResourceRepresentation() != null) { //POST PUT GET
             	ResourceRepresentation<?> resource = r.getResourceRepresentation();
-            	if(resource instanceof ResourceList) {
-            		for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourceList<?>) resource).getResourcesList().iterator(); it.hasNext();) {
-                		updateLocalResourceRoutine(statusCode, it.next());
-                	}
-            	}
-            	else {
-            		updateLocalResourceRoutine(statusCode, resource);
-            	}
+        		updateLocalResourceRoutine(statusCode, resource);
             }
         } catch (Exception e) {
             // TODO Auto-generated catch block
