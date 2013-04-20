@@ -389,7 +389,6 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 				}
 			}
 			mIntentsMap.put(request.getID(), i);
-			Log.i("intentinfo", "PUT " + request.getID());
 			mContext.startService(i);
 		}
 			
@@ -419,6 +418,13 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
 			RESTRequest<?> request = it.next();
 			if(request.getID().equals(r.getID())) {
+				Intent i = resultData.getParcelable(RestService.INTENT_KEY);
+				if(null == mIntentsMap.remove(request.getID()))
+					throw new RuntimeException("Cannot find request in intents map");
+				for(Entry<UUID, Intent> intent : mIntentsMap.entrySet()) {
+					Log.w("intentinfo", intent.getKey().toString());
+				}
+				mContext.stopService(i);
 				try {
 					request.setResultStream(r.getResultStream());
 				} catch (IOException e) {
@@ -431,7 +437,6 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 					request.setResource(r.getResource());
 					if(request.triggerOnSucceedRequestListeners()) {
 						request.triggerOnFinishedRequestListeners();
-						it.remove();
 					}
 					if(request.getVerb() == HTTPVerb.GET && resultCode != 210) {
 						try {
@@ -446,15 +451,10 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 					request.setResource(r.getResource());
 					if(request.triggerOnFailedRequestListeners()) {
 						request.triggerOnFinishedRequestListeners();
+						//removeRequest(request.getID());
+						it.remove();
 					}
 				}
-				Intent i = resultData.getParcelable(RestService.INTENT_KEY);
-				if(null == mIntentsMap.remove(request.getID()))
-					throw new RuntimeException("Cannot find request in intents map");
-				for(Entry<UUID, Intent> intent : mIntentsMap.entrySet()) {
-					Log.w("intentinfo", intent.getKey().toString());
-				}
-				mContext.stopService(i);
 			}
 		}
 		/*if(resultCode >= 200 && resultCode <= 210)

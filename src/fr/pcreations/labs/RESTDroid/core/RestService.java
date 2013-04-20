@@ -1,17 +1,10 @@
 package fr.pcreations.labs.RESTDroid.core;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.UUID;
-import java.util.Map.Entry;
-
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
-import android.util.Log;
 import fr.pcreations.labs.RESTDroid.core.Processor.RESTServiceCallback;
-import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnStartedRequestListener;
 
 /**
  * <b>Service class which hold all process populating an Intent map and calling {@link Processor#process(RESTRequest)}</b>
@@ -58,7 +51,7 @@ public class RestService extends IntentService{
 	}
 	
 	private Intent mCurrentIntent;
-
+	
 	/**
 	 * Receives the intent and starts the request by calling {@link Processor#process(RESTRequest)}
 	 * 
