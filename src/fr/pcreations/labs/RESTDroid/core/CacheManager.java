@@ -25,6 +25,8 @@ public class CacheManager {
 
 	private static File cacheDir;
 	
+	private static PersistableFactory persistableFactory;
+	
 	private CacheManager(){}
 	
 	public static void setCacheDir(File cacheDir) {
@@ -35,31 +37,41 @@ public class CacheManager {
 		return CacheManager.cacheDir;
 	}
 	
+	public static PersistableFactory getPersistableFactory() {
+		return persistableFactory;
+	}
+
+	public static void setPersistableFactory(PersistableFactory persistableFactory) {
+		CacheManager.persistableFactory = persistableFactory;
+	}
+
 	public static void cacheRequest(RESTRequest<? extends Resource> request) throws IOException {
-		InputStream input = request.getResultStream();
-		try {
-		    final File file = new File(CacheManager.getCacheDir(), String.valueOf(request.getUrl().hashCode()));
-		    final OutputStream output = new FileOutputStream(file);
-		    try {
-		        try {
-		            final byte[] buffer = new byte[1024];
-		            int read;
-
-		            while ((read = input.read(buffer)) != -1)
-		                output.write(buffer, 0, read);
-
-		            output.flush();
-		        } finally {
-		            output.close();
-		        }
-		    } catch (Exception e) {
-		        e.printStackTrace();
-		    }
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-		    input.close();
+		if( null == persistableFactory ) {
+			InputStream input = request.getResultStream();
+			try {
+			    final File file = new File(CacheManager.getCacheDir(), String.valueOf(request.getUrl().hashCode()));
+			    final OutputStream output = new FileOutputStream(file);
+			    try {
+			        try {
+			            final byte[] buffer = new byte[1024];
+			            int read;
+	
+			            while ((read = input.read(buffer)) != -1)
+			                output.write(buffer, 0, read);
+	
+			            output.flush();
+			        } finally {
+			            output.close();
+			        }
+			    } catch (Exception e) {
+			        e.printStackTrace();
+			    }
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+			    input.close();
+			}
 		}
 	}
 	

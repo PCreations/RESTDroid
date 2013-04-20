@@ -553,4 +553,14 @@ public abstract class Processor {
 		return p.parseToInputStream(resource);
 	}
 
+	/**
+	 * Getter for {@link Processor#mPersistableFactory}
+	 * 
+	 * @return
+	 * 		The processor's {@link PersistableFactory}
+	 */
+	public PersistableFactory getPersistableFactory() {
+		return mPersistableFactory;
+	}
+
 }
