@@ -36,7 +36,7 @@ import fr.pcreations.labs.RESTDroid.exceptions.RequestNotFoundException;
  * 
  * @author Pierre Criulanscy
  * 
- * @version 0.7.0
+ * @version 0.8.0
  * 
  * @see RESTDroid#getWebService(Class)
  * @see Processor#checkRequest(RESTRequest)
@@ -56,11 +56,9 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	
 	/**
 	 * Collection of {@link RESTRequest}
+	 * Initialized to an instance of CopyOnWriteArrayList to avoid ConcurrentModificationException
 	 */
 	protected List<RESTRequest<? extends Resource>> mRequestCollection;
-	
-	
-	//protected RequestQueue mRequestQueue;
 	
 	/**
 	 * {@link Module} actually registered to this WebService instance
@@ -93,8 +91,18 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @see WebService#mContext
 	 */
 	
+	/**
+	 * Maximum thread pool for ExecutorService instance
+	 * 
+	 * @see WebService#threadExecutor
+	 */
 	private final static int maximumThreadPool = 10;
 	
+	/**
+	 * Instance of ExecutorService. FixedThreadPool by default.
+	 * 
+	 * @see WebService#getThreadExecutor()
+	 */
 	private final static ExecutorService threadExecutor = Executors.newFixedThreadPool(maximumThreadPool);
 	
 	public WebService(Context context) {
@@ -104,7 +112,6 @@ public abstract class WebService implements RestResultReceiver.Receiver{
         mReceiver.setReceiver(this);
         mRequestCollection = new CopyOnWriteArrayList<RESTRequest<? extends Resource>>();
         CacheManager.setCacheDir(context.getCacheDir());
-        //mRequestQueue = new RequestQueue();
         mIntentsMap = new HashMap<UUID, Intent>();
 	}
 	
@@ -472,6 +479,14 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 			retryFailedRequest();*/
 	}
 	
+	/**
+	 * Removes request from {@link WebService#mRequestCollection}.
+	 * Since {@link WebService#mRequestCollection} is an instance of CopyOnWriteArrayList this method is the only way to remove requests.
+	 * 
+	 * @param requestsToRemove
+	 * 
+	 * @see WebService#mRequestCollection
+	 */
 	private void removeRequests(ArrayList<RESTRequest<? extends Resource>> requestsToRemove) {
 		mRequestCollection.removeAll(requestsToRemove);
 	}
