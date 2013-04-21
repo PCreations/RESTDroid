@@ -467,8 +467,6 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 					request.setResource(r.getResource());
 					if(request.triggerOnFailedRequestListeners()) {
 						request.triggerOnFinishedRequestListeners();
-						//removeRequest(request.getID());
-						requestsToRemove.add(request);
 					}
 				}
 			}
