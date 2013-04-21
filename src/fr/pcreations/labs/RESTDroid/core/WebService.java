@@ -115,7 +115,6 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		mModule = m;
 		mModule.init();
 		RestService.setProcessor(mModule.getProcessor());
-		CacheManager.setPersistableFactory(mModule.getProcessor().getPersistableFactory());
 	}
 	
 	/**
