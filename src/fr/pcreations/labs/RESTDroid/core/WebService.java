@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import android.content.Context;
 import android.content.Intent;
@@ -89,6 +91,11 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 * @see WebService#mContext
 	 */
+	
+	private final static int maximumThreadPool = 10;
+	
+	private final static ExecutorService threadExecutor = Executors.newFixedThreadPool(maximumThreadPool);
+	
 	public WebService(Context context) {
 		super();
 		mContext = context;
@@ -436,6 +443,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 					request.setResource(r.getResource());
 					if(request.triggerOnSucceedRequestListeners()) {
 						request.triggerOnFinishedRequestListeners();
+						it.remove();
 					}
 					if(request.getVerb() == HTTPVerb.GET && resultCode != 210) {
 						try {
@@ -510,4 +518,10 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		}
 		Log.i(RestService.TAG, "#####  END DISPLAYING REQUEST  ####");
 	}
+
+	public static ExecutorService getThreadExecutor() {
+		return threadExecutor;
+	}
+	
+	
 }
