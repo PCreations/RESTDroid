@@ -313,12 +313,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		}
 		request = new RESTRequest<R>(generateID(), clazz);
 		request.setResource(resource);
-		Log.v("intentinfo", "REQUEST " + request.getID() + " ADDED : " +(request.getResource() == null ? "null" : request.getResource().toString()));
-		mRequestCollection.add(request);
-		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
-			RESTRequest<?> r = it.next();
-			Log.v("intentinfo", "IN COLLECTION " + r.getID() + " : " + (r.getResource() == null ? "null" : r.getResource().toString()));
-		}
+		//mRequestCollection.add(request);
 		return request;
 	}
 	/**
@@ -368,8 +363,19 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @since 0.7.0
 	 */
 	public void executeRequest(RESTRequest<? extends Resource> r) {
-		if(!r.isPending())
+		if(!r.isPending()) {
+			for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
+				RESTRequest<?> request = it.next();
+				if(request.getUrl().equals(r.getUrl()) && request.getResultCode() != 0 && !(request.getResultCode() >= 200 && request.getResultCode() <=210)) { //et qu'il y a un fail behavior
+					Log.i("intentinfo", "REQUEST HAS ALREADY FAILED : " + r.getID());
+					ArrayList<RESTRequest<?>> toRemove = new ArrayList<RESTRequest<?>>();
+					toRemove.add(request);
+					removeRequests(toRemove);
+				}
+			}
+			mRequestCollection.add(r);
 			initAndStartService(r);
+		}
 		else {
 			Log.i("intentinfo", "REQUEST IS PENDING : " + r.getID());
 		}
