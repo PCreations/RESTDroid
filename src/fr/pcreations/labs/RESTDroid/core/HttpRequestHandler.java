@@ -215,7 +215,7 @@ public class HttpRequestHandler {
 	 * 		InputStream holding post data
 	 */
 	private void processRequest(final RESTRequest<? extends Resource> request, final InputStream holder) {
-		new Thread(new Runnable() {
+		WebService.getThreadExecutor().execute(new Runnable() {
 	        public void run() {
 	    		HTTPContainer currentHttpContainer = httpRequests.get(request.getID());
 	    		HttpResponse response = null;
@@ -259,7 +259,7 @@ public class HttpRequestHandler {
 	    		}
 	    		mProcessorCallback.callAction(statusCode, request);
 	        }
-	    }).start();
+	    });
 	}
 	
 	/**
@@ -270,8 +270,7 @@ public class HttpRequestHandler {
 	 * 
 	 */
 	private void processRequest(final RESTRequest<? extends Resource> request) {
-		Log.e("ormlitejackson", "HTTPRequestHandler processRequest");
-		new Thread(new Runnable() {
+		WebService.getThreadExecutor().execute(new Runnable() {
 	        public void run() {
 	    		HTTPContainer currentHttpContainer = httpRequests.get(request.getID());
 	    		HttpResponse response = null;
@@ -317,7 +316,7 @@ public class HttpRequestHandler {
 	    			}
 	    		}
 	        }
-	    }).start();
+	    });
 	}
 	
 	/**

@@ -7,6 +7,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import android.content.Context;
 import android.content.Intent;
@@ -89,12 +92,17 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 
 	 * @see WebService#mContext
 	 */
+	
+	private final static int maximumThreadPool = 10;
+	
+	private final static ExecutorService threadExecutor = Executors.newFixedThreadPool(maximumThreadPool);
+	
 	public WebService(Context context) {
 		super();
 		mContext = context;
 		mReceiver = new RestResultReceiver(new Handler());
         mReceiver.setReceiver(this);
-        mRequestCollection = new ArrayList<RESTRequest<? extends Resource>>();
+        mRequestCollection = new CopyOnWriteArrayList<RESTRequest<? extends Resource>>();
         CacheManager.setCacheDir(context.getCacheDir());
         //mRequestQueue = new RequestQueue();
         mIntentsMap = new HashMap<UUID, Intent>();
@@ -414,6 +422,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	@Override
 	public void onReceiveResult(int resultCode, Bundle resultData) {
 		RESTRequest<?> r = (RESTRequest<?>) resultData.getSerializable(RestService.REQUEST_KEY);
+		ArrayList<RESTRequest<? extends Resource>> requestsToRemove = new ArrayList<RESTRequest<? extends Resource>>();
 		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
 			RESTRequest<?> request = it.next();
 			if(request.getID().equals(r.getID())) {
@@ -436,6 +445,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 					request.setResource(r.getResource());
 					if(request.triggerOnSucceedRequestListeners()) {
 						request.triggerOnFinishedRequestListeners();
+						requestsToRemove.add(request);
 					}
 					if(request.getVerb() == HTTPVerb.GET && resultCode != 210) {
 						try {
@@ -451,13 +461,19 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 					if(request.triggerOnFailedRequestListeners()) {
 						request.triggerOnFinishedRequestListeners();
 						//removeRequest(request.getID());
-						it.remove();
+						requestsToRemove.add(request);
 					}
 				}
 			}
 		}
+		
+		removeRequests(requestsToRemove);
 		/*if(resultCode >= 200 && resultCode <= 210)
 			retryFailedRequest();*/
+	}
+	
+	private void removeRequests(ArrayList<RESTRequest<? extends Resource>> requestsToRemove) {
+		mRequestCollection.removeAll(requestsToRemove);
 	}
 	
 	/**
@@ -510,4 +526,10 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		}
 		Log.i(RestService.TAG, "#####  END DISPLAYING REQUEST  ####");
 	}
+
+	public static ExecutorService getThreadExecutor() {
+		return threadExecutor;
+	}
+	
+	
 }
