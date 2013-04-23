@@ -38,13 +38,15 @@ User guide
 *	[ORMLiteJacksonModule](https://github.com/PCreations/ORMLiteJacksonModule)
 *	[TestModule](https://github.com/PCreations/RESTDroid-Test-Module) (not up to date)
 
-## Forward and return path schema :
+## Forward and return path schema (not up to date):
 
-![Forward and return parth schema](http://pcreations.fr/labs/RESTDroid/RESTPattern.png)
+![Forward and return path schema](http://pcreations.fr/labs/RESTDroid/RESTPattern.png)
 
 ## User guide
 
 ### Getting started
+
+__Complete guides, FAQ and documentation available soon on my website__
 
 Download RESTDroid library and add it to your Android project. Update your android manifest :
 
