@@ -204,9 +204,28 @@ public abstract class Processor {
 	}
 	
 	public void onFailedRequest(WebService context, int statusCode, RESTRequest<? extends Resource> request) {
-		/*if(request.getFailBehavior() instanceof DefaultFailBehavior && request.getFailBehavior().getClass().equals(DefaultFailBehavior.class)) {
-			req++++5FSDuest.getFailBehavior().failAction(request);
-		}*/
+		Log.e("DEBUG", "ON FAILED REQUEST PROCESSOR");
+		/*
+		 * Hook for UniqueAlarmFailBehavior
+		 */
+		try {
+			FailBehaviorManager.trigger(context, UniqueAlarmFailBehavior.class);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void onSucceedRequest(WebService context, int statusCode, RESTRequest<? extends Resource> request) {

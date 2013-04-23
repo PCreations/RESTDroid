@@ -51,7 +51,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	/**
 	 * Current application context
 	 */
-	protected Context mContext;
+	private Context mContext;
 	
 	/**
 	 * Collection of {@link RESTRequest}
@@ -580,6 +580,14 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	public static void setRequestsCollection(
 			CopyOnWriteArrayList<RESTRequest<? extends Resource>> requestsCollection) {
 		WebService.requestsCollection = requestsCollection;
+	}
+	
+	public Context getApplicationContext() {
+		return mContext;
+	}
+
+	public void setApplicationContext(Context context) {
+		this.mContext = context;
 	}
 
 	public Class<? extends FailBehavior> getDefaultFailBehavior() {
