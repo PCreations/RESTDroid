@@ -1,4 +1,11 @@
-#change log 0.7.2.3
+#Change log 0.8
+*   You can now send and receive ResourceRepresentation list via ResourcesList interface
+*   You can easily manage caching your request thanks to CacheManager
+*   An ExecutorService is now used to manage thread pool
+*   Failed request are automatically handle by FailBehavior and FailBehaviorManager
+*   Fixed bug when trying to chain request in instance of RequestListeners class (thank you to Olivier Bregeras to have pointed me out this error)
+
+#Change log 0.7.2.3
 *	Hotfixes : Remove useless import android.download.Request and rename MainActivity of RESTDroid project
 
 #Change log 0.7.2.2
