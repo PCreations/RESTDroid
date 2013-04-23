@@ -1,3 +1,6 @@
+#Change log 0.8.1
+*   Rename OnSucceedRequestListener to OnSucceededRequestListener
+
 #Change log 0.8
 *   You can now send and receive ResourceRepresentation list via ResourcesList interface
 *   You can easily manage caching your request thanks to CacheManager
