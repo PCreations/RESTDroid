@@ -1,9 +1,5 @@
 package fr.pcreations.labs.RESTDroid.core;
 
-import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFailedRequestListener;
-import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFinishedRequestListener;
-import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnStartedRequestListener;
-
 /**
  * <b>Enum which represents ListenerState</b>
  * 
@@ -18,11 +14,11 @@ import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnStartedRequestListen
  * 
  * @author Pierre Criulanscy
  * 
- * @version 0.5
+ * @version 0.8
  * 
  * @see OnStartedRequestListener
  * @see OnFailedRequestListener
- * @see OnFinishedRequestListener
+ * @see OnSucceedRequestListener
  */
 public enum ListenerState {
 	SET,

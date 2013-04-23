@@ -8,8 +8,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import android.util.Log;
-
 /**
  * <b>Holder class for request listeners</b>
  * 
@@ -26,9 +24,9 @@ public class TestRequestListeners extends RequestListeners {
 		
 	};
 	
-	private OnFinishedRequestListener onFinished = new OnFinishedRequestListener() {
+	private OnSucceedRequestListener onSucceed = new OnSucceedRequestListener() {
 
-		public void onFinishedRequest(int resultCode) {
+		public void onSucceedRequest(int resultCode) {
 			//TODO
 		}
 		
@@ -42,11 +40,20 @@ public class TestRequestListeners extends RequestListeners {
 		
 	};
 	
+	private OnFinishedRequestListener onFinished = new OnFinishedRequestListener() {
+		
+		public void onFinishedRequest(int resultCode) {
+			//TODO
+		}
+		
+	};
+	
 	public TestRequestListeners() {
 		super();
 		addOnStartedRequestListener(onStart);
-		addOnFinishedRequestListener(onFinished);
+		addOnSucceedRequestListener(onSucceed);
 		addOnFailedRequestListener(onFailed);
+		addOnFinishedRequestListener(onFinished);
 	}
 }
  * </pre>
@@ -54,7 +61,7 @@ public class TestRequestListeners extends RequestListeners {
  * 
  * @author Pierre Criulanscy
  * 
- * @version 0.7.2
+ * @version 0.8
  *
  */
 public class RequestListeners {
@@ -70,14 +77,14 @@ public class RequestListeners {
 	protected transient HashMap<OnStartedRequestListener, ListenerState> mOnStartedRequestListeners;
 	
 	/**
-	 * HashMap of onFinishedRequestListener. Fires if value is set to true.
+	 * HashMap of onSucceedRequestListener. Fires if value is set to true.
 	 * 
-	 * @see OnFinishedRequestListener
+	 * @see OnSucceedRequestListener
 	 * @see ListenerState
-	 * @see RequestListeners#getOnFinishedRequestListeners()
+	 * @see RequestListeners#getOnSucceedRequestListeners()
 	 * @see RequestListeners#setOnFinishedRequestListeners(OnFinishedRequestListeners)
 	 */
-	protected transient HashMap<OnFinishedRequestListener, ListenerState> mOnFinishedRequestListeners;
+	protected transient HashMap<OnSucceedRequestListener, ListenerState> mOnSucceedRequestListeners;
 	
 	/**
 	 * HashMap of onFailedRequestListener. Fires if value is set to true.
@@ -90,16 +97,27 @@ public class RequestListeners {
 	protected transient HashMap<OnFailedRequestListener, ListenerState> mOnFailedRequestListeners;
 	
 	/**
+	 * HashMap of onFinishedRequestListener. Fires if value is set to true.
+	 * 
+	 * @see OnFinishedRequestListener
+	 * @see ListenerState
+	 * @see RequestListeners#getOnFinishedRequestListeners()
+	 * @see RequestListeners#setOnFinishedRequestListeners(OnFinishedRequestListeners)
+	 */
+	protected transient HashMap<OnFinishedRequestListener, ListenerState> mOnFinishedRequestListeners;
+	
+	/**
 	 * {@link RESTRequest} holding by this {@link RequestListeners} class
 	 * 
 	 * @see RequestListeners#setRequest(RESTRequest);
 	 */
-	protected transient RESTRequest<? extends ResourceRepresentation<?>> mRequest;
+	protected transient RESTRequest<? extends Resource> mRequest;
 	
 	public RequestListeners() {
 		mOnFailedRequestListeners = new HashMap<OnFailedRequestListener, ListenerState>();
-		mOnFinishedRequestListeners = new HashMap<OnFinishedRequestListener, ListenerState>();
+		mOnSucceedRequestListeners = new HashMap<OnSucceedRequestListener, ListenerState>();
 		mOnStartedRequestListeners = new HashMap<OnStartedRequestListener, ListenerState>();
+		mOnFinishedRequestListeners = new HashMap<OnFinishedRequestListener, ListenerState>();
 	}
 	
 	/**
@@ -108,7 +126,7 @@ public class RequestListeners {
 	 * @param r
 	 * 		Instance of {@link RESTRequest}
 	 */
-	public void setRequest(RESTRequest<? extends ResourceRepresentation<?>> r) {
+	public void setRequest(RESTRequest<? extends Resource> r) {
 		mRequest = r;
 	}
 	
@@ -128,18 +146,18 @@ public class RequestListeners {
 	}
 	
 	/**
-	 * Add {@link OnFinishedRequestListener} listener
+	 * Add {@link OnSucceedRequestListener} listener
 	 * 
 	 * @param listener
-	 * 		Instance of {@link OnFinishedRequestListener}
+	 * 		Instance of {@link OnSucceedRequestListener}
 	 * 
-	 * @see OnFinishedRequestListener
-	 * @see RequestListeners#mOnFinishedRequestListeners
-	 * @see RequestListeners#getOnFinishedRequestListeners()
+	 * @see OnSucceedRequestListener
+	 * @see RequestListeners#mOnSucceedRequestListeners
+	 * @see RequestListeners#getOnSucceedRequestListeners()
 	 */
-	public void addOnFinishedRequestListener(OnFinishedRequestListener listener) {		
-		if(!mOnFinishedRequestListeners.containsKey(listener))
-			mOnFinishedRequestListeners.put(listener, ListenerState.SET);
+	public void addOnSucceedRequestListener(OnSucceedRequestListener listener) {		
+		if(!mOnSucceedRequestListeners.containsKey(listener))
+			mOnSucceedRequestListeners.put(listener, ListenerState.SET);
 	}
 	
 	/**
@@ -158,6 +176,21 @@ public class RequestListeners {
 	}
 	
 	/**
+	 * Add {@link OnFinishedRequestListener} listener
+	 * 
+	 * @param listener
+	 * 		Instance of {@link OnFinishedRequestListener}
+	 * 
+	 * @see OnFinishedRequestListener
+	 * @see RequestListeners#mOnFinishedRequestListeners
+	 * @see RequestListeners#getOnFinishedRequestListeners()
+	 */
+	public void addOnFinishedRequestListener(OnFinishedRequestListener listener) {
+		if(!mOnFinishedRequestListeners.containsKey(listener))
+			mOnFinishedRequestListeners.put(listener, ListenerState.SET);
+	}
+	
+	/**
 	 * @return
 	 * 		{@link RequestListeners#mOnStartedRequestListeners}
 	 * 
@@ -171,14 +204,14 @@ public class RequestListeners {
 	
 	/**
 	 * @return
-	 * 		{@link RequestListeners#mOnFinishedRequestListeners}
+	 * 		{@link RequestListeners#mOnSucceedRequestListeners}
 	 * 
 	 * @see OnFinishedRequestListeners
-	 * @see RequestListeners#mOnFinishedRequestListeners
-	 * @see RequestListeners#addOnFinishedRequestListener(OnFinishedRequestListener)
+	 * @see RequestListeners#mOnSucceedRequestListeners
+	 * @see RequestListeners#addOnSucceedRequestListener(OnSucceedRequestListener)
 	 */
-	public HashMap<OnFinishedRequestListener, ListenerState> getOnFinishedRequestListeners() {
-		return mOnFinishedRequestListeners;
+	public HashMap<OnSucceedRequestListener, ListenerState> getOnSucceedRequestListeners() {
+		return mOnSucceedRequestListeners;
 	}
 	
 	/**
@@ -191,6 +224,18 @@ public class RequestListeners {
 	 */
 	public HashMap<OnFailedRequestListener, ListenerState> getOnFailedRequestListeners() {
 		return mOnFailedRequestListeners;
+	}
+	
+	/**
+	 * @return
+	 * 		{@link RequestListeners#mOnFinishedRequestListeners}
+	 * 
+	 * @see OnFinishedRequestListeners
+	 * @see RequestListeners#mOnFinishedRequestListeners
+	 * @see RequestListeners#addOnFinishedRequestListener(OnFinishedRequestListener)
+	 */
+	public HashMap<OnFinishedRequestListener, ListenerState> getOnFinishedRequestListeners() {
+		return mOnFinishedRequestListeners;
 	}
 	
 	/**
@@ -214,10 +259,10 @@ public class RequestListeners {
 	 * 
 	 * @author Pierre Criulanscy
 	 * 
-	 * @version 0.7.0
+	 * @version 0.8.0
 	 *
 	 */
-	public interface OnFinishedRequestListener {
+	public interface OnSucceedRequestListener {
 		
 		/**
 		 * Logic to executes when a {@link RESTRequest} finished
@@ -225,7 +270,7 @@ public class RequestListeners {
 		 * @param resultCode
 		 * 		The result code resulting of all process
 		 */
-        public abstract void onFinishedRequest(int resultCode);
+        public abstract void onSucceedRequest(int resultCode);
     }
 	
 	/**
@@ -244,6 +289,24 @@ public class RequestListeners {
 		 * 		The result code resulting of all process
 		 */
 		public abstract void onFailedRequest(int resultCode);
+	}
+	
+	/**
+	 * <b>Listener for {@link RESTRequest} finished state (whether the request succeeded or failed)</b>
+	 * 
+	 * @author Pierre Criulanscy
+	 * 
+	 * @version 0.8.0
+	 */
+	public interface OnFinishedRequestListener {
+		
+		/**
+		 * Logic to executes when {@link RESTRequest} is finished
+		 * 
+		 * @param resultCode
+		 * 		The result code resulting of all process
+		 */
+		public abstract void onFinishedRequest(int resultCode);
 	}
 	
 	/**
@@ -284,6 +347,24 @@ public class RequestListeners {
 		}
         
         return null;
+	}
+
+	/**
+	 * Resets all listeners by setting the state of all listeners to {@link ListenerState#SET}
+	 */
+	public void resetAllListeners() {
+		for(Entry<OnFinishedRequestListener, ListenerState> listener : mOnFinishedRequestListeners.entrySet()) {
+			listener.setValue(ListenerState.SET);
+		}
+		for(Entry<OnFailedRequestListener, ListenerState> listener : mOnFailedRequestListeners.entrySet()) {
+			listener.setValue(ListenerState.SET);
+		}
+		for(Entry<OnSucceedRequestListener, ListenerState> listener : mOnSucceedRequestListeners.entrySet()) {
+			listener.setValue(ListenerState.SET);
+		}
+		for(Entry<OnStartedRequestListener, ListenerState> listener : mOnStartedRequestListeners.entrySet()) {
+			listener.setValue(ListenerState.SET);
+		}
 	}
 	
 }

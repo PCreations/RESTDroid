@@ -43,15 +43,15 @@ public class RestService extends IntentService{
 	 */
 	private static Processor processor = null;
 	
-	private Intent mCurrentIntent;
-	
 	/**
 	 * Constructor
 	 */
 	public RestService() {
 		super("RestService");
 	}
-
+	
+	private Intent mCurrentIntent;
+	
 	/**
 	 * Receives the intent and starts the request by calling {@link Processor#process(RESTRequest)}
 	 * 
@@ -60,14 +60,14 @@ public class RestService extends IntentService{
 	 */
 	@Override
 	protected void onHandleIntent(Intent intent){
+		mCurrentIntent = intent;
 		Bundle bundle = intent.getExtras();
 		@SuppressWarnings("unchecked")
-		RESTRequest<ResourceRepresentation<?>> r = (RESTRequest<ResourceRepresentation<?>>) bundle.getSerializable(RestService.REQUEST_KEY);
-		mCurrentIntent = intent;
+		RESTRequest<? extends Resource> r = (RESTRequest<? extends Resource>) bundle.getSerializable(RestService.REQUEST_KEY);
 		RestService.processor.setRESTServiceCallback(new RESTServiceCallback() {
 
 			@Override
-			public void callAction(int statusCode, RESTRequest<ResourceRepresentation<?>> r) {
+			public void callAction(int statusCode, RESTRequest<? extends Resource> r) {
 				// TODO Auto-generated method stub
 				handleRESTServiceCallback(statusCode, r);
 			}
@@ -83,7 +83,7 @@ public class RestService extends IntentService{
 	
 	/**
 	 * Handles the binder callback fires by the Processor in {@link Processor#postRequestProcess(int, RESTRequest, java.io.InputStream)}
-	 * Current intent is retrieved in {@link RestService#mIntentsMap} in order to send results to {@link RestResultReceiver}
+	 * Current intent is retrieved in {@link RestService#intentsMap} in order to send results to {@link RestResultReceiver}
 	 * 
 	 * @param statusCode
 	 * 		The status code resulting of all process
@@ -93,9 +93,9 @@ public class RestService extends IntentService{
 	 * 
 	 * @see Processor#postRequestProcess(int, RESTRequest, java.io.InputStream)
 	 * @see RestResultReceiver
-	 * @see RestService#mIntentsMap
+	 * @see RestService#intentsMap
 	 */
-	private void handleRESTServiceCallback(int statusCode, RESTRequest<ResourceRepresentation<?>> r) {
+	private void handleRESTServiceCallback(int statusCode, RESTRequest<? extends Resource> r) {
 		Bundle bundle = mCurrentIntent.getExtras();
 		ResultReceiver receiver = bundle.getParcelable(RestService.RECEIVER_KEY);
 		//Log.e(RestService.TAG, "resource dans handleRESTServiceCallback = " + r.getResourceRepresentation().toString());

@@ -1,10 +1,11 @@
-#change log 0.7.2.5
-*	Hotfix: Delete reference to ResourceList class
+#Change log 0.8
+*   You can now send and receive ResourceRepresentation list via ResourcesList interface
+*   You can easily manage caching your request thanks to CacheManager
+*   An ExecutorService is now used to manage thread pool
+*   Failed request are automatically handle by FailBehavior and FailBehaviorManager
+*   Fixed bug when trying to chain request in instance of RequestListeners class (thank you to Olivier Bregeras to have pointed me out this error)
 
-#change log 0.7.2.4
-* Hotfixes : Intent maps is now stored in WebService class not in RestService class. WebService tries to retrieve pending request only if request is GET or DELETE
-
-#change log 0.7.2.3
+#Change log 0.7.2.3
 *	Hotfixes : Remove useless import android.download.Request and rename MainActivity of RESTDroid project
 
 #Change log 0.7.2.2

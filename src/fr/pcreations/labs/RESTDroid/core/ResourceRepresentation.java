@@ -1,6 +1,5 @@
 package fr.pcreations.labs.RESTDroid.core;
 
-import java.io.Serializable;
 
 /**
  * <b>Interface which represents application items that have to be synchronized with the server</b>
@@ -12,7 +11,7 @@ import java.io.Serializable;
  * 
  * @version 0.5
  */
-public interface ResourceRepresentation<ID> extends Serializable {
+public interface ResourceRepresentation<ID> extends Resource {
 	
 	/**
 	 * Getter for id field

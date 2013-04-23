@@ -20,13 +20,13 @@ abstract public class ParserFactory {
 	 * </ul>
 	 * </p>
 	 */
-	protected HashMap<Class<? extends ResourceRepresentation<?>>, Parser<? extends ResourceRepresentation<?>>> mParserMap;
+	protected HashMap<Class<? extends Resource>, Parser<? extends Resource>> mParserMap;
 	
 	/**
 	 * Constructor
 	 */
 	protected ParserFactory() {
-		mParserMap = new HashMap<Class<? extends ResourceRepresentation<?>>, Parser<? extends ResourceRepresentation<?>>>();
+		mParserMap = new HashMap<Class<? extends Resource>, Parser<? extends Resource>>();
 	}
 	
 	/**
@@ -47,6 +47,6 @@ return (P) mParserMap.get(clazz);
 	 * @return
 	 * 		Instance of {@link Parser}
 	 */
-	public abstract <P extends Parser<T>, T extends ResourceRepresentation<?>> P getParser(Class<T> clazz); 
+	public abstract <P extends Parser<T>, T extends Resource> P getParser(Class<T> clazz); 
 	
 }
