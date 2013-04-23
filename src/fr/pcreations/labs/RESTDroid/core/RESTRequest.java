@@ -18,7 +18,7 @@ import android.util.Log;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFailedRequestListener;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFinishedRequestListener;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnStartedRequestListener;
-import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnSucceedRequestListener;
+import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnSucceededRequestListener;
 /**
  * <b>Holder class for all request stuff. Provides some listener to handle specific logic in Activity when request starts, succeed or failed</b>
  * 
@@ -182,7 +182,7 @@ public class RESTRequest<T extends Resource> implements Serializable {
 			for(Entry<OnFailedRequestListener, ListenerState> listener : mRequestListeners.getOnFailedRequestListeners().entrySet()) {
 				listener.setValue(ListenerState.UNSET);
 			}
-			for(Entry<OnSucceedRequestListener, ListenerState> listener : mRequestListeners.getOnSucceedRequestListeners().entrySet()) {
+			for(Entry<OnSucceededRequestListener, ListenerState> listener : mRequestListeners.getOnSucceedRequestListeners().entrySet()) {
 				listener.setValue(ListenerState.UNSET);
 			}
 		}
@@ -228,11 +228,11 @@ public class RESTRequest<T extends Resource> implements Serializable {
 						break;
 				}
 			}
-			for(Entry<OnSucceedRequestListener, ListenerState> listener : mRequestListeners.getOnSucceedRequestListeners().entrySet()) {
+			for(Entry<OnSucceededRequestListener, ListenerState> listener : mRequestListeners.getOnSucceedRequestListeners().entrySet()) {
 				switch(listener.getValue()) {
 					case TRIGGER_ME:
 						listener.setValue(ListenerState.TRIGGERED);
-						listener.getKey().onSucceedRequest(mResultCode);
+						listener.getKey().onSucceededRequest(mResultCode);
 						listenerTriggered = true;
 						break;
 					case UNSET:
@@ -310,17 +310,17 @@ public class RESTRequest<T extends Resource> implements Serializable {
 	 * @return
 	 * 		True if a listener was triggered, false otherwise
 	 * 
-	 * @see RequestListeners#mOnSucceedRequestListeners
+	 * @see RequestListeners#mOnSucceededRequestListeners
 	 */
 	public boolean triggerOnSucceedRequestListeners() {
 		boolean listenerFired = false;
 		if(mRequestListeners != null) {
-			for(Entry<OnSucceedRequestListener, ListenerState> listener : mRequestListeners.getOnSucceedRequestListeners().entrySet()) {
+			for(Entry<OnSucceededRequestListener, ListenerState> listener : mRequestListeners.getOnSucceedRequestListeners().entrySet()) {
 				switch(listener.getValue()) {
 					case SET:
 						listener.setValue(ListenerState.TRIGGERED);
 						listenerFired = true;
-						listener.getKey().onSucceedRequest(mResultCode);
+						listener.getKey().onSucceededRequest(mResultCode);
 						break;
 					case UNSET:
 						listener.setValue(ListenerState.TRIGGER_ME);
