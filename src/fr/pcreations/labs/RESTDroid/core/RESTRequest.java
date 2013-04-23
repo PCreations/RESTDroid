@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFailedRequestListener;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFinishedRequestListener;
 import fr.pcreations.labs.RESTDroid.core.RequestListeners.OnStartedRequestListener;
@@ -126,6 +127,8 @@ public class RESTRequest<T extends Resource> implements Serializable {
 	 *  @since 0.7.1
 	 */
 	private transient RequestListeners mRequestListeners;
+	
+	private Class<? extends FailBehavior> mFailBehaviorClass;
 	
 	private long mExpirationTime;
 	
@@ -294,7 +297,7 @@ public class RESTRequest<T extends Resource> implements Serializable {
 						listener.setValue(ListenerState.TRIGGER_ME);
 						break;
 					default:
-						break;
+						Log.e("CAN'T TRIGGER STARTED REQUEST LISTENER", listener.getValue().toString());
 				}
 			}
 		}
@@ -700,6 +703,14 @@ public class RESTRequest<T extends Resource> implements Serializable {
 		return mExpirationTime;
 	}
 	
+	public Class<? extends FailBehavior> getFailBehaviorClass() {
+		return mFailBehaviorClass;
+	}
+
+	public void setFailBehaviorClass(Class<? extends FailBehavior> failBehaviorClass) {
+		this.mFailBehaviorClass = failBehaviorClass;
+	}
+
 	public String toString() {
 		String str = "";
 		str += null != mID ? "Request[id] = " +mID.toString() : "Request[id] = null";

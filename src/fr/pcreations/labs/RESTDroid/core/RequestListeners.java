@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 /**
  * <b>Holder class for request listeners</b>
@@ -346,6 +347,21 @@ public class RequestListeners {
 		}
         
         return null;
+	}
+
+	public void resetAllListeners() {
+		for(Entry<OnFinishedRequestListener, ListenerState> listener : mOnFinishedRequestListeners.entrySet()) {
+			listener.setValue(ListenerState.SET);
+		}
+		for(Entry<OnFailedRequestListener, ListenerState> listener : mOnFailedRequestListeners.entrySet()) {
+			listener.setValue(ListenerState.SET);
+		}
+		for(Entry<OnSucceedRequestListener, ListenerState> listener : mOnSucceedRequestListeners.entrySet()) {
+			listener.setValue(ListenerState.SET);
+		}
+		for(Entry<OnStartedRequestListener, ListenerState> listener : mOnStartedRequestListeners.entrySet()) {
+			listener.setValue(ListenerState.SET);
+		}
 	}
 	
 }
