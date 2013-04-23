@@ -188,7 +188,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * Pauses all request listeners
 	 * 
 	 * @see RESTRequest#mOnFailedRequestListeners
-	 * @see RESTRequest#mOnSucceedRequestListeners
+	 * @see RESTRequest#mOnSucceededRequestListeners
 	 * @see RESTRequest#mOnStartedRequestListeners
 	 */
 	public void onPause() {
@@ -202,7 +202,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * Resumes all request listeners and if a listener is triggered remove the request from {@link WebService#requestsCollection}
 	 * 
 	 * @see RESTRequest#mOnFailedRequestListeners
-	 * @see RESTRequest#mOnSucceedRequestListeners
+	 * @see RESTRequest#mOnSucceededRequestListeners
 	 * @see RESTRequest#mOnStartedRequestListeners
 	 */
 	public void onResume() {

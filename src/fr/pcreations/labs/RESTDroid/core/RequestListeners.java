@@ -79,12 +79,12 @@ public class RequestListeners {
 	/**
 	 * HashMap of onSucceedRequestListener. Fires if value is set to true.
 	 * 
-	 * @see OnSucceedRequestListener
+	 * @see OnSucceededRequestListener
 	 * @see ListenerState
 	 * @see RequestListeners#getOnSucceedRequestListeners()
 	 * @see RequestListeners#setOnFinishedRequestListeners(OnFinishedRequestListeners)
 	 */
-	protected transient HashMap<OnSucceedRequestListener, ListenerState> mOnSucceedRequestListeners;
+	protected transient HashMap<OnSucceededRequestListener, ListenerState> mOnSucceededRequestListeners;
 	
 	/**
 	 * HashMap of onFailedRequestListener. Fires if value is set to true.
@@ -115,7 +115,7 @@ public class RequestListeners {
 	
 	public RequestListeners() {
 		mOnFailedRequestListeners = new HashMap<OnFailedRequestListener, ListenerState>();
-		mOnSucceedRequestListeners = new HashMap<OnSucceedRequestListener, ListenerState>();
+		mOnSucceededRequestListeners = new HashMap<OnSucceededRequestListener, ListenerState>();
 		mOnStartedRequestListeners = new HashMap<OnStartedRequestListener, ListenerState>();
 		mOnFinishedRequestListeners = new HashMap<OnFinishedRequestListener, ListenerState>();
 	}
@@ -146,18 +146,18 @@ public class RequestListeners {
 	}
 	
 	/**
-	 * Add {@link OnSucceedRequestListener} listener
+	 * Add {@link OnSucceededRequestListener} listener
 	 * 
 	 * @param listener
-	 * 		Instance of {@link OnSucceedRequestListener}
+	 * 		Instance of {@link OnSucceededRequestListener}
 	 * 
-	 * @see OnSucceedRequestListener
-	 * @see RequestListeners#mOnSucceedRequestListeners
+	 * @see OnSucceededRequestListener
+	 * @see RequestListeners#mOnSucceededRequestListeners
 	 * @see RequestListeners#getOnSucceedRequestListeners()
 	 */
-	public void addOnSucceedRequestListener(OnSucceedRequestListener listener) {		
-		if(!mOnSucceedRequestListeners.containsKey(listener))
-			mOnSucceedRequestListeners.put(listener, ListenerState.SET);
+	public void addOnSucceedRequestListener(OnSucceededRequestListener listener) {		
+		if(!mOnSucceededRequestListeners.containsKey(listener))
+			mOnSucceededRequestListeners.put(listener, ListenerState.SET);
 	}
 	
 	/**
@@ -204,14 +204,14 @@ public class RequestListeners {
 	
 	/**
 	 * @return
-	 * 		{@link RequestListeners#mOnSucceedRequestListeners}
+	 * 		{@link RequestListeners#mOnSucceededRequestListeners}
 	 * 
 	 * @see OnFinishedRequestListeners
-	 * @see RequestListeners#mOnSucceedRequestListeners
-	 * @see RequestListeners#addOnSucceedRequestListener(OnSucceedRequestListener)
+	 * @see RequestListeners#mOnSucceededRequestListeners
+	 * @see RequestListeners#addOnSucceedRequestListener(OnSucceededRequestListener)
 	 */
-	public HashMap<OnSucceedRequestListener, ListenerState> getOnSucceedRequestListeners() {
-		return mOnSucceedRequestListeners;
+	public HashMap<OnSucceededRequestListener, ListenerState> getOnSucceedRequestListeners() {
+		return mOnSucceededRequestListeners;
 	}
 	
 	/**
@@ -262,7 +262,7 @@ public class RequestListeners {
 	 * @version 0.8.0
 	 *
 	 */
-	public interface OnSucceedRequestListener {
+	public interface OnSucceededRequestListener {
 		
 		/**
 		 * Logic to executes when a {@link RESTRequest} finished
@@ -270,7 +270,7 @@ public class RequestListeners {
 		 * @param resultCode
 		 * 		The result code resulting of all process
 		 */
-        public abstract void onSucceedRequest(int resultCode);
+        public abstract void onSucceededRequest(int resultCode);
     }
 	
 	/**
@@ -359,7 +359,7 @@ public class RequestListeners {
 		for(Entry<OnFailedRequestListener, ListenerState> listener : mOnFailedRequestListeners.entrySet()) {
 			listener.setValue(ListenerState.SET);
 		}
-		for(Entry<OnSucceedRequestListener, ListenerState> listener : mOnSucceedRequestListeners.entrySet()) {
+		for(Entry<OnSucceededRequestListener, ListenerState> listener : mOnSucceededRequestListeners.entrySet()) {
 			listener.setValue(ListenerState.SET);
 		}
 		for(Entry<OnStartedRequestListener, ListenerState> listener : mOnStartedRequestListeners.entrySet()) {

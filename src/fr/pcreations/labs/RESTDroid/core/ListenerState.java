@@ -18,7 +18,7 @@ package fr.pcreations.labs.RESTDroid.core;
  * 
  * @see OnStartedRequestListener
  * @see OnFailedRequestListener
- * @see OnSucceedRequestListener
+ * @see OnSucceededRequestListener
  */
 public enum ListenerState {
 	SET,
