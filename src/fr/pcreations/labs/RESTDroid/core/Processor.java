@@ -209,7 +209,7 @@ public abstract class Processor {
 		 * Hook for UniqueAlarmFailBehavior
 		 */
 		try {
-			FailBehaviorManager.trigger(context, UniqueAlarmFailBehavior.class);
+			FailBehaviorManager.trigger(context, DefaultRetryAtDelayedTimeFailBehavior.class);
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

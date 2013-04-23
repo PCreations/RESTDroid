@@ -3,8 +3,6 @@ package fr.pcreations.labs.RESTDroid.core;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import android.util.Log;
-
 public class RetryWhenOtherSucceedFailBehavior extends FailBehavior {
 
 	
