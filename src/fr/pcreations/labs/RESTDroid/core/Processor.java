@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 
-import android.content.Context;
 import android.util.Log;
 import fr.pcreations.labs.RESTDroid.core.HttpRequestHandler.ProcessorCallback;
 import fr.pcreations.labs.RESTDroid.exceptions.ParsingException;
@@ -201,6 +201,53 @@ public abstract class Processor {
 	protected void handleHttpRequestHandlerCallback(int statusCode, RESTRequest<? extends Resource> request) {
         statusCode = postRequestProcess(statusCode, request, request.getResultStream());
 		mRESTServiceCallback.callAction(statusCode, request);
+	}
+	
+	public void onFailedRequest(WebService context, int statusCode, RESTRequest<? extends Resource> request) {
+		Log.e("DEBUG", "ON FAILED REQUEST PROCESSOR");
+		/*
+		 * Hook for UniqueAlarmFailBehavior
+		 */
+		try {
+			FailBehaviorManager.trigger(context, DefaultRetryAtDelayedTimeFailBehavior.class);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void onSucceedRequest(WebService context, int statusCode, RESTRequest<? extends Resource> request) {
+		Log.e("DEBUG", "ON SUCCEED REQUEST PROCESSOR");
+		try {
+			FailBehaviorManager.trigger(context, RetryWhenOtherSucceedFailBehavior.class);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	protected String inputStreamToString(InputStream is) {

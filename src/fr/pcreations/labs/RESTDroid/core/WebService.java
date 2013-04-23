@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -29,7 +28,7 @@ import fr.pcreations.labs.RESTDroid.exceptions.RequestNotFoundException;
  * <ul>
  * <li>Check if the request has to be re-sent or not via {@link Processor#checkRequest(RESTRequest)}</li>
  * <li>Create the request Intent</li>
- * <li>Add the {@link RESTRequest} in {@link WebService#mRequestCollection}</li>
+ * <li>Add the {@link RESTRequest} in {@link WebService#requestsCollection}</li>
  * <li>Start the service</li>
  * </ul>
  * </p>
@@ -52,18 +51,20 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	/**
 	 * Current application context
 	 */
-	protected Context mContext;
+	private Context mContext;
 	
 	/**
 	 * Collection of {@link RESTRequest}
 	 * Initialized to an instance of CopyOnWriteArrayList to avoid ConcurrentModificationException
 	 */
-	protected List<RESTRequest<? extends Resource>> mRequestCollection;
+	private static CopyOnWriteArrayList<RESTRequest<? extends Resource>> requestsCollection;
 	
 	/**
 	 * {@link Module} actually registered to this WebService instance
 	 */
 	protected Module mModule;
+	
+	private Class<? extends FailBehavior> mDefaultFailBehavior = null;
 	
 	/**
 	 * HashMap which stores intent generated for specific {@link RESTRequest}
@@ -105,13 +106,13 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 */
 	private final static ExecutorService threadExecutor = Executors.newFixedThreadPool(maximumThreadPool);
 	
-	public WebService(Context context) {
+	public WebService(Context pContext) {
 		super();
-		mContext = context;
+		mContext = pContext;
 		mReceiver = new RestResultReceiver(new Handler());
         mReceiver.setReceiver(this);
-        mRequestCollection = new CopyOnWriteArrayList<RESTRequest<? extends Resource>>();
-        CacheManager.setCacheDir(context.getCacheDir());
+        requestsCollection = new CopyOnWriteArrayList<RESTRequest<? extends Resource>>();
+        CacheManager.setCacheDir(mContext.getCacheDir());
         mIntentsMap = new HashMap<UUID, Intent>();
 	}
 	
@@ -133,7 +134,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	}
 	
 	/**
-	 * Factory of {@link RESTRequest}. Adds {@link RESTRequest} instance in {@link WebService#mRequestCollection} or retrieve it
+	 * Factory of {@link RESTRequest}. Adds {@link RESTRequest} instance in {@link WebService#requestsCollection} or retrieve it
 	 * 
 	 * @param clazz
 	 * 		Class object of the {@link ResourceRepresentation} which {@link RESTRequest} is dealing with
@@ -142,7 +143,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * 		Instance of {@link RESTRequest}
 	 * 
 	 * @see RESTRequest
-	 * @see WebService#mRequestCollection
+	 * @see WebService#requestsCollection
 	 * 
 	 * @since 0.6.0
 	 */
@@ -150,11 +151,11 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	protected <T extends Resource> RESTRequest<T> retrieveRequest(Class<T> clazz, String url, Resource resource) {
 		RESTRequest<T> r;
 		Log.w("intentinfo", "ACTUAL RESOURCE : " + (null == resource ? "null" : resource.toString()));
-		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
+		for(Iterator<RESTRequest<?>> it = requestsCollection.iterator(); it.hasNext();) {
 			RESTRequest<?> request = it.next();
 			Log.v("intentinfo", "IN RESOURCES COLLECTION " + request.getID() + " : " + (request.getResource() == null ? "null" : request.getResource().toString()));
 		}
-		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
+		for(Iterator<RESTRequest<?>> it = requestsCollection.iterator(); it.hasNext();) {
 			r = (RESTRequest<T>) it.next();
 			if(r.isPending()) {
 				Log.e("intentinfo", "PENDING " + r.getID());
@@ -179,21 +180,21 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @see RESTRequest#mOnStartedRequestListeners
 	 */
 	public void onPause() {
-		for(Iterator<RESTRequest<? extends Resource>> it = mRequestCollection.iterator(); it.hasNext();) {
+		for(Iterator<RESTRequest<? extends Resource>> it = requestsCollection.iterator(); it.hasNext();) {
 			RESTRequest<? extends Resource> r = it.next();
 			r.pauseListeners();
 		}
 	}
 	
 	/**
-	 * Resumes all request listeners and if a listener is triggered remove the request from {@link WebService#mRequestCollection}
+	 * Resumes all request listeners and if a listener is triggered remove the request from {@link WebService#requestsCollection}
 	 * 
 	 * @see RESTRequest#mOnFailedRequestListeners
 	 * @see RESTRequest#mOnSucceedRequestListeners
 	 * @see RESTRequest#mOnStartedRequestListeners
 	 */
 	public void onResume() {
-		for(Iterator<RESTRequest<? extends Resource>> it = mRequestCollection.iterator(); it.hasNext();) {
+		for(Iterator<RESTRequest<? extends Resource>> it = requestsCollection.iterator(); it.hasNext();) {
 			RESTRequest<? extends Resource> r = it.next();
 			if(r.resumeListeners())
 				it.remove();
@@ -215,7 +216,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		RESTRequest<R> request = requestRoutine(clazz, uri, null, true);
 		request.setExpirationTime(expirationTime);
 		initRequest(request, HTTPVerb.GET,  uri);
-		Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "SIZE = " + String.valueOf(mRequestCollection.size()));
+		Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "SIZE = " + String.valueOf(requestsCollection.size()));
 		return request;
 	}
 	
@@ -313,9 +314,11 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		}
 		request = new RESTRequest<R>(generateID(), clazz);
 		request.setResource(resource);
+		request.setFailBehaviorClass(mDefaultFailBehavior);
 		//mRequestCollection.add(request);
 		return request;
 	}
+	
 	/**
 	 * Initializes a request by setting verb and uri
 	 * 
@@ -364,16 +367,21 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 */
 	public void executeRequest(RESTRequest<? extends Resource> r) {
 		if(!r.isPending()) {
-			for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
+			ArrayList<RESTRequest<?>> toRemove = new ArrayList<RESTRequest<?>>();
+			for(Iterator<RESTRequest<?>> it = requestsCollection.iterator(); it.hasNext();) {
 				RESTRequest<?> request = it.next();
-				if(request.getUrl().equals(r.getUrl()) && request.getResultCode() != 0 && !(request.getResultCode() >= 200 && request.getResultCode() <=210)) { //et qu'il y a un fail behavior
-					Log.i("intentinfo", "REQUEST HAS ALREADY FAILED : " + r.getID());
-					ArrayList<RESTRequest<?>> toRemove = new ArrayList<RESTRequest<?>>();
-					toRemove.add(request);
-					removeRequests(toRemove);
+				if(request.getUrl().equals(r.getUrl())) {
+					if(request.getResultCode() != 0 && !(request.getResultCode() >= 200 && request.getResultCode() <= 210)) { //If the request has failed
+						if(request.getFailBehaviorClass() != null) {
+							Log.e("intentinfo", "REQUEST HAS FAILED SO FUCK U");
+							return;
+						}
+						toRemove.add(request);
+						removeRequests(toRemove);
+					}
 				}
 			}
-			mRequestCollection.add(r);
+			requestsCollection.add(r);
 			initAndStartService(r);
 		}
 		else {
@@ -390,7 +398,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @see Processor#checkRequest(RESTRequest)
 	 */
 	protected void initAndStartService(RESTRequest<? extends Resource> request){
-		Log.i(RestService.TAG, request.toString());
+		Log.i(RestService.TAG, "initAndStartService : " + request.toString());
 		boolean proceedRequest = true;
 		if(request.getVerb() != HTTPVerb.GET)
 			proceedRequest = mModule.getProcessor().checkRequest(request);
@@ -402,7 +410,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 			i.putExtra(RestService.RECEIVER_KEY, mReceiver);
 			
 			/* Trigger OnStartedRequest listener */
-			for(Iterator<RESTRequest<? extends Resource>> it = mRequestCollection.iterator(); it.hasNext();) {
+			for(Iterator<RESTRequest<? extends Resource>> it = requestsCollection.iterator(); it.hasNext();) {
 				RESTRequest<? extends Resource> r = it.next();
 				if(request.getID().equals(r.getID())) {
 					r.triggerOnStartedRequestListeners();
@@ -413,6 +421,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		}
 			
 	}
+	
 	
 	/**
 	 * Generates a unique ID
@@ -436,7 +445,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	public void onReceiveResult(int resultCode, Bundle resultData) {
 		RESTRequest<?> r = (RESTRequest<?>) resultData.getSerializable(RestService.REQUEST_KEY);
 		ArrayList<RESTRequest<? extends Resource>> requestsToRemove = new ArrayList<RESTRequest<? extends Resource>>();
-		for(Iterator<RESTRequest<?>> it = mRequestCollection.iterator(); it.hasNext();) {
+		for(Iterator<RESTRequest<?>> it = requestsCollection.iterator(); it.hasNext();) {
 			RESTRequest<?> request = it.next();
 			if(request.getID().equals(r.getID())) {
 				Intent i = resultData.getParcelable(RestService.INTENT_KEY);
@@ -468,12 +477,14 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 							e.printStackTrace();
 						}
 					}
+					mModule.getProcessor().onSucceedRequest(this, resultCode, request);
 				}
 				else {
 					request.setResource(r.getResource());
 					if(request.triggerOnFailedRequestListeners()) {
 						request.triggerOnFinishedRequestListeners();
 					}
+					mModule.getProcessor().onFailedRequest(this, resultCode,  request);
 				}
 			}
 		}
@@ -483,20 +494,49 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 			retryFailedRequest();*/
 	}
 	
-	/**
-	 * Removes request from {@link WebService#mRequestCollection}.
-	 * Since {@link WebService#mRequestCollection} is an instance of CopyOnWriteArrayList this method is the only way to remove requests.
-	 * 
-	 * @param requestsToRemove
-	 * 
-	 * @see WebService#mRequestCollection
-	 */
-	private void removeRequests(ArrayList<RESTRequest<? extends Resource>> requestsToRemove) {
-		mRequestCollection.removeAll(requestsToRemove);
+	public void retryRequest(RESTRequest<? extends Resource> request) {
+		ArrayList<RESTRequest<? extends Resource>> requestToRemove = new ArrayList<RESTRequest<? extends Resource>>();
+		requestToRemove.add(request);
+		request.setResultCode(0);
+		request.getRequestListeners().resetAllListeners();
+		if(request.getVerb() != HTTPVerb.GET) {
+			if(request.getResource() != null) {
+				if(request.getResource() instanceof ResourceRepresentation) {
+					((ResourceRepresentation<?>)request.getResource()).setResultCode(0);
+					((ResourceRepresentation<?>)request.getResource()).setTransactingFlag(false);
+				}
+				else if(request.getResource() instanceof ResourcesList){
+					ResourcesList resourcesList = ((ResourcesList)request.getResource());
+					for(Iterator<? extends ResourceRepresentation<?>> it = resourcesList.getResourcesList().iterator(); it.hasNext();) {
+						ResourceRepresentation<?> resource = it.next();
+						resource.setResultCode(0);
+						resource.setTransactingFlag(false);
+					}
+				}
+			}
+		}
+		else {
+			request.setResource(null);
+		}
+		removeRequests(requestToRemove);
+		requestsCollection.add(request);
+		initAndStartService(request);	
 	}
 	
 	/**
-	 * Getter for retrieve specific {@link RESTRequest} in {@link WebService#mRequestCollection}
+	 * Removes request from {@link WebService#requestsCollection}.
+	 * Since {@link WebService#requestsCollection} is an instance of CopyOnWriteArrayList this method is the only way to remove requests.
+	 * 
+	 * @param requestsToRemove
+	 * 
+	 * @see WebService#requestsCollection
+	 */
+	private void removeRequests(ArrayList<RESTRequest<? extends Resource>> requestsToRemove) {
+		requestsCollection.removeAll(requestsToRemove);
+	}
+	
+	/**
+	 * Getter for retrieve specific {@link RESTRequest} in {@link WebService#requestsCollection}
 	 * 
 	 * FIXME !
 	 * 
@@ -512,43 +552,60 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends Resource> RESTRequest<T> getRequest(UUID requestID, Class<T> clazz) throws RequestNotFoundException {
-		for(RESTRequest<? extends Resource> r : mRequestCollection) {
+		for(Iterator<RESTRequest<?>> it = requestsCollection.iterator(); it.hasNext();) {
+			RESTRequest<?> r = it.next();
 			if(r.getID().equals(requestID))
 				return (RESTRequest<T>) r;
 		}
 		throw new RequestNotFoundException(requestID);
 	}
 	
-	/**
-	 * Provides a way to retry failed requests
-	 */
-	/*@SuppressWarnings("rawtypes")
-	public void retryFailedRequest() {
-		for(RESTRequest<? extends Resource> r : mRequestCollection) {
-			Resource resource = r.getResource();
-			if(null != resource) {
-				if(resource instanceof ResourceRepresentation) {
-					if(!((ResourceRepresentation) resource).getTransactingFlag() && ((ResourceRepresentation) resource).getState() != RequestState.STATE_OK && (((ResourceRepresentation) resource).getResultCode() < 200 || ((ResourceRepresentation) resource).getResultCode() > 210)) {
-						initAndStartService(r);
-					}
-				}
-				
-			}
-			
-		}
-	}*/
-	
 	public void displayRequest() {
 		Log.i(RestService.TAG, "##### START DISPLAYING REQUEST ####");
-		for(RESTRequest<? extends Resource> r : mRequestCollection) {
-			Log.i(RestService.TAG, "request["+r.getID()+"] = " + r.getResultCode());
+		for(RESTRequest<? extends Resource> r : requestsCollection) {
+			Log.i(RestService.TAG, "request["+r.getID()+"] FailClass = "+String.valueOf(r.getFailBehaviorClass()));
 		}
 		Log.i(RestService.TAG, "#####  END DISPLAYING REQUEST  ####");
+	}
+	
+	protected static CopyOnWriteArrayList<RESTRequest<? extends Resource>> getFailedRequests() {
+		CopyOnWriteArrayList<RESTRequest<? extends Resource>> failedRequests = new CopyOnWriteArrayList<RESTRequest<? extends Resource>>();
+		for(Iterator<RESTRequest<?>> it = requestsCollection.iterator(); it.hasNext();) {
+			RESTRequest<?> request = it.next();
+			if(!(request.getResultCode() >= 200 && request.getResultCode() <=210)) {
+				failedRequests.add(request);
+			}
+		}
+		return failedRequests;
+	}
+
+	public static CopyOnWriteArrayList<RESTRequest<? extends Resource>> getRequestsCollection() {
+		return requestsCollection;
+	}
+
+	public static void setRequestsCollection(
+			CopyOnWriteArrayList<RESTRequest<? extends Resource>> requestsCollection) {
+		WebService.requestsCollection = requestsCollection;
+	}
+	
+	public Context getApplicationContext() {
+		return mContext;
+	}
+
+	public void setApplicationContext(Context context) {
+		this.mContext = context;
+	}
+
+	public Class<? extends FailBehavior> getDefaultFailBehavior() {
+		return mDefaultFailBehavior;
+	}
+
+	public void setDefaultFailBehavior(Class<? extends FailBehavior> defaultFailBehavior) {
+		this.mDefaultFailBehavior = defaultFailBehavior;
 	}
 
 	public static ExecutorService getThreadExecutor() {
 		return threadExecutor;
 	}
-	
-	
+
 }
