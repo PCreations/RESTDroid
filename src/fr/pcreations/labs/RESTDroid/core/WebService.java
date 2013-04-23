@@ -367,12 +367,18 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 */
 	public void executeRequest(RESTRequest<? extends Resource> r) {
 		if(!r.isPending()) {
+			ArrayList<RESTRequest<?>> toRemove = new ArrayList<RESTRequest<?>>();
 			for(Iterator<RESTRequest<?>> it = requestsCollection.iterator(); it.hasNext();) {
 				RESTRequest<?> request = it.next();
-				if(request.getFailBehaviorClass() != null && request.getUrl().equals(r.getUrl()) && request.getResultCode() != 0 && !(request.getResultCode() >= 200 && request.getResultCode() <=210)) { //et qu'il y a un fail behavior
-					ArrayList<RESTRequest<?>> toRemove = new ArrayList<RESTRequest<?>>();
-					toRemove.add(request);
-					removeRequests(toRemove);
+				if(request.getUrl().equals(r.getUrl())) {
+					if(request.getResultCode() != 0 && !(request.getResultCode() >= 200 && request.getResultCode() <= 210)) { //If the request has failed
+						if(request.getFailBehaviorClass() != null) {
+							Log.e("intentinfo", "REQUEST HAS FAILED SO FUCK U");
+							return;
+						}
+						toRemove.add(request);
+						removeRequests(toRemove);
+					}
 				}
 			}
 			requestsCollection.add(r);
