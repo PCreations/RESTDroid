@@ -19,7 +19,7 @@ import fr.pcreations.labs.RESTDroid.exceptions.PersistableFactoryNotInitializedE
  * 
  * @author Pierre Criulanscy
  * 
- * @version 0.7.2
+ * @version 0.8
  *
  */
 public abstract class Processor {
@@ -203,8 +203,19 @@ public abstract class Processor {
 		mRESTServiceCallback.callAction(statusCode, request);
 	}
 	
+	/**
+	 * Hook to execute actions on failed request. This method actually set up the hook for {@link DefaultRetryAtDelayedTimeFailBehavior} so don't forget to call super.onFailedRequest on your custom Processor class
+	 * 
+	 * @param context
+	 * 		Instance of {@link WebService} within which the specified request is running
+	 * 
+	 * @param statusCode
+	 * 		Status code of failed request
+	 * 
+	 * @param request
+	 * 		The request which has just failed
+	 */
 	public void onFailedRequest(WebService context, int statusCode, RESTRequest<? extends Resource> request) {
-		Log.e("DEBUG", "ON FAILED REQUEST PROCESSOR");
 		/*
 		 * Hook for UniqueAlarmFailBehavior
 		 */
@@ -228,8 +239,19 @@ public abstract class Processor {
 		}
 	}
 	
+	/**
+	 * Hook to execute actions on succeed request. This method actually set up the hook for {@link RetryWhenOtherSucceedFailBehavior} so don't forget to call super.onFailedRequest on your custom Processor class
+	 * 
+	 * @param context
+	 * 		Instance of {@link WebService} within which the specified request is running
+	 * 
+	 * @param statusCode
+	 * 		Status code of succeed request
+	 * 
+	 * @param request
+	 * 		The request which has just succeed
+	 */
 	public void onSucceedRequest(WebService context, int statusCode, RESTRequest<? extends Resource> request) {
-		Log.e("DEBUG", "ON SUCCEED REQUEST PROCESSOR");
 		try {
 			FailBehaviorManager.trigger(context, RetryWhenOtherSucceedFailBehavior.class);
 		} catch (IllegalArgumentException e) {
@@ -473,9 +495,8 @@ public abstract class Processor {
         }
 		return statusCode;
 	}
-	
+
 	protected void updateLocalResourceRoutine(int statusCode, ResourceRepresentation<?> resource) throws Exception {
-		Log.i("UPDATE", "updateLocalResource");
 		Persistable<Resource> persistable = getResourcePersistable(resource);
 		resource.setResultCode(statusCode);
 		resource.setTransactingFlag(false);

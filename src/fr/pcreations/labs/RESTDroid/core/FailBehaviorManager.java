@@ -8,12 +8,42 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * <b>Manages triggering of request's {@link FailBehavior}</b>
+ * 
+ * @author Pierre Criulanscy
+ *
+ * @version 0.8
+ */
 public class FailBehaviorManager {
 	
+	/**
+	 * HashMap to store instance of FailBehavior as singletons
+	 * 
+	 * <p><ul>
+	 * 	<li><b>key</b> : Class object of {@link FailBehavior} class</li>
+	 * 	<li><b>value</b> : Instance of {@link FailBehavior} store as singleton</li>
+	 * </ul></p>
+	 */
 	private static HashMap<Class<? extends FailBehavior>, FailBehavior> failBehaviors = new HashMap<Class<? extends FailBehavior>, FailBehavior>();
 
 	private FailBehaviorManager() {}
 	
+	/**
+	 * Triggers the specified {@link FailBehavior} for each failed request which defines it as behavior of failure
+	 *   
+	 * @param context
+	 * 		Instance of {@link WebService} within which the specified request is running
+	 * 
+	 * @param failBehaviorClass
+	 * 		The {@link FailBehavior} Class object to trigger
+	 * 
+	 * @throws NoSuchMethodException
+	 * @throws IllegalArgumentException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 */
 	public static void trigger(WebService context, Class<? extends FailBehavior> failBehaviorClass) throws NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		CopyOnWriteArrayList<RESTRequest<? extends Resource>> failedRequests = WebService.getFailedRequests();
 		

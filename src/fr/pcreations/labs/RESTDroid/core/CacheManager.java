@@ -10,11 +10,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 
-import android.util.Log;
-
+/**
+ * <b>CacheManager handles caching request in flat file</b>
+ * 
+ * @author Pierre Criulanscy
+ * 
+ * @version 0.8
+ */
 public class CacheManager {
 	
-	public static final long DURATION_NO_CACHE = 0L; 
+	/**
+	 * Don't use caching for this request
+	 */
+	public static final long DURATION_NO_CACHE = 0L;
+	
 	public static final long DURATION_ONE_SECOND = 1000L;
 	public static final long DURATION_ONE_MINUTE = 60 * DURATION_ONE_SECOND;
 	public static final long DURATION_ONE_HOUR = 60 * DURATION_ONE_MINUTE;
@@ -23,18 +32,41 @@ public class CacheManager {
 	public static final long DURATION_ONE_MONTH = 30 * DURATION_ONE_WEEK;
 	public static final long DURATION_ONE_YEAR = 365 * DURATION_ONE_DAY;
 
+	/**
+	 * Android cache directory
+	 */
 	private static File cacheDir;
 	
 	private CacheManager(){}
 	
+	/**
+	 * Setter for {@link CacheManager#cacheDir}
+	 * 
+	 * @param cacheDir
+	 * 		The directory used for caching
+	 */
 	public static void setCacheDir(File cacheDir) {
 		CacheManager.cacheDir = cacheDir;
 	}
 	
+	/**
+	 * Getter for {@link CacheManager#cacheDir}
+	 * 
+	 * @return
+	 * 		{@link CacheManager#cacheDir}
+	 */
 	public static File getCacheDir() {
 		return CacheManager.cacheDir;
 	}
 	
+	/**
+	 * Cache request in {@link CacheManager#cacheDir}
+	 * 
+	 * @param request
+	 * 		The request to cache
+	 * 
+	 * @throws IOException
+	 */
 	public static void cacheRequest(RESTRequest<? extends Resource> request) throws IOException {
 		InputStream input = request.getResultStream();
 		try {
@@ -63,6 +95,14 @@ public class CacheManager {
 		}
 	}
 	
+	/**
+	 * Retrieves a {@link RESTRequest} from cache
+	 * 
+	 * @param r
+	 * 		The {@link RESTRequest} to retrieve
+	 * 
+	 * @return
+	 */
 	public static InputStream getRequestFromCache(RESTRequest<? extends Resource> r) {
 		InputStream input = null;
 		int requestHashcode = r.getUrl().hashCode();
@@ -72,7 +112,6 @@ public class CacheManager {
 		    final File file = new File(CacheManager.getCacheDir(), String.valueOf(requestHashcode));
 		    if(file.exists()) {
 		    	long lastModifiedTime = file.lastModified();
-		    	long expirationTime = r.getExpirationTime();
 		    	long difference = actualTime - lastModifiedTime;
 		    	if(actualTime - file.lastModified() <= r.getExpirationTime()) {
 			    	input = new BufferedInputStream(new FileInputStream(file));
@@ -82,9 +121,6 @@ public class CacheManager {
 				    return input;
 		    	}
 		    	return null;
-		    }
-		    else {
-		    	Log.e("fs","dsd");
 		    }
 		} catch(Exception e) {
 		    e.printStackTrace();  

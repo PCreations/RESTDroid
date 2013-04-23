@@ -349,6 +349,9 @@ public class RequestListeners {
         return null;
 	}
 
+	/**
+	 * Resets all listeners by setting the state of all listeners to {@link ListenerState#SET}
+	 */
 	public void resetAllListeners() {
 		for(Entry<OnFinishedRequestListener, ListenerState> listener : mOnFinishedRequestListeners.entrySet()) {
 			listener.setValue(ListenerState.SET);

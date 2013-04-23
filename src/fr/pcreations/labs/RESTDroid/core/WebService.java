@@ -35,7 +35,7 @@ import fr.pcreations.labs.RESTDroid.exceptions.RequestNotFoundException;
  * 
  * @author Pierre Criulanscy
  * 
- * @version 0.8.0
+ * @version 0.8
  * 
  * @see RESTDroid#getWebService(Class)
  * @see Processor#checkRequest(RESTRequest)
@@ -64,6 +64,12 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 */
 	protected Module mModule;
 	
+	/**
+	 * Default {@link FailBehavior} to use for all request sent by this WebService
+	 * 
+	 * @see WebService#getDefaultFailBehavior()
+	 * @see WebService#setDefaultFailBehavior(Class)
+	 */
 	private Class<? extends FailBehavior> mDefaultFailBehavior = null;
 	
 	/**
@@ -106,9 +112,15 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 */
 	private final static ExecutorService threadExecutor = Executors.newFixedThreadPool(maximumThreadPool);
 	
-	public WebService(Context pContext) {
+	/**
+	 * Default constructor. When overriding it you can call {@link WebService#setDefaultFailBehavior(Class)} to set the default {@link FailBehavior} for all request sent by this WebService 
+	 * 
+	 * @param context
+	 * 		The application context
+	 */
+	public WebService(Context context) {
 		super();
-		mContext = pContext;
+		mContext = context;
 		mReceiver = new RestResultReceiver(new Handler());
         mReceiver.setReceiver(this);
         requestsCollection = new CopyOnWriteArrayList<RESTRequest<? extends Resource>>();
@@ -202,7 +214,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	}
 	
 	/**
-	 * Initializes and prepares a GET request or retrieve it if already pending.
+	 * Initializes and prepares a GET request or retrieve it from cache if needed or if the request is already pending
 	 * 
 	 * @param clazz
 	 * 		Class of ResourceRepresentation holds by request
@@ -210,24 +222,30 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	 * @param uri
 	 * 		Uri to fetch
 	 * 
+	 * @param expirationTime
+	 * 		The expiration time used to know when this request has to be resent and not be retrieved from cache
+	 * 
 	 * @see WebService#get(RESTRequest, String, Bundle)
+	 * @see CacheManager
 	 */
 	protected <R extends Resource> RESTRequest<R> get(Class<R> clazz, String uri, long expirationTime) {
 		RESTRequest<R> request = requestRoutine(clazz, uri, null, true);
 		request.setExpirationTime(expirationTime);
 		initRequest(request, HTTPVerb.GET,  uri);
-		Log.w("fr.pcreations.labs.RESTDROID.sample.DebugWebService.TAG", "SIZE = " + String.valueOf(requestsCollection.size()));
 		return request;
 	}
 	
 	/**
-	 * Initializes and prepares a GET request or retrieve it if already pending.
+	 * Initializes and prepares a GET request or retrieve it from cache if needed or if the request is already pending
 	 * 
 	 * @param clazz
 	 * 		Class of ResourceRepresentation holds by request
 	 * 
 	 * @param uri
 	 * 		Uri to fetch
+	 * 
+	 * @param expirationTime
+	 * 		The expiration time used to know when this request has to be resent and not be retrieved from cache
 	 * 
 	 * @param extraParams
 	 * 		Extra parameters
@@ -494,6 +512,15 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 			retryFailedRequest();*/
 	}
 	
+	/**
+	 * Retries a request by resetting it result code, it {@link RequestListeners}, it {@link Resource} and initializes and starts the service
+	 * 
+	 * @param request
+	 * 		The request to retry
+	 * 
+	 * @see RequestListeners#resetAllListeners()
+	 * @see WebService#initAndStartService(RESTRequest)
+	 */
 	public void retryRequest(RESTRequest<? extends Resource> request) {
 		ArrayList<RESTRequest<? extends Resource>> requestToRemove = new ArrayList<RESTRequest<? extends Resource>>();
 		requestToRemove.add(request);
@@ -568,7 +595,13 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		Log.i(RestService.TAG, "#####  END DISPLAYING REQUEST  ####");
 	}
 	
-	protected static CopyOnWriteArrayList<RESTRequest<? extends Resource>> getFailedRequests() {
+	/**
+	 * Returns all failed {@link RESTRequest}
+	 * 
+	 * @return
+	 * 		All failed {@link RESTRequest}
+	 */
+	public static CopyOnWriteArrayList<RESTRequest<? extends Resource>> getFailedRequests() {
 		CopyOnWriteArrayList<RESTRequest<? extends Resource>> failedRequests = new CopyOnWriteArrayList<RESTRequest<? extends Resource>>();
 		for(Iterator<RESTRequest<?>> it = requestsCollection.iterator(); it.hasNext();) {
 			RESTRequest<?> request = it.next();
@@ -578,32 +611,65 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		}
 		return failedRequests;
 	}
-
-	public static CopyOnWriteArrayList<RESTRequest<? extends Resource>> getRequestsCollection() {
-		return requestsCollection;
-	}
-
-	public static void setRequestsCollection(
-			CopyOnWriteArrayList<RESTRequest<? extends Resource>> requestsCollection) {
-		WebService.requestsCollection = requestsCollection;
-	}
 	
+	/**
+	 * Getter for {@link WebService#mContext}
+	 * 
+	 * @return
+	 * 		The application context for this WebService
+	 * 
+	 * @see WebService#mContext
+	 * @see WebService#setApplicationContext(Context)
+	 */
 	public Context getApplicationContext() {
 		return mContext;
 	}
 
+	/**
+	 * Setter for {@link WebService#mContext}
+	 * 
+	 * @param context
+	 * 		The application context for this WebService
+	 * 
+	 * @see WebService#mContext
+	 * @see WebService#getApplicationContext()
+	 */
 	public void setApplicationContext(Context context) {
 		this.mContext = context;
 	}
 
+	/**
+	 * Getter for {@link WebService#mDefaultFailBehavior}
+	 * 
+	 * @return
+	 * 		Class object of the default {@link FailBehavior} for this WebService
+	 * 
+	 * @see WebService#mDefaultFailBehavior
+	 * @see WebService#setDefaultFailBehavior(Class)
+	 */
 	public Class<? extends FailBehavior> getDefaultFailBehavior() {
 		return mDefaultFailBehavior;
 	}
-
+	
+	/**
+	 * Setter for {@link WebService#mDefaultFailBehavior}
+	 * 
+	 * @param defaultFailBehavior
+	 * 		Class object of the default {@link FailBehavior} for this WebService
+	 * 
+	 * @see WebService#mDefaultFailBehavior
+	 * @see WebService#getDefaultFailBehavior()
+	 */
 	public void setDefaultFailBehavior(Class<? extends FailBehavior> defaultFailBehavior) {
 		this.mDefaultFailBehavior = defaultFailBehavior;
 	}
-
+	
+	/**
+	 * Return the instance of ExecutorService used to manage threads
+	 * 
+	 * @return
+	 * 		Instance of ExecutorService
+	 */
 	public static ExecutorService getThreadExecutor() {
 		return threadExecutor;
 	}
