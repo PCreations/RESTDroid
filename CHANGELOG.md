@@ -1,3 +1,6 @@
+#Change log 0.8.1.1
+*   Processor#preRequestProcess() method now mirrors the server state by default if the processor has a PersistableFactory
+
 #Change log 0.8.1
 *   Rename OnSucceedRequestListener to OnSucceededRequestListener
 
