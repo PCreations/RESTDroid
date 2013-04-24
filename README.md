@@ -1,7 +1,7 @@
 RESTDroid : REST client library for Android
 ===========================================
 
-Alpha release 0.8.1 : Testers and contributors are welcome :)
+Alpha release 0.8.1.1 : Testers and contributors are welcome :)
 
 RESTDroid provides a way to handle REST call to REST web-service. RESTDroid only packed fundamental logic to handle request but comes with additionnal logic such as automatic data persistency with remote server. Using or extending this logic is the role of Module. Here you can found severals Module such as an ORMlite-Jackon module to handle data persistence and mapping/parsing.
 

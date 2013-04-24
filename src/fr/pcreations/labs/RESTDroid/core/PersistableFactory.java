@@ -50,6 +50,6 @@ return persistable;
 	 * @see Persistable
 	 * @see ResourceRepresentation
 	 */
-	public abstract <P extends Persistable<T>, T extends Resource> P getPersistable(Class<T> clazz);
+	public abstract <P extends Persistable<R>, R extends Resource> P getPersistable(Class<R> clazz);
 	
 }

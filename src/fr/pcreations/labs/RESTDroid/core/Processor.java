@@ -54,14 +54,18 @@ public abstract class Processor {
 	}
 
 	/**
-	 * Hook for logic just before the request is executed (regardless of the request's HTTP verb)
+	 * Hook for logic just before the request is executed (regardless of the request's HTTP verb). By default this method mirror the server state in local database if this Processor has a {@link PersistableFactory}
 	 * 
 	 * @param r
 	 * 		The {@link RESTRequest} instance
 	 * 
 	 * @throws Exception
 	 */
-	abstract protected void preRequestProcess(RESTRequest<? extends Resource> r) throws Exception;
+	protected void preRequestProcess(RESTRequest<? extends Resource> r) throws Exception {
+		if(mPersistableFactory != null) {
+			mirrorServerState(r);
+		}
+	}
 	
 	/**
 	 * Hook for logic just before a GET request
