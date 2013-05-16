@@ -208,8 +208,11 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 	public void onResume() {
 		for(Iterator<RESTRequest<? extends Resource>> it = requestsCollection.iterator(); it.hasNext();) {
 			RESTRequest<? extends Resource> r = it.next();
-			if(r.resumeListeners())
-				it.remove();
+			ArrayList<RESTRequest<? extends Resource>> requestsToRemove = new ArrayList<RESTRequest<? extends Resource>>();
+			if(r.resumeListeners()) {
+				requestsToRemove.add(r);
+			}
+			requestsCollection.removeAll(requestsToRemove);
 		}
 	}
 	
@@ -334,6 +337,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 		request.setResource(resource);
 		request.setFailBehaviorClass(mDefaultFailBehavior);
 		//mRequestCollection.add(request);
+		requestsCollection.add(request);
 		return request;
 	}
 	
@@ -398,7 +402,6 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 					}
 				}
 			}
-			requestsCollection.add(r);
 			initAndStartService(r);
 		}
 		else {
@@ -482,7 +485,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 				request.setPending(false);
 				if(resultCode >= 200 && resultCode <= 210) {
 					request.setResource(r.getResource());
-					if(request.triggerOnSucceedRequestListeners()) {
+					if(request.triggerOnSucceededRequestListeners()) {
 						request.triggerOnFinishedRequestListeners();
 						requestsToRemove.add(request);
 					}
@@ -494,7 +497,7 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 							e.printStackTrace();
 						}
 					}
-					mModule.getProcessor().onSucceedRequest(this, resultCode, request);
+					mModule.getProcessor().onSucceededRequest(this, resultCode, request);
 				}
 				else {
 					request.setResource(r.getResource());

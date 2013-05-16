@@ -312,7 +312,7 @@ public class RESTRequest<T extends Resource> implements Serializable {
 	 * 
 	 * @see RequestListeners#mOnSucceededRequestListeners
 	 */
-	public boolean triggerOnSucceedRequestListeners() {
+	public boolean triggerOnSucceededRequestListeners() {
 		boolean listenerFired = false;
 		if(mRequestListeners != null) {
 			for(Entry<OnSucceededRequestListener, ListenerState> listener : mRequestListeners.getOnSucceedRequestListeners().entrySet()) {

@@ -10,10 +10,10 @@ import java.util.Iterator;
  * 
  * @version 0.8
  */
-public class RetryWhenOtherSucceedFailBehavior extends FailBehavior {
+public class RetryWhenOtherSucceededFailBehavior extends FailBehavior {
 
 	
-	public RetryWhenOtherSucceedFailBehavior() {
+	public RetryWhenOtherSucceededFailBehavior() {
 		super();
 	}
 	

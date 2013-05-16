@@ -219,7 +219,7 @@ public abstract class Processor {
 	 * @param request
 	 * 		The request which has just failed
 	 */
-	public void onFailedRequest(WebService context, int statusCode, RESTRequest<? extends Resource> request) {
+	protected void onFailedRequest(WebService context, int statusCode, RESTRequest<? extends Resource> request) {
 		/*
 		 * Hook for UniqueAlarmFailBehavior
 		 */
@@ -244,7 +244,7 @@ public abstract class Processor {
 	}
 	
 	/**
-	 * Hook to execute actions on succeed request. This method actually set up the hook for {@link RetryWhenOtherSucceedFailBehavior} so don't forget to call super.onFailedRequest on your custom Processor class
+	 * Hook to execute actions on succeed request. This method actually set up the hook for {@link RetryWhenOtherSucceededFailBehavior} so don't forget to call super.onFailedRequest on your custom Processor class
 	 * 
 	 * @param context
 	 * 		Instance of {@link WebService} within which the specified request is running
@@ -255,9 +255,9 @@ public abstract class Processor {
 	 * @param request
 	 * 		The request which has just succeed
 	 */
-	public void onSucceedRequest(WebService context, int statusCode, RESTRequest<? extends Resource> request) {
+	protected void onSucceededRequest(WebService context, int statusCode, RESTRequest<? extends Resource> request) {
 		try {
-			FailBehaviorManager.trigger(context, RetryWhenOtherSucceedFailBehavior.class);
+			FailBehaviorManager.trigger(context, RetryWhenOtherSucceededFailBehavior.class);
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -455,7 +455,8 @@ public abstract class Processor {
 	                }
 	                else {
 	                	Persistable<Resource> persistable = getResourcePersistable(resource);
-		                persistable.deleteResource((ResourceRepresentation<?>)resource);
+		                Log.e("PERSISTABLE", "DELETE RESOURCE");
+	                	persistable.deleteResource((ResourceRepresentation<?>)resource);
 	                }
 	            }
 	            else if(r.getVerb() == HTTPVerb.GET) {
@@ -482,7 +483,7 @@ public abstract class Processor {
 	                }
 	            }
 			}
-            if(r.getResource() != null) { //POST PUT GET
+            if(r.getResource() != null && r.getVerb() != HTTPVerb.DELETE) { //POST PUT GET
             	Resource resource = r.getResource();
             	if(resource instanceof ResourcesList) {
             		for(Iterator<ResourceRepresentation<?>> it = (Iterator<ResourceRepresentation<?>>) ((ResourcesList) resource).getResourcesList().iterator(); it.hasNext();) {

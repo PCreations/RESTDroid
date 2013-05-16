@@ -24,9 +24,9 @@ public class TestRequestListeners extends RequestListeners {
 		
 	};
 	
-	private OnSucceedRequestListener onSucceed = new OnSucceedRequestListener() {
+	private OnSucceededRequestListener onSucceeded = new OnSucceededRequestListener() {
 
-		public void onSucceedRequest(int resultCode) {
+		public void onSucceededRequest(int resultCode) {
 			//TODO
 		}
 		
@@ -81,7 +81,7 @@ public class RequestListeners {
 	 * 
 	 * @see OnSucceededRequestListener
 	 * @see ListenerState
-	 * @see RequestListeners#getOnSucceedRequestListeners()
+	 * @see RequestListeners#getOnSucceededRequestListeners()
 	 * @see RequestListeners#setOnFinishedRequestListeners(OnFinishedRequestListeners)
 	 */
 	protected transient HashMap<OnSucceededRequestListener, ListenerState> mOnSucceededRequestListeners;
@@ -155,7 +155,7 @@ public class RequestListeners {
 	 * @see RequestListeners#mOnSucceededRequestListeners
 	 * @see RequestListeners#getOnSucceedRequestListeners()
 	 */
-	public void addOnSucceedRequestListener(OnSucceededRequestListener listener) {		
+	public void addOnSucceededRequestListener(OnSucceededRequestListener listener) {		
 		if(!mOnSucceededRequestListeners.containsKey(listener))
 			mOnSucceededRequestListeners.put(listener, ListenerState.SET);
 	}
@@ -208,7 +208,7 @@ public class RequestListeners {
 	 * 
 	 * @see OnFinishedRequestListeners
 	 * @see RequestListeners#mOnSucceededRequestListeners
-	 * @see RequestListeners#addOnSucceedRequestListener(OnSucceededRequestListener)
+	 * @see RequestListeners#addOnSucceededRequestListener(OnSucceededRequestListener)
 	 */
 	public HashMap<OnSucceededRequestListener, ListenerState> getOnSucceedRequestListeners() {
 		return mOnSucceededRequestListeners;

@@ -1,0 +1,572 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.1.2" icons="true" automaticImage="PNG" always-add-relationships="false" generalizations="true" 
+  realizations="true" associations="true" dependencies="false" nesting-relationships="true">  
+  <class id="1" language="java" name="fr.pcreations.labs.RESTDroid.core.ParserFactory" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/ParserFactory.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="712" y="651"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="2" language="java" name="fr.pcreations.labs.RESTDroid.core.RequestState" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/RequestState.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="339" y="269"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="3" language="java" name="fr.pcreations.labs.RESTDroid.core.RestResultReceiver" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/RestResultReceiver.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="905" y="465"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <interface id="4" language="java" name="fr.pcreations.labs.RESTDroid.core.Resource" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/Resource.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="918" y="269"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </interface>  
+  <interface id="5" language="java" name="fr.pcreations.labs.RESTDroid.core.ResourceRepresentation" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/ResourceRepresentation.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="53" width="191" x="725" y="372"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </interface>  
+  <interface id="6" language="java" name="fr.pcreations.labs.RESTDroid.core.Persistable" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/Persistable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="1291" y="744"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </interface>  
+  <class id="7" language="java" name="fr.pcreations.labs.RESTDroid.core.FailBehaviorManager" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/FailBehaviorManager.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="532" y="269"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <enumeration id="8" language="java" name="fr.pcreations.labs.RESTDroid.core.HTTPVerb" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/HTTPVerb.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="1521" y="558"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </enumeration>  
+  <interface id="9" language="java" name="fr.pcreations.labs.RESTDroid.core.Processor.RESTServiceCallback" 
+    project="RESTDroid" file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/Processor.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="905" y="651"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </interface>  
+  <class id="10" language="java" name="fr.pcreations.labs.RESTDroid.core.HttpRequestHandler" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/HttpRequestHandler.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="1098" y="651"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="11" language="java" name="fr.pcreations.labs.RESTDroid.core.RequestListeners" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/RequestListeners.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="1907" y="558"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <interface id="12" language="java" name="fr.pcreations.labs.RESTDroid.core.Parser" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/Parser.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="712" y="744"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </interface>  
+  <interface id="13" language="java" name="fr.pcreations.labs.RESTDroid.core.ResourcesList" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/ResourcesList.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="956" y="372"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </interface>  
+  <class id="14" language="java" name="fr.pcreations.labs.RESTDroid.core.WebService" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/WebService.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="1149" y="372"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="15" language="java" name="fr.pcreations.labs.RESTDroid.core.RetryWhenOtherSucceededFailBehavior" 
+    project="RESTDroid" file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/RetryWhenOtherSucceededFailBehavior.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="238" x="339" y="465"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <interface id="16" language="java" name="fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFailedRequestListener" 
+    project="RESTDroid" file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/RequestListeners.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="53" width="167" x="1484" y="651"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </interface>  
+  <interface id="17" language="java" name="fr.pcreations.labs.RESTDroid.core.HttpRequestHandler.ProcessorCallback" 
+    project="RESTDroid" file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/HttpRequestHandler.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="905" y="744"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </interface>  
+  <class id="18" language="java" name="fr.pcreations.labs.RESTDroid.core.PersistableFactory" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/PersistableFactory.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="1291" y="651"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="19" language="java" name="fr.pcreations.labs.RESTDroid.core.HttpRequestHandler.HTTPContainer" 
+    project="RESTDroid" file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/HttpRequestHandler.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="1098" y="744"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <interface id="20" language="java" name="fr.pcreations.labs.RESTDroid.core.RequestListeners.OnStartedRequestListener" 
+    project="RESTDroid" file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/RequestListeners.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="53" width="176" x="1691" y="651"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </interface>  
+  <class id="21" language="java" name="fr.pcreations.labs.RESTDroid.core.RESTDroid" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/RESTDroid.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="1149" y="269"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="22" language="java" name="fr.pcreations.labs.RESTDroid.core.FailBehavior" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/FailBehavior.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="532" y="372"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <enumeration id="23" language="java" name="fr.pcreations.labs.RESTDroid.core.ListenerState" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/ListenerState.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="1907" y="651"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </enumeration>  
+  <interface id="24" language="java" name="fr.pcreations.labs.RESTDroid.core.RequestListeners.OnFinishedRequestListener" 
+    project="RESTDroid" file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/RequestListeners.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="53" width="181" x="2100" y="651"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </interface>  
+  <class id="25" language="java" name="fr.pcreations.labs.RESTDroid.core.DefaultRetryAtDelayedTimeFailBehavior" 
+    project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/DefaultRetryAtDelayedTimeFailBehavior.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="53" width="248" x="617" y="465"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="26" language="java" name="fr.pcreations.labs.RESTDroid.core.CacheManager" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/CacheManager.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="725" y="269"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="27" language="java" name="fr.pcreations.labs.RESTDroid.core.Processor" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/Processor.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="1098" y="558"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="28" language="java" name="fr.pcreations.labs.RESTDroid.core.SerializableHeader" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/SerializableHeader.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="1714" y="558"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="29" language="java" name="fr.pcreations.labs.RESTDroid.core.RestService" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/RestService.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1221" y="497"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <interface id="30" language="java" 
+    name="fr.pcreations.labs.RESTDroid.core.RequestListeners.OnSucceededRequestListener" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/RequestListeners.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="198" x="2321" y="651"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </interface>  
+  <interface id="31" language="java" name="fr.pcreations.labs.RESTDroid.core.RestResultReceiver.Receiver" 
+    project="RESTDroid" file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/RestResultReceiver.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="905" y="558"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </interface>  
+  <class id="32" language="java" name="fr.pcreations.labs.RESTDroid.core.RESTRequest" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/RESTRequest.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="53" width="153" x="1714" y="465"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="33" language="java" name="fr.pcreations.labs.RESTDroid.core.Module" project="RESTDroid" 
+    file="/RESTDroid/src/fr/pcreations/labs/RESTDroid/core/Module.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1407" y="497"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <association id="34">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="35" name="mOnFinishedRequestListeners"/>      
+      <multiplicity id="36" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="23" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <nesting id="37">    
+    <end type="SOURCE" refId="27"/>    
+    <end type="TARGET" refId="9"/>  
+  </nesting>  
+  <association id="38">    
+    <end type="SOURCE" refId="14" navigable="false">      
+      <attribute id="39" name="mReceiver"/>      
+      <multiplicity id="40" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <generalization id="41">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="4"/>  
+  </generalization>  
+  <association id="42">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="43" name="instance"/>      
+      <multiplicity id="44" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <association id="45">    
+    <end type="SOURCE" refId="32" navigable="false">      
+      <attribute id="46" name="mVerb"/>      
+      <multiplicity id="47" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <nesting id="48">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="20"/>  
+  </nesting>  
+  <association id="49">    
+    <end type="SOURCE" refId="32" navigable="false">      
+      <attribute id="50" name="mRequestListeners"/>      
+      <multiplicity id="51" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <association id="52">    
+    <end type="SOURCE" refId="27" navigable="false">      
+      <attribute id="53" name="mParserFactory"/>      
+      <multiplicity id="54" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <association id="55">    
+    <end type="SOURCE" refId="33" navigable="false">      
+      <attribute id="56" name="mProcessor"/>      
+      <multiplicity id="57" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="27" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <association id="58">    
+    <end type="SOURCE" refId="14" navigable="false">      
+      <attribute id="59" name="mModule"/>      
+      <multiplicity id="60" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="33" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <association id="61">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="62" name="mWebServices"/>      
+      <multiplicity id="63" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <association id="64">    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="65" name="mProcessorCallback"/>      
+      <multiplicity id="66" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="17" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <nesting id="67">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="16"/>  
+  </nesting>  
+  <nesting id="68">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="19"/>  
+  </nesting>  
+  <nesting id="69">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="31"/>  
+  </nesting>  
+  <association id="70">    
+    <end type="SOURCE" refId="27" navigable="false">      
+      <attribute id="71" name="mHttpRequestHandler"/>      
+      <multiplicity id="72" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <realization id="73">    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="31"/>  
+  </realization>  
+  <association id="74">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="75" name="mRequest"/>      
+      <multiplicity id="76" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="32" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <generalization id="77">    
+    <end type="SOURCE" refId="25"/>    
+    <end type="TARGET" refId="22"/>  
+  </generalization>  
+  <association id="78">    
+    <end type="SOURCE" refId="27" navigable="false">      
+      <attribute id="79" name="mRESTServiceCallback"/>      
+      <multiplicity id="80" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="9" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <association id="81">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="82" name="failBehaviors"/>      
+      <multiplicity id="83" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="22" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <association id="84">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="85" name="mParserMap"/>      
+      <multiplicity id="86" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <nesting id="87">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="17"/>  
+  </nesting>  
+  <association id="88">    
+    <end type="SOURCE" refId="27" navigable="false">      
+      <attribute id="89" name="mPersistableFactory"/>      
+      <multiplicity id="90" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="18" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <association id="91">    
+    <end type="SOURCE" refId="29" navigable="false">      
+      <attribute id="92" name="processor"/>      
+      <multiplicity id="93" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="27" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <generalization id="94">    
+    <end type="SOURCE" refId="15"/>    
+    <end type="TARGET" refId="22"/>  
+  </generalization>  
+  <association id="95">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="96" name="mOnFailedRequestListeners"/>      
+      <multiplicity id="97" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="23" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <association id="98">    
+    <end type="SOURCE" refId="18" navigable="false">      
+      <attribute id="99" name="mPersistables"/>      
+      <multiplicity id="100" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="6" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <nesting id="101">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="24"/>  
+  </nesting>  
+  <association id="102">    
+    <end type="SOURCE" refId="14" navigable="false">      
+      <attribute id="103" name="requestsCollection"/>      
+      <multiplicity id="104" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="32" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <association id="105">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="106" name="mOnStartedRequestListeners"/>      
+      <multiplicity id="107" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="23" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <nesting id="108">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="30"/>  
+  </nesting>  
+  <association id="109">    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="110" name="httpRequests"/>      
+      <multiplicity id="111" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <generalization id="112">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="4"/>  
+  </generalization>  
+  <association id="113">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="114" name="mReceiver"/>      
+      <multiplicity id="115" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="31" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <association id="116">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="117" name="mOnSucceededRequestListeners"/>      
+      <multiplicity id="118" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="23" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <association id="119">    
+    <end type="SOURCE" refId="32" navigable="false">      
+      <attribute id="120" name="mHeaders"/>      
+      <multiplicity id="121" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="28" navigable="true"/>    
+    <display labels="false" multiplicity="true"/>  
+  </association>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+    accessors="true" visibility="true">    
+    <attributes public="false" package="false" protected="false" private="false"/>    
+    <operations public="false" package="false" protected="false" private="false"/>  
+  </classifier-display>  
+  <association-display labels="false" multiplicity="true"/>
+</class-diagram>
