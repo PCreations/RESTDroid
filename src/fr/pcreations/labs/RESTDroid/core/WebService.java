@@ -394,9 +394,9 @@ public abstract class WebService implements RestResultReceiver.Receiver{
 				RESTRequest<?> request = it.next();
 				if(request.getUrl().equals(r.getUrl())) {
 					if(request.getResultCode() != 0 && !(request.getResultCode() >= 200 && request.getResultCode() <= 210)) { //If the request has failed
-						if(request.getFailBehaviorClass() != null) {
+						/*if(request.getFailBehaviorClass() != null) {
 							return;
-						}
+						}*/
 						toRemove.add(request);
 						removeRequests(toRemove);
 					}

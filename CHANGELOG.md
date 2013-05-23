@@ -1,3 +1,7 @@
+#Change log 0.8.2
+*   Fixed bug when deleting a resource, the local resource was not deleted
+*   Fixed bug when retrieving request in WebService (request was not found)
+
 #Change log 0.8.1.1
 *   Processor#preRequestProcess() method now mirrors the server state by default if the processor has a PersistableFactory
 
