@@ -34,5 +34,5 @@ To migrate on version 0.8.x just refactor any calls to setResourceRepresentation
 User guide
 ----------
 
-You can find the whole guide on my website : [RESTDroid guide](http://pcreations.fr/restdroid-guides)
+You can find the whole guide on my website : [RESTDroid guide](http://pcreations.fr/me/restdroid-guides)
 And the Doc : [RESTDroid Documentation](http://pcreations.fr/RESTDroid/doc/)
