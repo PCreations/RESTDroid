@@ -15,7 +15,7 @@ RESTDroid in a nutshell :
 *	You can __dynamically change the process logic__ via RESTDroid Module (choose to cache & persist, only debug, not to cache, or whatever you want/need by creating a new RESTDroid Module)
 *	You can know at any moment if a particular local resource is remotely syncronized. Data persistence between local and remote is automatically handles.
 *	You can __easily manage caching__ for your request (new in 0.8)
-*	You can __specify a behavior at failure__ for your request such as __automatically retry request when anoter one has succeeded__ or __retry the request every X seconds untils the request is successfull__. You can of course __implement your own behavior at failure__ (new in 0.8)
+*	You can __specify a behavior at failure__ for your request such as __automatically retry request when another one has succeeded__ or __retry the request every X seconds untils the request is successfull__. You can of course __implement your own behavior at failure__ (new in 0.8)
 
 Futures features for v1
 ----------------
